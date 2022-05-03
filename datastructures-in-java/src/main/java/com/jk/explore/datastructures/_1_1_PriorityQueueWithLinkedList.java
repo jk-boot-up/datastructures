@@ -1,20 +1,58 @@
 package com.jk.explore.datastructures;
 
 
-public class _1_1_PriorityQueueWithLinkedList {
+public class _1_1_PriorityQueueWithLinkedList<T extends Comparable<T>> {
 
-    final int size;
+    final int limit;
+    private int currentSize = 0;
+    private LinkedList<T> linkedList = new LinkedList<T>();
 
-    public _1_1_PriorityQueueWithLinkedList(int size) {
-        this.size = size;
+    public _1_1_PriorityQueueWithLinkedList(int limit) {
+        this.limit = limit;
     }
 
-    public <T> void add(DataWithPriority<T> data) {
-
+    public void add(T data) {
+        if(limit == currentSize) {
+            throw new RuntimeException("Q is full");
+        }
+        if(linkedList.isEmpty()) {
+            linkedList.add(data);
+            currentSize++;
+        } else {
+            LinkedList.Node<T> prev = null;
+            LinkedList.Node<T> current = linkedList.first;
+            T currentSmall = current.data;
+            while(currentSmall.compareTo(data) < 1 && current != null) {
+                prev = current;
+                current = current.next;
+                if(current != null) {
+                    currentSmall = current.data;
+                }
+            }
+            if(currentSmall.compareTo(data) < 0) {
+                linkedList.addAtLast(data);
+                currentSize++;
+                return;
+            }
+            if(currentSmall.compareTo(data) > 0) {
+                LinkedList.Node<T> newNode = LinkedList.Node.of(data);
+                prev.next = newNode;
+                newNode.next = current;
+                currentSize++;
+                return;
+            }
+        }
     }
 
-    public <T> DataWithPriority<T> remove() {
-        return null;
+    public T remove() {
+        if(currentSize == 0) {
+            return null;
+        }
+        return linkedList.removeLast();
+    }
+
+    public int size() {
+        return currentSize;
     }
 
     public boolean isEmpty() {
@@ -29,6 +67,7 @@ public class _1_1_PriorityQueueWithLinkedList {
 
         private Node<T> first;
         private Node<T> last;
+        private int size;
 
         public void add(T element) {
             if(first == null) {
@@ -91,6 +130,7 @@ public class _1_1_PriorityQueueWithLinkedList {
             }
             return temp.data;
         }
+
 
         protected static class Node<T> {
             T data;

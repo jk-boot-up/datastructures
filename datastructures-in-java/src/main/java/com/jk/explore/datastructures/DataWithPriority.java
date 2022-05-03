@@ -7,13 +7,13 @@ import java.util.LinkedList;
 
 @Getter
 @RequiredArgsConstructor
-public class DataWithPriority<T> {
-    LinkedList l = new LinkedList();
-    private final T data;
+public class DataWithPriority<P> implements Comparable<DataWithPriority<P>> {
+
+    private final P data;
     private final Integer priority;
 
-    private void test() {
-        l.add(Integer.valueOf(10));
+    @Override
+    public int compareTo(DataWithPriority<P> o) {
+        return this.getPriority().compareTo(o.getPriority());
     }
-
 }

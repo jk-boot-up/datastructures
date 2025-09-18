@@ -1,0 +1,49 @@
+
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    lombokVersion = '1.18.40'
+}
+
+dependencies {
+    implementation libs.guava
+    compileOnly "org.projectlombok:lombok:$lombokVersion"
+    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+
+    testCompileOnly "org.projectlombok:lombok:$lombokVersion"
+    testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+}
+
+testing {
+    suites {
+        test {
+            useJUnitJupiter('5.12.1')
+        }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(24)
+    }
+}
+
+application {
+    mainClass = 'com.jk.dsa.linkedlists.single.reverse.App'
+}
+
+jar {
+    archiveFileName = 'sll-reverse-between.jar'
+    manifest {
+        attributes(
+                'Main-Class': 'com.jk.dsa.linkedlists.single.reverse.App'
+        )
+    }
+}
+

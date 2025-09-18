@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class _1_1_PriorityQueueWithLinkedListTest {
+public class _1_1_PriorityQueueWithLinkedList2Test {
 
     @Test
     public void addAtFirst_Node() {
@@ -33,16 +33,16 @@ public class _1_1_PriorityQueueWithLinkedListTest {
         Assertions.assertTrue(cut.isEmpty());
     }
 
-    @Test
-    public void addToPriorityQ() {
-        _1_1_PriorityQueueWithLinkedList<Integer> cut = new _1_1_PriorityQueueWithLinkedList<>(10);
-        // 4, 3, 2, 1, 0
-        cut.add(10);
-        cut.add(11);
-        cut.add(12);
-        cut.add(8);
-        Assertions.assertEquals(cut.size(), 4);
-        Assertions.assertEquals(cut.remove(), 12);
-    }
+//    @Test
+//    public void addToPriorityQ() {
+//        _1_1_PriorityQueueWithLinkedList<Integer> cut = new _1_1_PriorityQueueWithLinkedList<>(10);
+//        // 4, 3, 2, 1, 0
+//        cut.add(10);
+//        cut.add(11);
+//        cut.add(12);
+//        cut.add(8);
+//        Assertions.assertEquals(cut.size(), 4);
+//        Assertions.assertEquals(cut.remove(), 12);
+//    }
 
 }

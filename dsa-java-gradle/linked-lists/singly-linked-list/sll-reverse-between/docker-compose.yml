@@ -1,0 +1,42 @@
+version: '3.9'
+services:
+  build:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sll-reverse-between
+    profiles: ["build"]
+    working_dir: /home/gradle/project
+    volumes:
+      - .:/home/gradle/project
+      - ./logs:/logs
+    command: ["/bin/sh", "-c", "./gradlew build --console=plain > /logs/build.log 2>&1"]
+    stdin_open: true
+    tty: true
+
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sll-reverse-between
+    profiles: ["test"]
+    volumes:
+      - ./logs:/logs
+    command: ["./gradlew", "test", "--console=plain"]
+    stdin_open: true
+    tty: true
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: sll-reverse-between
+    container_name: sll-reverse-between
+    ports:
+      - "8080:8080"
+    environment:
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    command: ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-jar", "sll-reverse-between.jar"]
+    stdin_open: true
+    tty: true
+    profiles: ["run"]

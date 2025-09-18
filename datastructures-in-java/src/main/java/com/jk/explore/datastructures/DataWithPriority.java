@@ -9,11 +9,12 @@ import java.util.LinkedList;
 @RequiredArgsConstructor
 public class DataWithPriority<P> implements Comparable<DataWithPriority<P>> {
 
-    private final P data;
-    private final Integer priority;
+//    private final P data;
+//    private final Integer priority;
 
     @Override
     public int compareTo(DataWithPriority<P> o) {
-        return this.getPriority().compareTo(o.getPriority());
+        return 1;
+        //return this.getPriority().compareTo(o.getPriority());
     }
 }

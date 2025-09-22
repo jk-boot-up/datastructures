@@ -1,6 +1,7 @@
-
 plugins {
+    id 'java'
     id 'application'
+    id 'idea'
 }
 
 repositories {
@@ -9,21 +10,59 @@ repositories {
 
 ext {
     lombokVersion = '1.18.40'
+    // If you want a specific Guava version, change this:
+    guavaVersion = '32.1.2-jre'
 }
 
 dependencies {
-    implementation libs.guava
-    compileOnly "org.projectlombok:lombok:$lombokVersion"
-    annotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    // concrete Guava coordinate
+    implementation "com.google.guava:guava:${guavaVersion}"
 
-    testCompileOnly "org.projectlombok:lombok:$lombokVersion"
-    testAnnotationProcessor "org.projectlombok:lombok:$lombokVersion"
+    // lombok for compilation-time only
+    compileOnly "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    // tests normally need implementation
+    testImplementation "org.junit.jupiter:junit-jupiter:5.12.1"
+    testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+    testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+    // For IDE navigation / compile-time only (preferred)
+    compileOnly gradleApi()
 }
 
 testing {
     suites {
         test {
             useJUnitJupiter('5.12.1')
+        }
+    }
+}
+
+// Ask IntelliJ (via the IDEA plugin) to download sources/javadoc for dependencies
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+// Apply test logging to all Test tasks (works with the testing.suites API too)
+tasks.withType(Test).configureEach {
+    testLogging {
+        events "PASSED", "FAILED", "SKIPPED", "STANDARD_OUT", "STANDARD_ERROR"
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+
+    // nice summary at the end of the test suite
+    afterSuite { desc, result ->
+        if (!desc.parent) {
+            println()
+            println("--------------------------------------------------")
+            println("Test results: ${result.resultType}")
+            println("Tests run: ${result.testCount}, Failures: ${result.failedTestCount}, Skipped: ${result.skippedTestCount}")
+            println("--------------------------------------------------")
         }
     }
 }
@@ -35,7 +74,8 @@ java {
 }
 
 application {
-    mainClass = 'com.jk.dsa.linkedlists.single.reverse.App'
+    // prefer the property setter form
+    mainClass.set('com.jk.dsa.linkedlists.single.reverse.App')
 }
 
 jar {
@@ -47,3 +87,84 @@ jar {
     }
 }
 
+/*
+ * Helper tasks for fetching sources to improve IDE navigation
+ */
+
+// 1) Download and unzip Gradle distribution (useful to get Gradle API sources)
+task downloadGradleSources {
+    description = "Download and unzip the Gradle <wrapper-version>-all.zip (contains sources)."
+    group = "help"
+
+    def gv = gradle.gradleVersion
+    def url = "https://services.gradle.org/distributions/gradle-${gv}-all.zip"
+    def destZip = file("$buildDir/gradle-dist/gradle-${gv}-all.zip")
+    def extractedDir = file("$buildDir/gradle-dist/gradle-${gv}")
+
+    outputs.dir(extractedDir)
+
+    doLast {
+        if (!destZip.exists()) {
+            logger.lifecycle("Downloading ${url} -> ${destZip}")
+            ant.get(src: url, dest: destZip)
+        } else {
+            logger.lifecycle("Using cached ${destZip}")
+        }
+        copy {
+            from zipTree(destZip)
+            into extractedDir
+        }
+        logger.lifecycle("Gradle dist extracted to: ${extractedDir}")
+        logger.lifecycle("If you want to attach Gradle API sources in the IDE, point to: ${extractedDir}")
+    }
+}
+
+// 2) Try to download dependency *-sources.jar files and unpack them
+task downloadDependencySources {
+    description = "Try to fetch '*-sources.jar' for compileClasspath/runtimeClasspath dependencies and unpack them into build/dependency-sources."
+    group = "help"
+
+    doLast {
+        def destRoot = file("$buildDir/dependency-sources")
+        destRoot.mkdirs()
+
+        // Choose configs to inspect (adjust if needed)
+        def configs = []
+        if (configurations.findByName('compileClasspath')) configs << configurations.compileClasspath
+        if (configurations.findByName('runtimeClasspath')) configs << configurations.runtimeClasspath
+        if (configurations.findByName('testCompileClasspath')) configs << configurations.testCompileClasspath
+
+        if (configs.isEmpty()) {
+            logger.lifecycle("No classpath configurations found to resolve.")
+            return
+        }
+
+        configs.each { config ->
+            logger.lifecycle("Inspecting configuration: ${config.name}")
+            // Resolve to get artifacts
+            config.resolvedConfiguration.resolvedArtifacts.each { ra ->
+                def mod = ra.moduleVersion.id
+                def coord = "${mod.group}:${mod.name}:${mod.version}:sources@jar"
+                try {
+                    def detached = configurations.detachedConfiguration(dependencies.create(coord))
+                    def resolvedFiles = detached.resolve()
+                    if (!resolvedFiles.isEmpty()) {
+                        def srcJar = resolvedFiles.iterator().next()
+                        def targetDir = file("$destRoot/${mod.group}.${mod.name}-${mod.version}")
+                        copy {
+                            from zipTree(srcJar)
+                            into targetDir
+                        }
+                        logger.lifecycle("Unpacked sources for ${mod.group}:${mod.name}:${mod.version} -> ${targetDir}")
+                    } else {
+                        logger.lifecycle("No sources found for $coord")
+                    }
+                } catch (Exception e) {
+                    // many artifacts won't have a sources.jar — ignore and log
+                    logger.lifecycle("No sources for ${coord}: ${e.message}")
+                }
+            }
+        }
+        logger.lifecycle("Dependency sources (if found) unpacked into ${destRoot}")
+    }
+}

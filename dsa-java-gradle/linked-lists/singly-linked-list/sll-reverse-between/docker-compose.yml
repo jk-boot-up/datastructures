@@ -1,42 +1,27 @@
-version: '3.9'
+version: "3.9"
+
 services:
-  build:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: sll-reverse-between
-    profiles: ["build"]
-    working_dir: /home/gradle/project
-    volumes:
-      - .:/home/gradle/project
-      - ./logs:/logs
-    command: ["/bin/sh", "-c", "./gradlew build --console=plain > /logs/build.log 2>&1"]
-    stdin_open: true
-    tty: true
-
-  test:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: sll-reverse-between
-    profiles: ["test"]
-    volumes:
-      - ./logs:/logs
-    command: ["./gradlew", "test", "--console=plain"]
-    stdin_open: true
-    tty: true
-
+  # runtime image built from your Dockerfile (multi-stage)
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    image: sll-reverse-between
+    image: sll-reverse-between:latest
     container_name: sll-reverse-between
-    ports:
-      - "8080:8080"
-    environment:
-      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-    command: ["java", "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005", "-jar", "sll-reverse-between.jar"]
-    stdin_open: true
-    tty: true
-    profiles: ["run"]
+    restart: "no"
+    # runtime command from your Dockerfile will be used
+    ports: []          # add ports if your app listens on any
+    depends_on: []
+    profiles: []
+
+  # test service: runs Gradle tests using containerized gradle
+  test:
+    image: gradle:9.0.0-jdk24
+    container_name: sll-reverse-between-test
+    working_dir: /home/gradle/project
+    volumes:
+      - ./:/home/gradle/project:cached
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      ./gradlew --no-daemon clean test --stacktrace --info --no-build-cache --console=plain
+    restart: "no"

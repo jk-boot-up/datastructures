@@ -85,40 +85,7 @@ public class LinkedList {
             tail = reversePartitionTail;
         }
     }
-
-
-
-    public void reverseBetween2(int left, int right) {
-        if (head == null || left == right) {
-            return;
-        }
-
-        Node dummy = new Node(0);
-        dummy.next = head;
-        Node prev = dummy;
-
-        for (int i = 1; i < left; i++) {
-            prev = prev.next;
-        }
-
-        Node current = prev.next;
-        Node next = null;
-        Node prevSublist = null;
-
-        for (int i = 0; i <= right - left; i++) {
-            next = current.next;
-            current.next = prevSublist;
-            prevSublist = current;
-            current = next;
-        }
-
-        prev.next.next = current;
-        prev.next = prevSublist;
-
-        head = dummy.next;
-    }
     
-
     @Getter
     @NoArgsConstructor
     @ToString

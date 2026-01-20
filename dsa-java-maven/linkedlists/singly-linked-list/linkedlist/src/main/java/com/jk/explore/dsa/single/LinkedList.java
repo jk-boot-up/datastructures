@@ -56,7 +56,7 @@ public class LinkedList {
      */
     public void addLast(int data) {
         Node newNode = new Node(data);
-        if (head == null) {
+        if (isEmpty()) {
             head = newNode;
             tail = newNode;
         } else {
@@ -77,7 +77,7 @@ public class LinkedList {
      */
     public void addFirst(int data) {
         Node newNode = new Node(data);
-        if (head == null) {
+        if (isEmpty()) {
             head = newNode;
             tail = newNode;
         } else {
@@ -101,7 +101,7 @@ public class LinkedList {
      * @param data the value to be removed
      */
     public void removeFirst(int data) {
-        if (head == null) {
+        if (isEmpty()) {
             return;
         }
 
@@ -157,7 +157,7 @@ public class LinkedList {
      * </p>
      */
     public void removeLast() {
-        if (head == null) {
+        if (isEmpty()) {
             return;
         }
 
@@ -266,6 +266,14 @@ public class LinkedList {
     }
 
     /**
+     * Check whether the list is empty
+     * @return true if the list is empty
+     */
+    public boolean isEmpty() {
+        return length == 0;
+    }
+
+    /**
      * Returns a string representation of the list.
      *
      * <p>
@@ -279,7 +287,6 @@ public class LinkedList {
         StringBuilder sb = new StringBuilder();
         Node currentNode = head;
         sb.append("[ ");
-
         if (length != 0) {
             while (currentNode != null) {
                 sb.append(" ").append(currentNode.data);
@@ -289,7 +296,6 @@ public class LinkedList {
                 currentNode = currentNode.next;
             }
         }
-
         sb.append(" ]");
         return sb.toString();
     }

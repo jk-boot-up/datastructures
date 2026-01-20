@@ -62,17 +62,16 @@ The list maintains: - `head` → first node\
 
 ## 🔧 Supported Operations
 
-Operation         Method               Time Complexity
-  ----------------- -------------------- -----------------
-Insert at end     `addLast(int)`       O(1)
-Insert at start   `addFirst(int)`      O(1)
-Insert at index   `insert(int, int)`   O(n)
-Remove by value   `remove(int)`        O(n)
-Remove last       `removeLast()`       O(n)
-Search            `contains(int)`      O(n)
-Get size          `getLength()`        O(1)
+| Operation         | Method              | Time Complexity |
+|------------------|---------------------|-----------------|
+| Insert at end    | `addLast(int)`      | O(1)            |
+| Insert at start  | `addFirst(int)`     | O(1)            |
+| Insert at index  | `insert(int, int)`  | O(n)            |
+| Remove by value  | `remove(int)`       | O(n)            |
+| Remove last      | `removeLast()`      | O(n)            |
+| Search           | `contains(int)`     | O(n)            |
+| Get size         | `getLength()`       | O(1)            |
 
-------------------------------------------------------------------------
 
 ## 🧪 Example Usage
 

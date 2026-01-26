@@ -6,6 +6,28 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
+ *
+ *  A Linked List is a linear data structure in which elements (called nodes)
+ *  are stored non-contiguously in memory. Each node consists of data and
+ *  a reference (link) to the next node in the sequence.
+ *  <p>
+ *  The list starts with a head node, and traversal is performed by
+ *  following the references until the last node, called the tail.
+ *  The tail node's next reference points to {@code null}.
+ *
+ *  <pre>
+ *  head                        tail
+ *  |                           |
+ *  v                           v
+ *  +------+    +------+    +------+
+ *  | 10   | -> | 20   | -> | 30   | -> null
+ *  +------+    +------+    +------+
+ *  </pre>
+ *
+ *  Linked lists support dynamic memory allocation and allow efficient
+ *  insertion and deletion of elements, but they provide only sequential
+ *  access to elements.
+ * </p>
  * A custom implementation of a singly linked list that stores integer values.
  *
  * <p>

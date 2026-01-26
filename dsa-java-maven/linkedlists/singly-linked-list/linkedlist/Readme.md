@@ -149,7 +149,6 @@ This project is intended for educational purposes and may be freely
 used, modified, and shared.
 
 ------------------------------------------------------------------------
-
 ## Clone URL
 
 https://github.com/jk-boot-up/datastructures.git

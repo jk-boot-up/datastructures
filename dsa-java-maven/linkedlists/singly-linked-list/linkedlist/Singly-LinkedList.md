@@ -196,4 +196,5 @@ Avoid when:
 Designed for **learning and teaching Data Structures in Java**
 
 **Author:** Jayasekhar K  
-**GitHub:** https://github.com/jk-boot-up/datastructures
+**GitHub:** https://github.com/jk-boot-up/datastructures  
+**Project root:** https://github.com/jk-boot-up/datastructures/tree/main/dsa-java-maven/linkedlists/singly-linked-list/linkedlist

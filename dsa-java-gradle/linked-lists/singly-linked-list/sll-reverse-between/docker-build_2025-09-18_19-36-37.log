@@ -1,0 +1,265 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load .dockerignore
+#1 transferring context: 2B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 694B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/gradle:9.0.0-jdk24
+#3 DONE 0.0s
+
+#4 [internal] load metadata for docker.io/library/eclipse-temurin:24-jdk
+#4 DONE 1.1s
+
+#5 [stage-1 1/3] FROM docker.io/library/eclipse-temurin:24-jdk@sha256:7493205ffe6caa8074fa8a06a276bb1c5ac41d3dd0fd43a0db66d7f776e80b3e
+#5 DONE 0.0s
+
+#6 [build 1/4] FROM docker.io/library/gradle:9.0.0-jdk24
+#6 DONE 0.0s
+
+#7 [stage-1 2/3] WORKDIR /app
+#7 CACHED
+
+#8 [build 2/4] WORKDIR /home/gradle/project
+#8 CACHED
+
+#9 [internal] load build context
+#9 transferring context: 58.95kB 0.0s done
+#9 DONE 0.0s
+
+#10 [build 3/4] COPY . .
+#10 DONE 0.1s
+
+#11 [build 4/4] RUN REAL_JAVA_HOME=$(dirname $(dirname $(readlink -f $(which javac))))   && echo "REAL_JAVA_HOME=$REAL_JAVA_HOME"   && $REAL_JAVA_HOME/bin/java -version   && $REAL_JAVA_HOME/bin/javac -version   && gradle build --no-daemon --stacktrace --info -Dorg.gradle.java.home=$REAL_JAVA_HOME
+#11 0.145 REAL_JAVA_HOME=/opt/java/openjdk
+#11 0.169 openjdk version "24.0.2" 2025-07-15
+#11 0.170 OpenJDK Runtime Environment Temurin-24.0.2+12 (build 24.0.2+12)
+#11 0.170 OpenJDK 64-Bit Server VM Temurin-24.0.2+12 (build 24.0.2+12, mixed mode, sharing)
+#11 0.229 javac 24.0.2
+#11 0.517 Initialized native services in: /home/gradle/.gradle/native
+#11 0.519 Initialized jansi services in: /home/gradle/.gradle/native
+#11 0.635 To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/9.0.0/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+#11 0.636 Received JVM installation metadata from '/opt/java/openjdk': {JAVA_HOME=/opt/java/openjdk, JAVA_VERSION=24.0.2, JAVA_VENDOR=Eclipse Adoptium, RUNTIME_NAME=OpenJDK Runtime Environment, RUNTIME_VERSION=24.0.2+12, VM_NAME=OpenJDK 64-Bit Server VM, VM_VERSION=24.0.2+12, VM_VENDOR=Eclipse Adoptium, OS_ARCH=aarch64}
+#11 0.735 Starting process 'Gradle build daemon'. Working directory: /home/gradle/.gradle/daemon/9.0.0 Command: /opt/java/openjdk/bin/java --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.prefs/java.util.prefs=ALL-UNNAMED --add-opens=java.base/java.nio.charset=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.xml/javax.xml.namespace=ALL-UNNAMED --enable-native-access=ALL-UNNAMED -XX:MaxMetaspaceSize=384m -XX:+HeapDumpOnOutOfMemoryError -Xms256m -Xmx512m -Dfile.encoding=UTF-8 -Duser.country=US -Duser.language=en -Duser.variant -cp /opt/gradle/lib/gradle-daemon-main-9.0.0.jar -javaagent:/opt/gradle/lib/agents/gradle-instrumentation-agent-9.0.0.jar org.gradle.launcher.daemon.bootstrap.GradleDaemon 9.0.0
+#11 0.735 Successfully started process 'Gradle build daemon'
+#11 1.139 An attempt to start the daemon took 0.478 secs.
+#11 1.235 The client will now receive all logging from the daemon (pid: 86). The daemon log file: /home/gradle/.gradle/daemon/9.0.0/daemon-86.out.log
+#11 1.235 Daemon will be stopped at the end of the build 
+#11 1.435 Using 4 worker leases.
+#11 1.535 Received JVM installation metadata from '/opt/java/openjdk': {JAVA_HOME=/opt/java/openjdk, JAVA_VERSION=24.0.2, JAVA_VENDOR=Eclipse Adoptium, RUNTIME_NAME=OpenJDK Runtime Environment, RUNTIME_VERSION=24.0.2+12, VM_NAME=OpenJDK 64-Bit Server VM, VM_VERSION=24.0.2+12, VM_VENDOR=Eclipse Adoptium, OS_ARCH=aarch64}
+#11 1.635 Watching the file system is configured to be enabled if available
+#11 1.635 Unable to list file systems to check whether they can be watched. Disabling watching. Reason: Could not query file systems: could not open mount file (errno 2: No such file or directory)
+#11 1.635 File system watching is inactive
+#11 1.935 Starting Build
+#11 1.935 Caching disabled for Groovy DSL script compilation (cp_settings) because:
+#11 1.935   Build cache is disabled
+#11 1.935   Not worth caching.
+#11 1.935 Compiling settings file '/home/gradle/project/settings.gradle' using SubsetScriptTransformer.
+#11 2.835 Downloading https://plugins.gradle.org/m2/org/gradle/toolchains/foojay-resolver-convention/org.gradle.toolchains.foojay-resolver-convention.gradle.plugin/1.0.0/org.gradle.toolchains.foojay-resolver-convention.gradle.plugin-1.0.0.pom to /home/gradle/.gradle/.tmp/gradle_download8306532047204925420bin
+#11 2.935 Resource missing. [HTTP HEAD: https://plugins.gradle.org/m2/org/gradle/toolchains/foojay-resolver-convention/org.gradle.toolchains.foojay-resolver-convention.gradle.plugin/1.0.0/org.gradle.toolchains.foojay-resolver-convention.gradle.plugin-1.0.0.jar]
+#11 2.935 Resolved plugin [id: 'org.gradle.toolchains.foojay-resolver-convention', version: '1.0.0']
+#11 3.936 Downloading https://plugins.gradle.org/m2/org/gradle/toolchains/foojay-resolver/1.0.0/foojay-resolver-1.0.0.pom to /home/gradle/.gradle/.tmp/gradle_download2321522242265690771bin
+#11 4.335 Downloading https://plugins.gradle.org/m2/org/gradle/toolchains/foojay-resolver/1.0.0/foojay-resolver-1.0.0.module to /home/gradle/.gradle/.tmp/gradle_download2976469165706341640bin
+#11 4.535 Downloading https://plugins.gradle.org/m2/org/gradle/toolchains/foojay-resolver/1.0.0/foojay-resolver-1.0.0.jar to /home/gradle/.gradle/.tmp/gradle_download17143314813226711132bin
+#11 4.635 Caching disabled for InstrumentationAnalysisTransform: /home/gradle/.gradle/caches/modules-2/files-2.1/org.gradle.toolchains/foojay-resolver/1.0.0/72c0af50bc9156fb2a9429ed152abb4417bb6eaf/foojay-resolver-1.0.0.jar because:
+#11 4.635   Build cache is disabled
+#11 4.636   Caching not enabled.
+#11 4.636 Caching disabled for MergeInstrumentationAnalysisTransform: /home/gradle/.gradle/caches/9.0.0/transforms/a165e720ecf973056561eac1d2617550/transformed/.gradle-instrumented-classpath.marker because:
+#11 4.636   Build cache is disabled
+#11 4.636   Caching not enabled.
+#11 4.637 Caching disabled for MergeInstrumentationAnalysisTransform: /home/gradle/.gradle/caches/9.0.0/transforms/a165e720ecf973056561eac1d2617550/transformed/analysis/instrumentation-hierarchy.bin because:
+#11 4.637   Build cache is disabled
+#11 4.638   Caching not enabled.
+#11 4.638 Caching disabled for MergeInstrumentationAnalysisTransform: /home/gradle/.gradle/caches/9.0.0/transforms/a165e720ecf973056561eac1d2617550/transformed/analysis/instrumentation-dependencies.bin because:
+#11 4.638   Build cache is disabled
+#11 4.639   Caching not enabled.
+#11 4.639 Caching disabled for MergeInstrumentationAnalysisTransform: /home/gradle/.gradle/caches/modules-2/files-2.1/org.gradle.toolchains/foojay-resolver/1.0.0/72c0af50bc9156fb2a9429ed152abb4417bb6eaf/foojay-resolver-1.0.0.jar because:
+#11 4.640   Build cache is disabled
+#11 4.640   Caching not enabled.
+#11 4.641 Caching disabled for ExternalDependencyInstrumentingArtifactTransform: /home/gradle/.gradle/caches/9.0.0/transforms/7a3f3c32d8c940d6e4815a4852b54745/transformed/.gradle-instrumented-classpath.marker because:
+#11 4.642   Build cache is disabled
+#11 4.643   Caching not enabled.
+#11 4.644 Caching disabled for ExternalDependencyInstrumentingArtifactTransform: /home/gradle/.gradle/caches/9.0.0/transforms/7a3f3c32d8c940d6e4815a4852b54745/transformed/merge/instrumentation-dependencies.bin because:
+#11 4.645   Build cache is disabled
+#11 4.645   Caching not enabled.
+#11 4.735 Caching disabled for ExternalDependencyInstrumentingArtifactTransform: /home/gradle/.gradle/caches/modules-2/files-2.1/org.gradle.toolchains/foojay-resolver/1.0.0/72c0af50bc9156fb2a9429ed152abb4417bb6eaf/foojay-resolver-1.0.0.jar because:
+#11 4.736   Build cache is disabled
+#11 4.737   Caching not enabled.
+#11 4.737 Caching disabled for Groovy DSL script compilation (settings) because:
+#11 4.738   Build cache is disabled
+#11 4.738   Not worth caching.
+#11 4.739 Compiling settings file '/home/gradle/project/settings.gradle' using BuildScriptTransformer.
+#11 4.835 Settings evaluated using settings file '/home/gradle/project/settings.gradle'.
+#11 4.835 Using local directory build cache for the root build (location = /home/gradle/.gradle/caches/build-cache-1, remove unused entries = after 7 days).
+#11 5.036 Caching disabled for generation of dependency accessors for libs because:
+#11 5.036   Not worth caching.
+#11 5.235 Projects loaded. Root project using build file '/home/gradle/project/build.gradle'.
+#11 5.236 Included projects: [root project 'sll-reverse-between', project ':app']
+#11 5.335 
+#11 5.336 > Configure project :
+#11 5.337 Evaluating root project 'sll-reverse-between' using build file '/home/gradle/project/build.gradle'.
+#11 5.636 
+#11 5.637 > Configure project :app
+#11 5.637 Evaluating project ':app' using build file '/home/gradle/project/app/build.gradle'.
+#11 5.637 Caching disabled for Groovy DSL script compilation (cp_proj) because:
+#11 5.637   Not worth caching.
+#11 5.637 Compiling build file '/home/gradle/project/app/build.gradle' using SubsetScriptTransformer.
+#11 5.637 Resolved plugin [id: 'application']
+#11 5.637 Caching disabled for Groovy DSL script compilation (proj) because:
+#11 5.638   Not worth caching.
+#11 5.639 Compiling build file '/home/gradle/project/app/build.gradle' using BuildScriptTransformer.
+#11 5.639 All projects evaluated.
+#11 5.640 Task name matched 'build'
+#11 5.640 Selected primary task 'build' from project :
+#11 5.736 Tasks to be executed: [task ':app:compileJava', task ':app:processResources', task ':app:classes', task ':app:jar', task ':app:startScripts', task ':app:distTar', task ':app:distZip', task ':app:assemble', task ':app:compileTestJava', task ':app:processTestResources', task ':app:testClasses', task ':app:test', task ':app:check', task ':app:build']
+#11 5.736 Tasks that were excluded: []
+#11 5.736 Resolve mutations for :app:compileJava (Thread[#60,Execution worker,5,main]) started.
+#11 5.736 :app:compileJava (Thread[#60,Execution worker,5,main]) started.
+#11 6.535 
+#11 6.535 > Task :app:compileJava UP-TO-DATE
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/org/projectlombok/lombok/1.18.40/lombok-1.18.40.pom to /home/gradle/.gradle/.tmp/gradle_download16190443372761943220bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/com/google/guava/guava/33.4.6-jre/guava-33.4.6-jre.pom to /home/gradle/.gradle/.tmp/gradle_download11627029385285521724bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/33.4.6-jre/guava-parent-33.4.6-jre.pom to /home/gradle/.gradle/.tmp/gradle_download13249603460122406470bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/com/google/guava/guava/33.4.6-jre/guava-33.4.6-jre.module to /home/gradle/.gradle/.tmp/gradle_download2297537712403356224bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.pom to /home/gradle/.gradle/.tmp/gradle_download15330790349878662393bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.pom to /home/gradle/.gradle/.tmp/gradle_download5225317719466556518bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/26.0-android/guava-parent-26.0-android.pom to /home/gradle/.gradle/.tmp/gradle_download11850534051608114745bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/com/google/guava/guava-parent/33.4.0-android/guava-parent-33.4.0-android.pom to /home/gradle/.gradle/.tmp/gradle_download15963691823630394698bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.pom to /home/gradle/.gradle/.tmp/gradle_download6360274181481213994bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0.pom to /home/gradle/.gradle/.tmp/gradle_download16006581082388132999bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/org/sonatype/oss/oss-parent/9/oss-parent-9.pom to /home/gradle/.gradle/.tmp/gradle_download13445558803358047963bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0.pom to /home/gradle/.gradle/.tmp/gradle_download14714767967175590846bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.module to /home/gradle/.gradle/.tmp/gradle_download5719781966131931680bin
+#11 6.535 Downloading https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_parent/2.36.0/error_prone_parent-2.36.0.pom to /home/gradle/.gradle/.tmp/gradle_download10816670035066039832bin
+#11 6.536 Downloading https://repo.maven.apache.org/maven2/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar to /home/gradle/.gradle/.tmp/gradle_download17869975347513238575bin
+#11 6.536 Downloading https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar to /home/gradle/.gradle/.tmp/gradle_download4474735714792245535bin
+#11 6.536 Downloading https://repo.maven.apache.org/maven2/com/google/guava/guava/33.4.6-jre/guava-33.4.6-jre.jar to /home/gradle/.gradle/.tmp/gradle_download11004816786063637311bin
+#11 6.536 Downloading https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0.jar to /home/gradle/.gradle/.tmp/gradle_download6805217068710373491bin
+#11 6.536 Downloading https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar to /home/gradle/.gradle/.tmp/gradle_download1829885384217875388bin
+#11 6.536 Downloading https://repo.maven.apache.org/maven2/org/projectlombok/lombok/1.18.40/lombok-1.18.40.jar to /home/gradle/.gradle/.tmp/gradle_download17820626596163415477bin
+#11 6.536 Downloading https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0.jar to /home/gradle/.gradle/.tmp/gradle_download7490697246401776352bin
+#11 6.536 Build cache key for task ':app:compileJava' is d3c03597e5865f2f21aaa0c53e408c64
+#11 6.536 Skipping task ':app:compileJava' as it is up-to-date.
+#11 6.536 Resolve mutations for :app:processResources (Thread[#60,Execution worker,5,main]) started.
+#11 6.536 :app:processResources (Thread[#60,Execution worker,5,main]) started.
+#11 6.536 
+#11 6.536 > Task :app:processResources NO-SOURCE
+#11 6.536 Skipping task ':app:processResources' as it has no source files and no previous output files.
+#11 6.536 Resolve mutations for :app:classes (Thread[#60,Execution worker,5,main]) started.
+#11 6.536 :app:classes (Thread[#60,Execution worker,5,main]) started.
+#11 6.536 
+#11 6.536 > Task :app:classes UP-TO-DATE
+#11 6.536 Skipping task ':app:classes' as it has no actions.
+#11 6.536 Resolve mutations for :app:jar (Thread[#60,Execution worker,5,main]) started.
+#11 6.536 :app:jar (Thread[#60,Execution worker,5,main]) started.
+#11 6.536 
+#11 6.536 > Task :app:jar UP-TO-DATE
+#11 6.536 Caching disabled for task ':app:jar' because:
+#11 6.536   Not worth caching
+#11 6.536 Skipping task ':app:jar' as it is up-to-date.
+#11 6.536 Resolve mutations for :app:startScripts (Thread[#60,Execution worker,5,main]) started.
+#11 6.536 :app:startScripts (Thread[#60,Execution worker,5,main]) started.
+#11 6.536 
+#11 6.536 > Task :app:startScripts UP-TO-DATE
+#11 6.536 Caching disabled for task ':app:startScripts' because:
+#11 6.536   Not worth caching
+#11 6.536 Skipping task ':app:startScripts' as it is up-to-date.
+#11 6.536 Resolve mutations for :app:distTar (Thread[#60,Execution worker,5,main]) started.
+#11 6.536 :app:distTar (Thread[#60,Execution worker,5,main]) started.
+#11 6.536 
+#11 6.536 > Task :app:distTar UP-TO-DATE
+#11 6.536 Caching disabled for task ':app:distTar' because:
+#11 6.536   Not worth caching
+#11 6.536 Skipping task ':app:distTar' as it is up-to-date.
+#11 6.536 Resolve mutations for :app:distZip (Thread[#60,Execution worker,5,main]) started.
+#11 6.536 :app:distZip (Thread[#60,Execution worker,5,main]) started.
+#11 6.536 
+#11 6.536 > Task :app:distZip UP-TO-DATE
+#11 6.536 Caching disabled for task ':app:distZip' because:
+#11 6.536   Not worth caching
+#11 6.536 Skipping task ':app:distZip' as it is up-to-date.
+#11 6.536 Resolve mutations for :app:assemble (Thread[#60,Execution worker,5,main]) started.
+#11 6.537 :app:assemble (Thread[#60,Execution worker,5,main]) started.
+#11 6.537 
+#11 6.537 > Task :app:assemble UP-TO-DATE
+#11 6.537 Skipping task ':app:assemble' as it has no actions.
+#11 6.537 Resolve mutations for :app:compileTestJava (Thread[#60,Execution worker,5,main]) started.
+#11 6.537 :app:compileTestJava (Thread[#60,Execution worker,5,main]) started.
+#11 6.935 
+#11 6.935 > Task :app:compileTestJava UP-TO-DATE
+#11 6.935 Downloading https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.12.1/junit-jupiter-5.12.1.pom to /home/gradle/.gradle/.tmp/gradle_download13550685086904141181bin
+#11 6.935 Downloading https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.12.1/junit-bom-5.12.1.pom to /home/gradle/.gradle/.tmp/gradle_download9045433973693567080bin
+#11 6.935 Downloading https://repo.maven.apache.org/maven2/org/junit/junit-bom/5.12.1/junit-bom-5.12.1.module to /home/gradle/.gradle/.tmp/gradle_download1508724026161401065bin
+#11 6.935 Downloading https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.12.1/junit-jupiter-5.12.1.module to /home/gradle/.gradle/.tmp/gradle_download11656328928231767532bin
+#11 6.935 Downloading https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.12.1/junit-jupiter-api-5.12.1.pom to /home/gradle/.gradle/.tmp/gradle_download6648221700955533583bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.12.1/junit-jupiter-api-5.12.1.module to /home/gradle/.gradle/.tmp/gradle_download7938978028654787585bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/5.12.1/junit-jupiter-params-5.12.1.pom to /home/gradle/.gradle/.tmp/gradle_download2644468054055584774bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/5.12.1/junit-jupiter-params-5.12.1.module to /home/gradle/.gradle/.tmp/gradle_download13893495730884654563bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.pom to /home/gradle/.gradle/.tmp/gradle_download7188927051930499087bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.pom to /home/gradle/.gradle/.tmp/gradle_download1554574969871711014bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.module to /home/gradle/.gradle/.tmp/gradle_download9495431736062151864bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.module to /home/gradle/.gradle/.tmp/gradle_download10101290617518725897bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.12.1/junit-platform-commons-1.12.1.pom to /home/gradle/.gradle/.tmp/gradle_download15143634559695473437bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.12.1/junit-platform-commons-1.12.1.module to /home/gradle/.gradle/.tmp/gradle_download13689898768424320857bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-api/5.12.1/junit-jupiter-api-5.12.1.jar to /home/gradle/.gradle/.tmp/gradle_download14867441103592610597bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-params/5.12.1/junit-jupiter-params-5.12.1.jar to /home/gradle/.gradle/.tmp/gradle_download13517569362469464355bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-commons/1.12.1/junit-platform-commons-1.12.1.jar to /home/gradle/.gradle/.tmp/gradle_download543922414996882104bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.12.1/junit-jupiter-5.12.1.jar to /home/gradle/.gradle/.tmp/gradle_download5086754050661168473bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar to /home/gradle/.gradle/.tmp/gradle_download17126646599663143462bin
+#11 6.936 Downloading https://repo.maven.apache.org/maven2/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar to /home/gradle/.gradle/.tmp/gradle_download2540645566413352408bin
+#11 6.936 Build cache key for task ':app:compileTestJava' is 14686e6e34d636d44952a29682ce9d61
+#11 6.936 Skipping task ':app:compileTestJava' as it is up-to-date.
+#11 6.936 Resolve mutations for :app:processTestResources (Thread[#60,Execution worker,5,main]) started.
+#11 6.936 :app:processTestResources (Thread[#60,Execution worker,5,main]) started.
+#11 6.936 
+#11 6.936 > Task :app:processTestResources NO-SOURCE
+#11 6.936 Skipping task ':app:processTestResources' as it has no source files and no previous output files.
+#11 6.936 Resolve mutations for :app:testClasses (Thread[#60,Execution worker,5,main]) started.
+#11 6.937 :app:testClasses (Thread[#60,Execution worker,5,main]) started.
+#11 6.937 
+#11 6.937 > Task :app:testClasses UP-TO-DATE
+#11 6.937 Skipping task ':app:testClasses' as it has no actions.
+#11 6.937 Resolve mutations for :app:test (Thread[#60,Execution worker,5,main]) started.
+#11 6.937 :app:test (Thread[#60,Execution worker,5,main]) started.
+#11 7.202 
+#11 7.202 > Task :app:test UP-TO-DATE
+#11 7.202 Downloading https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.12.1/junit-jupiter-engine-5.12.1.pom to /home/gradle/.gradle/.tmp/gradle_download14434347548988228275bin
+#11 7.202 Downloading https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.12.1/junit-jupiter-engine-5.12.1.module to /home/gradle/.gradle/.tmp/gradle_download1663811918813966291bin
+#11 7.202 Downloading https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/1.12.1/junit-platform-launcher-1.12.1.pom to /home/gradle/.gradle/.tmp/gradle_download17775535338347943139bin
+#11 7.202 Downloading https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/1.12.1/junit-platform-launcher-1.12.1.module to /home/gradle/.gradle/.tmp/gradle_download17967092413766868241bin
+#11 7.202 Downloading https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/1.12.1/junit-platform-engine-1.12.1.pom to /home/gradle/.gradle/.tmp/gradle_download17706598789554234693bin
+#11 7.202 Downloading https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/1.12.1/junit-platform-engine-1.12.1.module to /home/gradle/.gradle/.tmp/gradle_download10760013648368915005bin
+#11 7.202 Downloading https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter-engine/5.12.1/junit-jupiter-engine-5.12.1.jar to /home/gradle/.gradle/.tmp/gradle_download4795893280407064262bin
+#11 7.202 Downloading https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-engine/1.12.1/junit-platform-engine-1.12.1.jar to /home/gradle/.gradle/.tmp/gradle_download972896746139356680bin
+#11 7.202 Downloading https://repo.maven.apache.org/maven2/org/junit/platform/junit-platform-launcher/1.12.1/junit-platform-launcher-1.12.1.jar to /home/gradle/.gradle/.tmp/gradle_download6609232182547635014bin
+#11 7.202 Build cache key for task ':app:test' is d34584d57785b1fb9f8ac1ed24beea53
+#11 7.203 Skipping task ':app:test' as it is up-to-date.
+#11 7.203 Resolve mutations for :app:check (Thread[#60,Execution worker,5,main]) started.
+#11 7.203 :app:check (Thread[#60,Execution worker,5,main]) started.
+#11 7.203 
+#11 7.203 > Task :app:check UP-TO-DATE
+#11 7.203 Skipping task ':app:check' as it has no actions.
+#11 7.203 Resolve mutations for :app:build (Thread[#60,Execution worker,5,main]) started.
+#11 7.203 :app:build (Thread[#60,Execution worker,5,main]) started.
+#11 7.203 
+#11 7.203 > Task :app:build UP-TO-DATE
+#11 7.203 Skipping task ':app:build' as it has no actions.
+#11 7.203 
+#11 7.203 BUILD SUCCESSFUL in 6s
+#11 7.203 7 actionable tasks: 7 up-to-date
+#11 DONE 7.3s
+
+#12 [stage-1 3/3] COPY --from=build /home/gradle/project/app/build/libs/sll-reverse-between.jar sll-reverse-between.jar
+#12 DONE 0.0s
+
+#13 exporting to image
+#13 exporting layers done
+#13 writing image sha256:8314f94263f6e766520f81497479a317a82cc256fb319253c2ca5d5ff6540a97 done
+#13 naming to docker.io/library/sll-reverse-between done
+#13 DONE 0.0s
+
+What's Next?
+  View a summary of image vulnerabilities and recommendations → docker scout quickview

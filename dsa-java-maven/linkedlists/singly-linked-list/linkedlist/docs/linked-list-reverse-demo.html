@@ -1,0 +1,798 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Singly Linked List — Build &amp; Reverse Demo</title>
+<style>
+  :root{
+    --bg:#1b2130; --panel:#242c40; --panel2:#2c3549; --border:#4a5570;
+    --text:#eef1f7; --muted:#9aa6c2; --accent:#4da3ff; --accent2:#ff9d4d;
+    --good:#4fd9a0; --bad:#ff6b81; --null:#8b96b3; --code-hl:#33415c;
+    --cursor:#ffcf4d; --type:#b48cff; --on-accent:#10141f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:24px; line-height:1.4;
+  }
+  h1{font-size:22px; margin:0 0 4px;}
+  h1 .pkg{color:var(--muted); font-weight:400; font-size:14px; display:block; margin-top:2px;}
+  p.lead{color:var(--muted); margin:0 0 20px; max-width:760px;}
+
+  .tabs{display:flex; gap:8px; margin-bottom:16px; border-bottom:1px solid var(--border);}
+  .tab-btn{
+    background:none; border:none; color:var(--muted); font-size:14px; font-weight:600;
+    padding:10px 16px; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px;
+  }
+  .tab-btn.active{color:var(--text); border-bottom-color:var(--accent);}
+  .tab{display:none;}
+  .tab.active{display:block;}
+
+  .panel{
+    background:var(--panel); border:1px solid var(--border); border-radius:10px;
+    padding:18px; margin-bottom:16px;
+  }
+  .controls{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin-bottom:14px;}
+  .controls .group{
+    display:flex; gap:6px; align-items:center; background:var(--panel2);
+    border:1px solid var(--border); border-radius:8px; padding:6px 10px;
+  }
+  input[type=text], input[type=number]{
+    background:var(--panel); border:1px solid var(--border); color:var(--text);
+    border-radius:6px; padding:6px 8px; width:64px; font-size:13px;
+  }
+  input[type=text]{width:150px;}
+  button{
+    background:var(--accent); color:var(--on-accent); border:none; border-radius:6px;
+    padding:7px 12px; font-size:13px; font-weight:600; cursor:pointer;
+  }
+  button.secondary{background:var(--panel2); color:var(--text); border:1px solid var(--border);}
+  button.ghost{background:transparent; color:var(--muted); border:1px solid var(--border);}
+  button:disabled{opacity:.4; cursor:not-allowed;}
+  button:hover:not(:disabled){filter:brightness(1.1);}
+  label{font-size:12px; color:var(--muted);}
+
+  .stage{
+    position:relative; width:100%; overflow-x:auto; overflow-y:hidden;
+    background:
+      linear-gradient(#2b3348 1px, transparent 1px) 0 0/100% 40px;
+    border:1px solid var(--border); border-radius:8px;
+  }
+  .stage-inner{position:relative; height:340px; min-width:100%;}
+  svg.links{position:absolute; left:0; top:0; overflow:visible; pointer-events:none;}
+
+  .node{
+    position:absolute; width:64px; height:44px; border-radius:8px;
+    background:linear-gradient(180deg,#2a3348,#1e2536); border:2px solid var(--border);
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:15px;
+    color:var(--text);
+    transition:left .45s ease, top .45s ease, opacity .3s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .node.new{border-color:var(--good); box-shadow:0 0 0 2px rgba(79,217,160,.3);}
+  .node.ring-cursor{border-color:var(--cursor); box-shadow:0 0 0 3px rgba(255,207,77,.4);}
+  .node.ring-prev{border-color:var(--good); box-shadow:0 0 0 3px rgba(79,217,160,.4);}
+  .node.ring-head{border-color:var(--accent); box-shadow:0 0 0 3px rgba(77,163,255,.35);}
+  .node.ring-tail{border-color:var(--accent2); box-shadow:0 0 0 3px rgba(255,157,77,.35);}
+  .badge{
+    position:absolute; padding:3px 8px; border-radius:12px; font-size:11px; font-weight:700;
+    color:var(--on-accent); white-space:nowrap; transition:left .45s ease, top .45s ease, opacity .3s ease;
+    transform:translateX(-50%);
+  }
+  .badge.head{background:var(--accent);}
+  .badge.tail{background:var(--accent2);}
+  .badge.prev{background:var(--good);}
+  .badge.cursor{background:var(--cursor);}
+  .badge.post{background:var(--muted); opacity:.9;}
+  .null-pill{
+    position:absolute; font-size:10px; color:var(--null); border:1px dashed var(--border);
+    border-radius:10px; padding:2px 6px; transform:translateX(-50%); transition:left .45s ease, top .45s ease;
+  }
+  .node-label{
+    position:absolute; top:2px; font-size:10px; color:var(--muted); transform:translateX(-50%);
+    transition:left .45s ease;
+  }
+
+  .desc{
+    background:var(--panel2); border:1px solid var(--border); border-radius:8px;
+    padding:10px 14px; font-size:13.5px; min-height:20px;
+  }
+  .desc b{color:var(--accent);}
+
+  .grid2{display:grid; grid-template-columns:1.1fr .9fr; gap:16px;}
+  @media (max-width:900px){.grid2{grid-template-columns:1fr;}}
+
+  pre.code{
+    background:var(--panel2); border:1px solid var(--border); border-radius:8px; padding:12px 0;
+    font-size:12.5px; overflow-x:auto; margin:0; max-height:340px; color:var(--text);
+  }
+  pre.code .line{padding:1px 14px; white-space:pre;}
+  pre.code .line.hl{background:var(--code-hl); border-left:3px solid var(--accent);}
+  .kw{color:var(--accent2); font-weight:600;} .ty{color:var(--type); font-weight:600;} .cm{color:var(--muted); font-style:italic;}
+
+  .legend{display:flex; flex-wrap:wrap; gap:14px; font-size:11.5px; color:var(--muted); margin-top:10px;}
+  .legend .sw{display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:5px; vertical-align:-1px;}
+
+  .stats{display:flex; gap:18px; font-size:12.5px; color:var(--muted); margin-bottom:10px;}
+  .stats b{color:var(--text);}
+
+  .pointer-strip{display:flex; flex-wrap:wrap; gap:8px; margin:0 0 10px;}
+  .pointer-chip{
+    display:flex; align-items:center; gap:6px; background:var(--panel2); border:1px solid var(--border);
+    border-radius:8px; padding:6px 10px; font-size:12.5px;
+  }
+  .pointer-chip .dot{width:9px; height:9px; border-radius:50%; flex:none;}
+  .pointer-chip .val{color:var(--text); font-weight:700;}
+  .pointer-chip.dim{opacity:.55;}
+
+  .presets{display:flex; gap:8px; flex-wrap:wrap;}
+  .stepper{display:flex; align-items:center; gap:10px; margin-top:12px;}
+  .progress{flex:1; height:6px; background:var(--panel2); border-radius:3px; overflow:hidden;}
+  .progress > div{height:100%; background:var(--accent); width:0%; transition:width .2s;}
+  .step-count{font-size:12px; color:var(--muted); white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<h1>Singly Linked List
+  <span class="pkg">com.jk.explore.dsa.linkedlists.single.reverse.LinkedList&lt;T&gt;</span>
+</h1>
+<p class="lead">
+  Two demos: build a list with <code>addFirst</code> / <code>addLast</code> / <code>add(index, data)</code>,
+  then watch <code>reverse()</code> flip it one pointer at a time, in sync with the actual source line executing.
+  See <a href="./LinkedList-Reverse-Diagrams.md" style="color:var(--accent)">LinkedList-Reverse-Diagrams.md</a>
+  for the written walkthrough. On the Reverse tab: <kbd>←</kbd>/<kbd>→</kbd> to step, <kbd>space</kbd> to play/pause.
+</p>
+
+<div class="tabs">
+  <button class="tab-btn active" data-tab="build">1. Build &amp; Modify</button>
+  <button class="tab-btn" data-tab="reverse">2. Reverse Animation</button>
+</div>
+
+<!-- ===================== TAB 1: BUILD ===================== -->
+<div class="tab active" id="tab-build">
+  <div class="panel">
+    <div class="controls presets">
+      <button id="btnAddLast" title="O(1) — tail pointer">+ addLast()</button>
+      <button id="btnAddFirst" class="secondary" title="O(1) — head pointer">+ addFirst()</button>
+      <button id="btnAddAt" class="secondary" title="O(n) — walks from head">+ add(middle, data)</button>
+      <button id="btnResetBuild" class="ghost">↺ reset list</button>
+    </div>
+    <div class="stats">
+      <span>size: <b id="buildSize">0</b></span>
+      <span id="buildComplexity">O(1) — new node linked directly via tail pointer, no traversal</span>
+    </div>
+    <div class="grid2">
+      <div>
+        <div class="stage"><div class="stage-inner" id="buildStage" style="height:150px;">
+          <svg class="links" id="buildLinks" width="100%" height="150"></svg>
+        </div></div>
+        <div class="desc" id="buildDesc">Start: <b>new LinkedList&lt;&gt;(1)</b> — a single node, head and tail both point at it.</div>
+        <div class="legend">
+          <span><span class="sw" style="background:var(--accent)"></span>head</span>
+          <span><span class="sw" style="background:var(--accent2)"></span>tail</span>
+          <span><span class="sw" style="background:var(--good)"></span>newly inserted node</span>
+        </div>
+      </div>
+      <pre class="code" id="buildCodeBlock"></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== TAB 2: REVERSE ===================== -->
+<div class="tab" id="tab-reverse">
+  <div class="panel">
+    <div class="controls presets">
+      <button id="preset3" class="secondary">demo: 3 nodes</button>
+      <button id="preset5">demo: 5 nodes</button>
+      <button id="preset7" class="secondary">demo: 7 nodes</button>
+      <button id="btnUseBuild" class="ghost" title="Reverse whatever is currently on tab 1">use my built list</button>
+    </div>
+
+    <div class="stats">
+      <span>step <b id="stepPos">0</b> / <span id="stepTotal">0</span></span>
+      <span>time: <b>O(n)</b></span>
+      <span>space: <b>O(1)</b></span>
+    </div>
+
+    <div class="pointer-strip" id="pointerStrip"></div>
+
+    <div class="grid2">
+      <div>
+        <div class="stage"><div class="stage-inner" id="revStage">
+          <svg class="links" id="revLinks" width="100%" height="340"></svg>
+        </div></div>
+        <div class="legend">
+          <span><span class="sw" style="background:var(--accent)"></span>head</span>
+          <span><span class="sw" style="background:var(--accent2)"></span>tail</span>
+          <span><span class="sw" style="background:var(--good)"></span>prev</span>
+          <span><span class="sw" style="background:var(--cursor)"></span>cursor</span>
+          <span><span class="sw" style="background:var(--muted)"></span>post (temp)</span>
+          <span><span class="sw" style="background:var(--bad)"></span>link being rewritten right now</span>
+          <span>— arcs below the row = current <code>next</code> links; dashed = null; ring around a box = a pointer targets it</span>
+        </div>
+      </div>
+      <pre class="code" id="codeBlock"></pre>
+    </div>
+
+    <div class="desc" id="revDesc">Click <b>build steps</b> to generate the walkthrough for the list above.</div>
+
+    <div class="stepper">
+      <button id="btnFirst" class="ghost">⏮</button>
+      <button id="btnPrev" class="secondary">◀ prev</button>
+      <button id="btnPlay">▶ play</button>
+      <button id="btnNext">next ▶</button>
+      <button id="btnLast" class="ghost">⏭</button>
+      <div class="progress"><div id="progressBar"></div></div>
+      <div class="step-count"><span id="speedLabel">1.0x</span></div>
+      <input type="range" id="speed" min="0.5" max="3" step="0.5" value="1" style="width:90px;">
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ---------------------------------------------------------------
+   Shared helpers
+--------------------------------------------------------------- */
+const NODE_W = 64, NODE_GAP = 130, ROW_Y = 150;
+
+function el(tag, attrs, children){
+  const e = document.createElementNS(tag === "svg" || attrs && attrs.__svg ? "http://www.w3.org/2000/svg" : null, tag);
+  return e;
+}
+function svgEl(tag, attrs){
+  const e = document.createElementNS("http://www.w3.org/2000/svg", tag);
+  for(const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+function ensureArrowMarker(svg, id, color){
+  let defs = svg.querySelector("defs");
+  if(!defs){ defs = svgEl("defs", {}); svg.appendChild(defs); }
+  if(svg.querySelector("#"+id)) return;
+  const marker = svgEl("marker", {id, markerWidth:8, markerHeight:8, refX:6, refY:3, orient:"auto"});
+  const path = svgEl("path", {d:"M0,0 L6,3 L0,6 Z", fill:color});
+  marker.appendChild(path);
+  defs.appendChild(marker);
+}
+
+/* ---------------------------------------------------------------
+   TAB 1 — Build & Modify
+--------------------------------------------------------------- */
+
+/* Mirrors src/main/java/.../reverse/LinkedList.java so the code panel
+   always reflects the real source, not a paraphrase. */
+const BUILD_CODE = {
+  ctor: [
+    {t:"public LinkedList(T data) {", key:null, indent:0},
+    {t:"Node<T> node = new Node<>(data);", key:"alloc", indent:1},
+    {t:"head = tail = node;", key:"init", indent:1},
+    {t:"size++;", key:"init", indent:1},
+    {t:"}", key:null, indent:0},
+  ],
+  addFirst: [
+    {t:"public void addFirst(T data) {", key:null, indent:0},
+    {t:"Node<T> node = new Node<>(data);", key:"alloc", indent:1},
+    {t:"if(size == 0) {", key:"check-empty", indent:1},
+    {t:"head = tail = node;", key:"empty", indent:2},
+    {t:"size++;", key:"empty", indent:2},
+    {t:"return;", key:"empty", indent:2},
+    {t:"}", key:"check-empty", indent:1},
+    {t:"node.next = head;", key:"normal", indent:1},
+    {t:"head = node;", key:"normal", indent:1},
+    {t:"size++;", key:"normal", indent:1},
+    {t:"}", key:null, indent:0},
+  ],
+  addLast: [
+    {t:"public void addLast(T data) {", key:null, indent:0},
+    {t:"Node<T> node = new Node<T>(data);", key:"alloc", indent:1},
+    {t:"if(isEmpty()) {", key:"check-empty", indent:1},
+    {t:"head = tail = node;", key:"empty", indent:2},
+    {t:"size++;", key:"empty", indent:2},
+    {t:"return;", key:"empty", indent:2},
+    {t:"}", key:"check-empty", indent:1},
+    {t:"tail.next = node;", key:"normal", indent:1},
+    {t:"tail = node;", key:"normal", indent:1},
+    {t:"size++;", key:"normal", indent:1},
+    {t:"}", key:null, indent:0},
+  ],
+  add: [
+    {t:"public void add(int index, T data) {", key:null, indent:0},
+    {t:"if(index < 0 || index > size) {", key:"bounds", indent:1},
+    {t:'throw new RuntimeException("index out of bound");', key:"bounds", indent:2},
+    {t:"}", key:"bounds", indent:1},
+    {t:"if(index == 0) {", key:"idx-zero-check", indent:1},
+    {t:"addFirst(data);", key:"idx-zero", indent:2},
+    {t:"return;", key:"idx-zero", indent:2},
+    {t:"}", key:"idx-zero-check", indent:1},
+    {t:"if(index == size) {", key:"idx-size-check", indent:1},
+    {t:"addLast(data);", key:"idx-size", indent:2},
+    {t:"return;", key:"idx-size", indent:2},
+    {t:"}", key:"idx-size-check", indent:1},
+    {t:"int cursorIndex = 0;", key:"traverse", indent:1},
+    {t:"Node<T> indexNode = head;", key:"traverse", indent:1},
+    {t:"Node<T> indexBeforeNode = null;", key:"traverse", indent:1},
+    {t:"while(indexNode != null && cursorIndex < index) {", key:"traverse", indent:1},
+    {t:"indexBeforeNode = indexNode;", key:"traverse", indent:2},
+    {t:"cursorIndex++;", key:"traverse", indent:2},
+    {t:"indexNode = indexNode.next;", key:"traverse", indent:2},
+    {t:"}", key:"traverse", indent:1},
+    {t:"Node<T> node = new Node<>(data);", key:"insert", indent:1},
+    {t:"if(indexBeforeNode != null) {", key:"insert", indent:1},
+    {t:"indexBeforeNode.next = node;", key:"insert", indent:2},
+    {t:"}", key:"insert", indent:1},
+    {t:"node.next = indexNode;", key:"insert", indent:1},
+    {t:"size++;", key:"insert", indent:1},
+    {t:"}", key:null, indent:0},
+  ],
+};
+
+function renderBuildCode(method, activeKeys){
+  const pre = document.getElementById("buildCodeBlock");
+  pre.innerHTML = "";
+  const keys = activeKeys || [];
+  (BUILD_CODE[method] || []).forEach(l => {
+    const div = document.createElement("div");
+    div.className = "line" + (l.key && keys.includes(l.key) ? " hl" : "");
+    div.textContent = "  ".repeat(l.indent) + l.t;
+    pre.appendChild(div);
+  });
+}
+
+let buildList = [{id:0, value:"1"}];
+let buildNextId = 1;
+let buildNextValue = 2;
+
+function renderBuild(newId){
+  const stage = document.getElementById("buildStage");
+  const svg = document.getElementById("buildLinks");
+  stage.querySelectorAll(".node,.badge,.null-pill,.node-label").forEach(n=>n.remove());
+  svg.innerHTML = "";
+  ensureArrowMarker(svg, "arrowGray", "#8b96b3");
+
+  buildList.forEach((n, i) => {
+    const x = 30 + i*NODE_GAP;
+    const y = 55;
+    const div = document.createElement("div");
+    div.className = "node" + (n.id === newId ? " new" : "");
+    div.style.left = x + "px";
+    div.style.top = y + "px";
+    div.textContent = n.value;
+    stage.appendChild(div);
+
+    if(i < buildList.length - 1){
+      const x2 = 30 + (i+1)*NODE_GAP;
+      const line = svgEl("line", {
+        x1:x+NODE_W, y1:y+22, x2:x2, y2:y+22,
+        stroke:"#8b96b3", "stroke-width":2, "marker-end":"url(#arrowGray)"
+      });
+      svg.appendChild(line);
+    } else {
+      const line = svgEl("line", {
+        x1:x+NODE_W, y1:y+22, x2:x+NODE_W+26, y2:y+22,
+        stroke:"#8b96b3", "stroke-width":2, "marker-end":"url(#arrowGray)"
+      });
+      svg.appendChild(line);
+      const nullLabel = document.createElement("div");
+      nullLabel.className = "null-pill";
+      nullLabel.style.left = (x+NODE_W+50) + "px";
+      nullLabel.style.top = (y+14) + "px";
+      nullLabel.textContent = "null";
+      stage.appendChild(nullLabel);
+    }
+
+    if(i === 0){
+      const b = document.createElement("div");
+      b.className = "badge head";
+      b.style.left = (x+NODE_W/2) + "px";
+      b.style.top = (y-24) + "px";
+      b.textContent = "head";
+      stage.appendChild(b);
+    }
+    if(i === buildList.length-1){
+      const b = document.createElement("div");
+      b.className = "badge tail";
+      b.style.left = (x+NODE_W/2) + "px";
+      b.style.top = (y-24) + "px";
+      if(buildList.length === 1) b.style.top = (y-48) + "px";
+      b.textContent = "tail";
+      stage.appendChild(b);
+    }
+  });
+
+  document.getElementById("buildSize").textContent = buildList.length;
+  const widthNeeded = 60 + buildList.length*NODE_GAP;
+  stage.style.width = Math.max(widthNeeded, 300) + "px";
+}
+
+function setBuildDesc(html, complexity){
+  document.getElementById("buildDesc").innerHTML = html;
+  if(complexity) document.getElementById("buildComplexity").textContent = complexity;
+}
+
+document.getElementById("btnAddLast").addEventListener("click", () => {
+  const v = String(buildNextValue++);
+  const id = buildNextId++;
+  buildList.push({id, value:v});
+  renderBuild(id);
+  setBuildDesc(`<b>addLast(${v})</b> — tail.next = newNode; tail = newNode;`,
+    "O(1) — tail pointer means no traversal is needed");
+  renderBuildCode("addLast", ["check-empty", "normal"]);
+});
+
+document.getElementById("btnAddFirst").addEventListener("click", () => {
+  const v = String(buildNextValue++);
+  const id = buildNextId++;
+  buildList.unshift({id, value:v});
+  renderBuild(id);
+  setBuildDesc(`<b>addFirst(${v})</b> — newNode.next = head; head = newNode;`,
+    "O(1) — only the head pointer is touched");
+  renderBuildCode("addFirst", ["check-empty", "normal"]);
+});
+
+document.getElementById("btnAddAt").addEventListener("click", () => {
+  const originalLen = buildList.length;
+  const idx = Math.floor(originalLen/2);
+  const v = String(buildNextValue++);
+  const id = buildNextId++;
+  buildList.splice(idx, 0, {id, value:v});
+  renderBuild(id);
+  const note = idx === 0 ? "same as addFirst — O(1)"
+    : idx === originalLen ? "same as addLast — O(1)"
+    : `walked ${idx} node(s) from head to find the insertion point`;
+  setBuildDesc(`<b>add(${idx}, ${v})</b> — insert between the node before index ${idx} and the node that used to be there. ${note}.`,
+    idx === 0 || idx === originalLen ? "O(1)" : "O(n) — traversal required to reach the index");
+  if(idx === 0) renderBuildCode("add", ["idx-zero-check", "idx-zero"]);
+  else if(idx === originalLen) renderBuildCode("add", ["idx-size-check", "idx-size"]);
+  else renderBuildCode("add", ["traverse", "insert"]);
+});
+
+document.getElementById("btnResetBuild").addEventListener("click", () => {
+  buildList = [{id:0, value:"1"}];
+  buildNextId = 1;
+  buildNextValue = 2;
+  renderBuild();
+  setBuildDesc(`Start: <b>new LinkedList&lt;&gt;(1)</b> — a single node, head and tail both point at it.`,
+    "O(1) — new node linked directly via tail pointer, no traversal");
+  renderBuildCode("ctor", ["alloc", "init"]);
+});
+
+renderBuild();
+renderBuildCode("ctor", ["alloc", "init"]);
+
+/* ---------------------------------------------------------------
+   TAB 2 — Reverse animation
+--------------------------------------------------------------- */
+const CODE_LINES = [
+  {t:"public void reverse() {", key:null, indent:0},
+  {t:"if (isEmpty()) {", key:"guard-empty", indent:1},
+  {t:"return;", key:"guard-empty", indent:2},
+  {t:"}", key:"guard-empty", indent:1},
+  {t:"if (size == 1) {", key:"guard-one", indent:1},
+  {t:"return;", key:"guard-one", indent:2},
+  {t:"}", key:"guard-one", indent:1},
+  {t:"Node<T> cursorNode = head;", key:"init", indent:1},
+  {t:"Node<T> preCursorNode = null;", key:"init", indent:1},
+  {t:"Node<T> postCursorNode = null;", key:"init", indent:1},
+  {t:"Node<T> oldHeadNode = head;", key:"init", indent:1},
+  {t:"Node<T> oldTailNode = tail;", key:"init", indent:1},
+  {t:"while (cursorNode != null) {", key:"check", indent:1},
+  {t:"postCursorNode = cursorNode.next;", key:"save", indent:2},
+  {t:"cursorNode.next = preCursorNode;", key:"rewire", indent:2},
+  {t:"preCursorNode = cursorNode;", key:"advance", indent:2},
+  {t:"cursorNode = postCursorNode;", key:"advance", indent:2},
+  {t:"}", key:"check", indent:1},
+  {t:"head = oldTailNode;", key:"swap-head", indent:1},
+  {t:"tail = oldHeadNode;", key:"swap-tail", indent:1},
+  {t:"}", key:null, indent:0},
+];
+
+function renderCode(activeKey){
+  const pre = document.getElementById("codeBlock");
+  pre.innerHTML = "";
+  CODE_LINES.forEach(l => {
+    const div = document.createElement("div");
+    div.className = "line" + (activeKey && l.key === activeKey ? " hl" : "");
+    div.textContent = "  ".repeat(l.indent) + l.t;
+    pre.appendChild(div);
+  });
+}
+renderCode(null);
+
+function buildReverseSteps(values){
+  const n = values.length;
+  const steps = [];
+  if(n === 0){
+    steps.push({desc:"List is empty — <b>isEmpty()</b> is true, method returns immediately. Nothing to reverse.",
+      codeLine:"guard-empty", links:{}, ptrs:{}, n:0});
+    return steps;
+  }
+  const links = {};
+  for(let i=0;i<n;i++) links[i] = (i+1<n) ? i+1 : null;
+
+  if(n === 1){
+    steps.push({desc:"Only one node — <b>size == 1</b>, method returns immediately. A single node is already its own reverse.",
+      codeLine:"guard-one", links:{...links}, ptrs:{head:0, tail:0}, n});
+    return steps;
+  }
+
+  let cursor = 0, prev = null, post = null;
+  const oldHead = 0, oldTail = n-1;
+
+  steps.push({
+    desc:"Initialize <b>cursor = head</b>, <b>prev = null</b>. Save <b>oldHead</b>/<b>oldTail</b> so head/tail can be swapped once the walk finishes.",
+    codeLine:"init", links:{...links}, ptrs:{cursor, prev, post:null, head:oldHead, tail:oldTail}, n
+  });
+
+  while(cursor !== null){
+    steps.push({
+      desc:`Loop check: <b>cursor</b> (node "${values[cursor]}") is not null → continue.`,
+      codeLine:"check", links:{...links}, ptrs:{cursor, prev, post, head:oldHead, tail:oldTail}, n
+    });
+    post = links[cursor];
+    steps.push({
+      desc:`<b>post = cursor.next</b> → remember ${post===null ? "null" : `node "${values[post]}"`} before we overwrite the link.`,
+      codeLine:"save", links:{...links}, ptrs:{cursor, prev, post, head:oldHead, tail:oldTail}, n
+    });
+    links[cursor] = prev;
+    steps.push({
+      desc:`<b>cursor.next = prev</b> → node "${values[cursor]}"'s arrow now points ${prev===null ? "to null" : `to node "${values[prev]}"`}.`,
+      codeLine:"rewire", links:{...links}, ptrs:{cursor, prev, post, head:oldHead, tail:oldTail}, n
+    });
+    prev = cursor;
+    cursor = post;
+    steps.push({
+      desc:`<b>prev = cursor; cursor = post;</b> → both pointers slide one step forward.`,
+      codeLine:"advance", links:{...links}, ptrs:{cursor, prev, post, head:oldHead, tail:oldTail}, n
+    });
+  }
+  steps.push({
+    desc:"Loop check: <b>cursor</b> is null → exit the loop. Every node has been relinked.",
+    codeLine:"check", links:{...links}, ptrs:{cursor:null, prev, post, head:oldHead, tail:oldTail}, n
+  });
+  steps.push({
+    desc:`<b>head = oldTail</b> → head now points at node "${values[oldTail]}".`,
+    codeLine:"swap-head", links:{...links}, ptrs:{cursor:null, prev, post, head:oldTail, tail:oldTail}, n
+  });
+  steps.push({
+    desc:`<b>tail = oldHead</b> → tail now points at node "${values[oldHead]}". Reversal complete: <b>[${values.slice().reverse().join(", ")}]</b>.`,
+    codeLine:"swap-tail", links:{...links}, ptrs:{cursor:null, prev, post, head:oldTail, tail:oldHead}, n
+  });
+  return steps;
+}
+
+let revValues = [];
+let revSteps = [];
+let revIdx = 0;
+let playTimer = null;
+
+const STAGE_LEFT_PAD = 110;
+function nodeX(i){ return STAGE_LEFT_PAD + i*NODE_GAP; }
+
+const NULL_ANCHOR_X = -70;
+
+function renderReverseStep(){
+  const stage = document.getElementById("revStage");
+  const svg = document.getElementById("revLinks");
+  stage.querySelectorAll(".node,.badge,.null-pill,.node-label").forEach(e=>e.remove());
+  svg.innerHTML = "";
+  ensureArrowMarker(svg, "arrowFwd", "#8b96b3");
+  ensureArrowMarker(svg, "arrowBack", "#4da3ff");
+  ensureArrowMarker(svg, "arrowNull", "#8b96b3");
+  ensureArrowMarker(svg, "arrowHot", "#ff6b81");
+
+  const step = revSteps[revIdx];
+  document.getElementById("stepPos").textContent = revIdx;
+  document.getElementById("stepTotal").textContent = revSteps.length - 1;
+  document.getElementById("progressBar").style.width =
+    (revSteps.length > 1 ? (revIdx/(revSteps.length-1))*100 : 0) + "%";
+  document.getElementById("revDesc").innerHTML = step.desc;
+  renderCode(step.codeLine);
+  renderPointerStrip(step);
+
+  const n = step.n;
+  const nodeDivs = {};
+
+  for(let i=0;i<n;i++){
+    const x = nodeX(i);
+    const label = document.createElement("div");
+    label.className = "node-label";
+    label.style.left = (x+NODE_W/2) + "px";
+    label.textContent = "idx " + i;
+    stage.appendChild(label);
+
+    const div = document.createElement("div");
+    div.className = "node";
+    div.style.left = x + "px";
+    div.style.top = ROW_Y + "px";
+    div.textContent = revValues[i];
+    stage.appendChild(div);
+    nodeDivs[i] = div;
+  }
+
+  // rings on the node boxes themselves, so a pointer's target is obvious
+  // even if its badge sits far away at the null anchor.
+  if(n > 0){
+    if(step.ptrs.head !== undefined && step.ptrs.head !== null) nodeDivs[step.ptrs.head].classList.add("ring-head");
+    if(step.ptrs.tail !== undefined && step.ptrs.tail !== null) nodeDivs[step.ptrs.tail].classList.add("ring-tail");
+    if("prev" in step.ptrs && step.ptrs.prev !== null) nodeDivs[step.ptrs.prev].classList.add("ring-prev");
+    if("cursor" in step.ptrs && step.ptrs.cursor !== null) nodeDivs[step.ptrs.cursor].classList.add("ring-cursor");
+  }
+
+  // the single link being rewritten this step (drawn in red), if any
+  const hotSource = step.codeLine === "rewire" ? step.ptrs.cursor : null;
+
+  // links (below the row)
+  if(step.links){
+    for(let i=0;i<n;i++){
+      const target = step.links[i];
+      const isHot = i === hotSource;
+      const x1 = nodeX(i) + NODE_W/2;
+      const y1 = ROW_Y + 44;
+      if(target === null){
+        const y2 = ROW_Y + 90;
+        const path = svgEl("path", {
+          d:`M${x1},${y1} L${x1},${y2}`,
+          stroke: isHot ? "#ff6b81" : "#8b96b3", "stroke-width": isHot ? 3 : 2, "stroke-dasharray":"4,3", fill:"none",
+          "marker-end": isHot ? "url(#arrowHot)" : "url(#arrowNull)"
+        });
+        svg.appendChild(path);
+        const pill = document.createElement("div");
+        pill.className = "null-pill";
+        pill.style.left = x1 + "px";
+        pill.style.top = (y2+4) + "px";
+        pill.textContent = "null";
+        stage.appendChild(pill);
+      } else {
+        const x2 = nodeX(target) + NODE_W/2;
+        const forward = target > i;
+        const dy = Math.min(40 + Math.abs(target-i)*14, 110);
+        const midX = (x1+x2)/2;
+        const ctrlY = ROW_Y + 44 + dy;
+        const path = svgEl("path", {
+          d:`M${x1},${y1} Q${midX},${ctrlY} ${x2},${y1}`,
+          stroke: isHot ? "#ff6b81" : (forward ? "#8b96b3" : "#4da3ff"),
+          "stroke-width": isHot ? 3.5 : 2.2, fill:"none",
+          "marker-end": isHot ? "url(#arrowHot)" : (forward ? "url(#arrowFwd)" : "url(#arrowBack)")
+        });
+        svg.appendChild(path);
+      }
+    }
+  }
+
+  // pointer badges (above the row)
+  function badgeX(target){
+    return target === null ? nodeX(0) + NULL_ANCHOR_X + NODE_W/2 : nodeX(target) + NODE_W/2;
+  }
+  if(n > 0){
+    addBadge("head", "head", badgeX(step.ptrs.head), ROW_Y - 34);
+    addBadge("tail", "tail", badgeX(step.ptrs.tail), ROW_Y - 34);
+    if("prev" in step.ptrs) addBadge("prev", "prev", badgeX(step.ptrs.prev), ROW_Y - 66);
+    if("cursor" in step.ptrs) addBadge("cursor", "cursor", badgeX(step.ptrs.cursor), ROW_Y - 98);
+    if(step.ptrs.post !== undefined && step.ptrs.post !== null &&
+       (step.codeLine === "save" || step.codeLine === "rewire")){
+      addBadge("post", "post", badgeX(step.ptrs.post), ROW_Y - 130);
+    }
+
+    const anchor = document.createElement("div");
+    anchor.className = "null-pill";
+    anchor.style.left = (nodeX(0) + NULL_ANCHOR_X + NODE_W/2) + "px";
+    anchor.style.top = (ROW_Y - 10) + "px";
+    anchor.textContent = "∅ null";
+    stage.appendChild(anchor);
+  }
+
+  function addBadge(cls, text, x, y){
+    const b = document.createElement("div");
+    b.className = "badge " + cls;
+    b.style.left = x + "px";
+    b.style.top = y + "px";
+    b.textContent = text;
+    stage.appendChild(b);
+  }
+
+  const widthNeeded = STAGE_LEFT_PAD + 60 + Math.max(n,1)*NODE_GAP;
+  stage.style.width = Math.max(widthNeeded, 320) + "px";
+
+  document.getElementById("btnPrev").disabled = revIdx === 0;
+  document.getElementById("btnFirst").disabled = revIdx === 0;
+  document.getElementById("btnNext").disabled = revIdx === revSteps.length-1;
+  document.getElementById("btnLast").disabled = revIdx === revSteps.length-1;
+}
+
+function renderPointerStrip(step){
+  const strip = document.getElementById("pointerStrip");
+  strip.innerHTML = "";
+  const describe = (target) => target === null ? "null" : `node "${revValues[target]}" (idx ${target})`;
+  const rows = [
+    ["head", "var(--accent)", step.ptrs.head],
+    ["tail", "var(--accent2)", step.ptrs.tail],
+    ["prev", "var(--good)", "prev" in step.ptrs ? step.ptrs.prev : undefined],
+    ["cursor", "var(--cursor)", "cursor" in step.ptrs ? step.ptrs.cursor : undefined],
+  ];
+  rows.forEach(([label, color, target]) => {
+    if(target === undefined) return;
+    const chip = document.createElement("div");
+    chip.className = "pointer-chip";
+    chip.innerHTML = `<span class="dot" style="background:${color}"></span>${label} → <span class="val">${describe(target)}</span>`;
+    strip.appendChild(chip);
+  });
+}
+
+function setRevList(values){
+  revValues = values.map(String);
+  revSteps = buildReverseSteps(revValues);
+  revIdx = 0;
+  stopPlay();
+  renderReverseStep();
+}
+
+document.getElementById("preset3").addEventListener("click", () => setRevList([1,2,3]));
+document.getElementById("preset5").addEventListener("click", () => setRevList([1,2,3,4,5]));
+document.getElementById("preset7").addEventListener("click", () => setRevList([1,2,3,4,5,6,7]));
+
+document.getElementById("btnUseBuild").addEventListener("click", () => {
+  setRevList(buildList.map(n=>n.value));
+});
+
+document.getElementById("btnFirst").addEventListener("click", () => { revIdx = 0; renderReverseStep(); });
+document.getElementById("btnLast").addEventListener("click", () => { revIdx = revSteps.length-1; renderReverseStep(); });
+document.getElementById("btnPrev").addEventListener("click", () => { if(revIdx>0){ revIdx--; renderReverseStep(); } });
+document.getElementById("btnNext").addEventListener("click", () => { if(revIdx<revSteps.length-1){ revIdx++; renderReverseStep(); } });
+
+function stopPlay(){
+  if(playTimer){ clearInterval(playTimer); playTimer = null; }
+  document.getElementById("btnPlay").textContent = "▶ play";
+}
+document.getElementById("btnPlay").addEventListener("click", () => {
+  if(playTimer){ stopPlay(); return; }
+  document.getElementById("btnPlay").textContent = "⏸ pause";
+  const speed = parseFloat(document.getElementById("speed").value) || 1;
+  playTimer = setInterval(() => {
+    if(revIdx >= revSteps.length-1){ stopPlay(); return; }
+    revIdx++;
+    renderReverseStep();
+  }, 900/speed);
+});
+document.getElementById("speed").addEventListener("input", (e) => {
+  document.getElementById("speedLabel").textContent = parseFloat(e.target.value).toFixed(1) + "x";
+  if(playTimer){ stopPlay(); document.getElementById("btnPlay").click(); }
+});
+
+/* ---------------------------------------------------------------
+   Keyboard shortcuts (Reverse tab: ← / → to step, space to play/pause)
+--------------------------------------------------------------- */
+document.addEventListener("keydown", (e) => {
+  if(["INPUT","TEXTAREA"].includes(e.target.tagName)) return;
+  if(!document.getElementById("tab-reverse").classList.contains("active")) return;
+  if(e.key === "ArrowRight"){
+    e.preventDefault();
+    document.getElementById("btnNext").click();
+  } else if(e.key === "ArrowLeft"){
+    e.preventDefault();
+    document.getElementById("btnPrev").click();
+  } else if(e.key === " "){
+    e.preventDefault();
+    document.getElementById("btnPlay").click();
+  }
+});
+
+/* ---------------------------------------------------------------
+   Tabs
+--------------------------------------------------------------- */
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById("tab-"+btn.dataset.tab).classList.add("active");
+  });
+});
+
+// initial reverse demo
+setRevList([1,2,3,4,5]);
+</script>
+</body>
+</html>

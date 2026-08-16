@@ -1,0 +1,15 @@
+# Maven
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+/docs/linkedlist-reverse-explained.mp4
+/docs/linkedlist-reverse-explained.txt

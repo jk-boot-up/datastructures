@@ -1,0 +1,18 @@
+# Maven
+target/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS
+.DS_Store
+/demo-videos/linkedlist-reverse-between-explained.mp4
+/demo-videos/linkedlist-reverse-between-explained.txt
+/.mvn/
+/videos/
+/demo-videos/

@@ -1,11 +1,27 @@
-# Reversing a Generic Singly Linked List (Java 21 + Gradle + JUnit 5)
+# Reversing a Slice of a Singly Linked List — `reverseBetween(from, to)`
 
-A **stand-alone, study-oriented** Gradle project that implements a singly linked
-list with Java generics and shows — in code, in diagrams, and in an animation —
-how to reverse it.
+*(Java 21 + Gradle + JUnit 5 + Lombok)*
+
+A **stand-alone, study-oriented** Gradle project that implements a generic
+singly linked list and solves the classic **reverse-between** problem: reverse
+only the nodes from index `from` to index `to`, in place, leaving the rest of
+the list untouched.
+
+```
+A → B → C → D → E      reverseBetween(1, 3)      A → D → C → B → E
+```
+
+The reversal loop is the one you already know. What makes this problem worth
+studying is the **bookkeeping** around it — and the **sentinel node** that makes
+the nastiest edge case disappear.
 
 This guide assumes you have **never used Gradle before** and are still getting
 comfortable with Java. Nothing is skipped.
+
+> **Want to try it yourself first?** [`PROBLEM.md`](PROBLEM.md) states the
+> problem properly — examples, constraints, edge cases and progressive hints —
+> without giving the solution away. Attempting it before reading section 4 is
+> worth far more than reading section 4 twice.
 
 > **New to Java, or not sure you are ready?** Start with
 > [`PREREQUISITES.md`](PREREQUISITES.md). It lists exactly what to install, the
@@ -16,11 +32,12 @@ comfortable with Java. Nothing is skipped.
 | I want to… | Do this |
 | --- | --- |
 | Check I am ready | read [`PREREQUISITES.md`](PREREQUISITES.md) |
-| Watch the 12-minute explainer | [`demo-videos/linkedlist-reverse-explained.mp4`](demo-videos/linkedlist-reverse-explained.mp4) |
+| **Read the problem first** | [`PROBLEM.md`](PROBLEM.md) — statement, examples, hints |
+| Watch the 14-minute explainer | [`videos/linkedlist-reverse-between-explained.mp4`](videos/linkedlist-reverse-between-explained.mp4) |
 | See it run | `./gradlew run` |
 | Run the tests | `./gradlew test` |
 | Watch the animation | open [`docs/animation.html`](docs/animation.html) in a browser |
-| Read the reversal code | [`SinglyLinkedList.reverse()`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L442-L457) |
+| Read the star method | [`reverseBetween(from, to)`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L481-L525) |
 
 ---
 
@@ -29,7 +46,7 @@ comfortable with Java. Nothing is skipped.
 1. [Project layout](#1-project-layout)
 2. [What is a singly linked list?](#2-what-is-a-singly-linked-list)
 3. [Why generics?](#3-why-generics)
-4. [The star operation: reverse](#4-the-star-operation-reverse)
+4. [The star operation: `reverseBetween(from, to)`](#4-the-star-operation-reversebetweenfrom-to)
 5. [Every operation, explained with diagrams](#5-every-operation-explained-with-diagrams)
 6. [Complexity summary](#6-complexity-summary)
 7. [How Gradle works (and how to build this project)](#7-how-gradle-works-and-how-to-build-this-project)
@@ -51,13 +68,13 @@ linkedlist-reverse-generic/
 ├── gradlew / gradlew.bat     ← the Gradle "wrapper" scripts (see section 7)
 ├── gradle/wrapper/           ← the wrapper's jar + which Gradle version to use
 ├── PREREQUISITES.md          ← read this FIRST if you are new to Java
-├── README.md                 ← this document
+├── PROBLEM.md                ← the problem statement, examples and hints
+├── README.md                 ← this document (the worked solution)
 ├── docs/
-│   └── animation.html                    ← interactive, step-by-step animation
-├── demo-videos/              (git-ignored — large media)
-│   ├── linkedlist-reverse-explained.mp4  ← narrated 12-minute walkthrough
-│   ├── linkedlist-reverse-explained.srt  ← subtitles for the video
-│   └── linkedlist-reverse-explained.txt  ← video description + chapter times
+│   └── animation.html                             ← interactive animation
+├── videos/                   (git-ignored — large media)
+│   ├── linkedlist-reverse-between-explained.mp4   ← narrated 14-min walkthrough
+│   └── linkedlist-reverse-between-explained.txt   ← description + chapter times
 └── src/
     ├── main/java/org/jk/dsa/learning/
     │   ├── Node.java                 ← one box in the chain
@@ -120,19 +137,19 @@ flowchart LR
 ```
 
 The list itself
-([`SinglyLinkedList`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L56))
+([`SinglyLinkedList`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L71))
 only remembers three things:
 
 | Field | Line | Why it exists |
 | --- | --- | --- |
-| `head` | [L59](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L59) | the entrance to the chain; without it the whole list is lost |
-| `tail` | [L62](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L62) | lets `addLast` be O(1) instead of O(n) |
-| `size` | [L65](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L65) | lets `size()` be O(1) instead of counting nodes |
+| `head` | [L59](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L74) | the entrance to the chain; without it the whole list is lost |
+| `tail` | [L62](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L77) | lets `addLast` be O(1) instead of O(n) |
+| `size` | [L65](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L80) | lets `size()` be O(1) instead of counting nodes |
 
 > **The rule that causes 90% of linked-list bugs:** *every* method that changes
 > the shape of the list must leave `head`, `tail` **and** `size` correct. The
-> test [`fixesHeadAndTailPointers`](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java#L73)
-> exists precisely to catch a `reverse()` that forgets `tail`.
+> test [`sliceAtTailFixesTail`](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java#L62)
+> exists precisely to catch a `reverseBetween()` that forgets `tail`.
 
 **Singly** means each node knows only its *successor*. It has no arrow back to
 its predecessor. That is why `removeLast()` is slow — see
@@ -143,7 +160,7 @@ its predecessor. That is why `removeLast()` is slow — see
 ## 3. Why generics?
 
 Look at the class declaration
-([L56](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L56)):
+([L56](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L71)):
 
 ```java
 public class SinglyLinkedList<T> implements Iterable<T> {
@@ -166,7 +183,7 @@ Two things you get for free:
 2. **No casting.** `String s = names.get(0);` just works — see the test
    [`retrievedElementsAreTyped`](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java#L219).
 
-Demo 3 in [`Main.demoCustomType()`](src/main/java/org/jk/dsa/learning/Main.java#L70)
+Demo 5 in [`Main.demoCustomType()`](src/main/java/org/jk/dsa/learning/Main.java#L109)
 puts a `Student` class into the very same list to prove the point. `Student` is
 written with **Lombok** — see [section 7.7](#77-lombok-annotation-processing) —
 while the `Point` and `Book` types in the tests show the two alternatives, a
@@ -175,193 +192,243 @@ plain `record` and a Lombok `@Data` bean.
 > **Small print (worth knowing):** Java generics use *type erasure*. At runtime
 > the JVM only sees `Object`; the type checks happen at compile time. That is why
 > the factory method
-> [`of(E... values)`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L90)
+> [`of(E... values)`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L105)
 > is annotated `@SafeVarargs` — it promises the compiler we do not abuse the
 > generic array it creates for the varargs.
 
 ---
 
-## 4. The star operation: reverse
+## 4. The star operation: `reverseBetween(from, to)`
 
-### 4.1 The idea
+### 4.1 The problem
 
-Reversing does **not** move data around and does **not** build a second list. It
-only **flips the direction of every arrow**, then swaps `head` and `tail`.
+Reverse **only a slice** of the list, and leave everything outside it exactly
+where it was.
 
-To do that we need three cursors, all in
-[`reverse()`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L442-L457):
-
-| Cursor | Line | Meaning |
-| --- | --- | --- |
-| `previous` | [L443](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L443) | the part already reversed. Starts as `null` because the old head must end up pointing at nothing. |
-| `current` | [L444](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L444) | the node whose arrow we are flipping right now |
-| `nextHop` | [L447](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L447) | a saved copy of `current.next` |
-
-**Why `nextHop` matters:** line
-[L448](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L448) overwrites
-`current.next`. The instant that happens, the rest of the list is unreachable —
-unless we saved it first. Deleting that one line is the classic bug; try it and
-watch the tests fail.
-
-### 4.2 The loop, line by line
-
-```java
-public void reverse() {                        // L442
-    Node<T> previous = null;                   // L443
-    Node<T> current  = head;                   // L444
-
-    while (current != null) {                  // L446
-        Node<T> nextHop = current.next;        // L447  1. remember where to go next
-        current.next    = previous;            // L448  2. flip this node's arrow
-        previous        = current;             // L449  3. grow the reversed part
-        current         = nextHop;             // L450  4. move on
-    }
-
-    Node<T> oldHead = head;                    // L454
-    head = previous;                           // L455  last node processed = new head
-    tail = oldHead;                            // L456  old first node = new tail
-}
 ```
+before:   A → B → C → D → E          reverseBetween(1, 3)
+               ↑         ↑
+             from        to
+
+after:    A → D → C → B → E
+```
+
+`A` and `E` never move. Only `B C D` flip.
+
+> **A note on indexing.** This class is **zero-based** and `to` is **inclusive**,
+> to match [`get(int)`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L154)
+> and [`insertAt`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L295).
+> The classic textbook/interview version of this problem numbers positions from
+> **one**. The algorithm is identical; only the arithmetic on the bounds changes.
+
+### 4.2 Why it is harder than reversing everything
+
+A whole-list reversal owns the entire chain, so it only has to swap `head` and
+`tail` at the end. A slice reversal has to **cut a segment out, flip it, and
+stitch it back in** — and there are two connection points that must both be
+right:
+
+```mermaid
+flowchart LR
+    A["A<br/><i>beforeSlice</i>"] -->|"stitch 1<br/>must point at D"| D["D<br/><i>new first</i>"]
+    D --> C["C"] --> B["B<br/><i>sliceTail</i>"]
+    B -->|"stitch 2<br/>must point at E"| E["E<br/><i>after the slice</i>"]
+```
+
+The loop in the middle is *exactly* the three-pointer reversal. Everything else
+is bookkeeping — and the bookkeeping is the whole lesson.
+
+### 4.3 The four phases
+
+| Phase | What it does | Line |
+| --- | --- | --- |
+| Sentinel | put a throwaway node in front of the list | [L489](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L489) |
+| 1. Walk | find the node **before** the slice | [L492-L495](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L492-L495) |
+| 2. Remember | save the slice's first node — it becomes the **last** | [L500](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L500) |
+| 3. Flip | the ordinary reversal loop, run a **fixed** number of times | [L506-L511](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L506-L511) |
+| 4. Stitch | re-attach both ends, then repair `head`/`tail` | [L516-L523](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L516-L523) |
 
 ```mermaid
 flowchart TD
-    START([reverse called]) --> INIT["previous = null<br/>current = head<br/><i>L443-L444</i>"]
-    INIT --> CHECK{"current != null ?<br/><i>L446</i>"}
-    CHECK -->|no| FIX["head = previous<br/>tail = old head<br/><i>L455-L456</i>"]
-    CHECK -->|yes| S1["nextHop = current.next<br/><i>L447 — save the rest</i>"]
-    S1 --> S2["current.next = previous<br/><i>L448 — flip the arrow</i>"]
-    S2 --> S3["previous = current<br/><i>L449</i>"]
-    S3 --> S4["current = nextHop<br/><i>L450</i>"]
-    S4 --> CHECK
-    FIX --> END([done — O#40;n#41; time, O#40;1#41; space])
+    START([reverseBetween from, to]) --> CHK{"from == to ?"}
+    CHK -->|yes| DONE0([nothing to reverse])
+    CHK -->|no| SENT["sentinel = new Node(null, head)<br/><i>L489</i>"]
+    SENT --> W["walk from steps to beforeSlice<br/><i>L492-L495</i>"]
+    W --> REM["sliceTail = beforeSlice.next<br/><i>L500 — will become the LAST node</i>"]
+    REM --> LOOP{"flipped to-from+1 times ?"}
+    LOOP -->|no| F["save nextHop &middot; flip &middot; grow &middot; walk<br/><i>L507-L510</i>"]
+    F --> LOOP
+    LOOP -->|yes| S1["beforeSlice.next = previous<br/><i>L516</i>"]
+    S1 --> S2["sliceTail.next = current<br/><i>L517</i>"]
+    S2 --> H["head = sentinel.next<br/><i>L520 — no special case!</i>"]
+    H --> T{"current == null ?"}
+    T -->|yes| T2["tail = sliceTail<br/><i>L522</i>"]
+    T -->|no| DONE
+    T2 --> DONE([done — O#40;to#41; time, O#40;1#41; space])
 ```
 
-### 4.3 Watch the pointers move
+### 4.4 The sentinel trick
 
-For `A -> B -> C`:
+Phase 1 has one awkward case. When `from == 0` there **is no node before the
+slice**, so `beforeSlice` would be `null` and the list's `head` itself has to
+change.
+
+Instead of writing an `if` for it, we put a temporary throwaway node — a
+**sentinel**, also called a *dummy head* — in front of the list
+([L489](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L489)):
 
 ```mermaid
 flowchart LR
-    subgraph s0["step 0 — nothing flipped yet"]
+    S["∅<br/><i>sentinel</i>"] --> A["A"] --> B["B"] --> C["C"]
+    head(("head")) --> A
+```
+
+Now "the node before the slice" always exists, even for index 0. At the end we
+just read the real head back out
+([L520](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L520)):
+
+```java
+head = sentinel.next;   // correct whether or not from == 0
+```
+
+and drop the sentinel. It was only ever a local variable, so it costs one object
+and disappears the moment the method returns — still **O(1) space**.
+
+**See the difference for yourself.**
+[`reverseBetweenWithoutSentinel`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L543)
+is the identical algorithm written the hard way. Compare them:
+
+| | with sentinel | without |
+| --- | --- | --- |
+| find `beforeSlice` | one loop | `if (from > 0)` **plus** a loop that runs `from - 1` times |
+| find `sliceTail` | `beforeSlice.next` | a ternary on whether `beforeSlice` is null |
+| re-attach the front | `beforeSlice.next = previous` | `if (beforeSlice == null) head = … else …` |
+
+Two extra branches, both of which exist *only* because there was nothing in
+front of the list. Those branches are where the bugs live.
+
+### 4.5 Why `sliceTail` must be saved
+
+This is the second thing people get wrong. The node that **starts** the slice is
+the node that will **end** it — so it is the one that must point at whatever
+follows the slice:
+
+```mermaid
+flowchart LR
+    subgraph before["before the flip"]
         direction LR
-        p0(("previous<br/>null")) -.-> x0(( ))
-        a0["A"] --> b0["B"] --> c0["C"] --> n0(("null"))
-        cur0(("current")) --> a0
+        b1["B<br/><i>first of slice</i>"] --> c1["C"] --> d1["D"] --> e1["E"]
     end
 ```
 
 ```mermaid
 flowchart LR
-    subgraph s1["step 1 — A now points at null"]
+    subgraph after["after the flip — B is now last, and points at nothing"]
         direction LR
-        a1["A"] --> n1(("null"))
-        b1["B"] --> c1["C"] --> n1b(("null"))
-        p1(("previous")) --> a1
-        cur1(("current")) --> b1
+        d2["D"] --> c2["C"] --> b2["B<br/><i>last of slice</i>"] --> n2(("null"))
+        e2["E<br/><i>stranded!</i>"]
     end
 ```
 
-```mermaid
-flowchart LR
-    subgraph s2["step 2 — B points back at A"]
-        direction LR
-        b2["B"] --> a2["A"] --> n2(("null"))
-        c2["C"] --> n2b(("null"))
-        p2(("previous")) --> b2
-        cur2(("current")) --> c2
-    end
+If you have not kept a handle on `B`, you cannot re-attach `E` and the tail of
+the list is lost. Saving it at
+[L500](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L500), *before*
+the loop runs, is what prevents that.
+
+### 4.6 The loop is the same loop
+
+Put the two side by side. This is the reversal you already know:
+
+```java
+Node<T> previous = null;                        // L504
+Node<T> current  = sliceTail;                   // L505
+for (int i = 0; i <= to - from; i++) {          // L506  <- runs a FIXED number of times
+    Node<T> nextHop = current.next;             // L507  save the rest
+    current.next    = previous;                 // L508  flip the arrow
+    previous        = current;                  // L509  grow the reversed part
+    current         = nextHop;                  // L510  walk forward
+}
 ```
 
-```mermaid
-flowchart LR
-    subgraph s3["step 3 — C points back at B, loop ends"]
-        direction LR
-        c3["C"] --> b3["B"] --> a3["A"] --> n3(("null"))
-        p3(("previous / new head")) --> c3
-        cur3(("current<br/>null")) -.-> z3(( ))
-    end
+The *only* difference from a whole-list reversal is the loop condition: a
+counter instead of `while (current != null)`. That is why
+[`reverse()`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L592) in
+this class is a one-liner — reversing everything is just the slice
+`[0, size-1]`:
+
+```java
+public void reverse() {
+    if (size > 1) {
+        reverseBetween(0, size - 1);
+    }
+}
 ```
 
-The same trace is printed by
-[`Main.demoReverseTrace()`](src/main/java/org/jk/dsa/learning/Main.java#L102) when
-you run `./gradlew run`, and animated in
-[`docs/animation.html`](docs/animation.html).
+### 4.7 Complexity
 
-### 4.4 The recursive version
+**Time: O(to)** — one walk of `from` steps to reach the slice, then one pass of
+`to - from + 1` flips. Added together that is at most a single pass over the
+list, so **O(n)** in the worst case.
 
-[`reverseRecursive()`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L473)
-delegates to the private helper
-[`reverseFrom(node)`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L496).
-The recursion dives all the way to the last node — which becomes the new head —
-and flips arrows while the calls unwind.
+**Space: O(1)** — five reference variables and one sentinel node, no matter how
+long the list or the slice is. Nothing is copied.
 
-```mermaid
-sequenceDiagram
-    participant R as reverseFrom(A)
-    participant S as reverseFrom(B)
-    participant T as reverseFrom(C)
-    R->>S: recurse on A.next
-    S->>T: recurse on B.next
-    Note over T: base case: C.next == null<br/>L497 — return C
-    T-->>S: newHead = C
-    Note over S: B.next.next = B  → C -> B<br/>B.next = null<br/>L501-L502
-    S-->>R: newHead = C
-    Note over R: A.next.next = A  → B -> A<br/>A.next = null
-    R-->>R: return C as the new head
-```
+### 4.8 The edge cases
 
-**Trade-off:** identical O(n) time, but O(n) *space*, because the JVM keeps one
-stack frame per pending call. A few hundred thousand nodes and you get a
-`StackOverflowError`. **Prefer the iterative version.**
+These four are what the tests hammer, and what a naive implementation gets wrong:
 
-### 4.5 The non-destructive version
+| Case | Why it is tricky | Test |
+| --- | --- | --- |
+| `from == 0` | `head` must change; there is no node before the slice | [`sliceAtHeadMovesHead`](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java#L51) |
+| `to == size-1` | `tail` must change, or the next `addLast` corrupts the list | [`sliceAtTailFixesTail`](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java#L63) |
+| `from == to` | a one-node slice — must be a no-op, not a crash | [`singleNodeSliceIsANoOp`](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java#L40) |
+| the whole range | must equal a plain `reverse()` | [`wholeRangeIsAPlainReverse`](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java#L76) |
 
-Sometimes you must keep the original order. Use
-[`reversedCopy()`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L518):
-it walks the original front to back and `addFirst`s each value into a new list,
-which naturally comes out reversed — O(n) time and O(n) space, original
-untouched. Proven by
-[`doesNotMutateTheOriginal`](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java#L172).
+The test [`everySliceMatchesAReferenceImplementation`](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java#L169)
+goes further: for list sizes 1, 2, 3, 5 and 8 it tries **every possible
+`(from, to)` pair** and compares against an obviously-correct implementation
+built with `java.util.Collections.reverse`. That is 100+ slices checked
+automatically, which is far more convincing than a handful of hand-written
+examples.
 
-### 4.6 Watch it move: `docs/animation.html`
+### 4.9 Watch it move: `docs/animation.html`
 
 Open [`docs/animation.html`](docs/animation.html) in any browser — no server, no
-build step, just double-click it. Pick an operation on the left, press **Play**
-(or tap `←` / `→` to step by hand), and the source panel underneath highlights
-the **exact line** that is executing. Every line number in that panel is a link
-into the real `SinglyLinkedList.java`.
+build step, just double-click it. Type any `from,to` into the box on the left
+and step through with `←` / `→`. The sentinel appears as a dashed box in front
+of the list, the slice is highlighted with a blue band, and the source panel
+underneath highlights the exact line executing.
 
-You can also deep-link to a single moment as `animation.html#<operation>:<step>`:
+You can deep-link to a single moment as `animation.html#<operation>:<step>`:
 
 | Link | What you see |
 | --- | --- |
-| [`#reverse:9`](docs/animation.html#reverse:9) | the `nextHop` rescue at line 447 |
-| [`#reverse:11`](docs/animation.html#reverse:11) | the first arrow being flipped, line 448 |
-| [`#reverseRecursive:12`](docs/animation.html#reverseRecursive:12) | the recursion at its deepest, call stack visible |
-| [`#removeLast:6`](docs/animation.html#removeLast:6) | the O(n) walk that a singly linked list cannot avoid |
-| [`#get:5`](docs/animation.html#get:5) | why there is no random access |
+| [`#reverseBetween:8`](docs/animation.html#reverseBetween:8) | the sentinel being created |
+| [`#reverseBetween:12`](docs/animation.html#reverseBetween:12) | `sliceTail` being saved — the key bookkeeping step |
+| [`#reverseBetween:24`](docs/animation.html#reverseBetween:24) | mid-flip, backwards arrows inside the slice band |
+| [`#reverseBetween:31`](docs/animation.html#reverseBetween:31) | the two stitches re-attaching the slice |
+| [`#reverseBetweenWithoutSentinel:6`](docs/animation.html#reverseBetweenWithoutSentinel:6) | the special case the sentinel removes |
 
-Change the **List contents** box to `10,20,30` or `cat,dog,emu` — same code, any
-type. That is generics.
+### 4.10 Prefer to be talked through it? Watch the video
 
-### 4.7 Prefer to be talked through it? Watch the video
-
-[`demo-videos/linkedlist-reverse-explained.mp4`](demo-videos/linkedlist-reverse-explained.mp4)
-is a narrated, 11-minute walkthrough of everything on this page and in the
-animation. Subtitles are in
-[`linkedlist-reverse-explained.srt`](demo-videos/linkedlist-reverse-explained.srt), and
-[`linkedlist-reverse-explained.txt`](demo-videos/linkedlist-reverse-explained.txt) holds
-a ready-made description with chapter timestamps if you want to upload it.
+[`videos/linkedlist-reverse-between-explained.mp4`](videos/linkedlist-reverse-between-explained.mp4)
+is a narrated, 14-minute walkthrough of this whole page. It opens with a
+plain-language introduction to linked lists and to the problem, so it works even
+if you have never met either before.
+[`linkedlist-reverse-between-explained.txt`](videos/linkedlist-reverse-between-explained.txt)
+holds a ready-made description with chapter timestamps if you want to upload it.
 
 | Chapter | Starts | Covers |
 | --- | --- | --- |
-| 1 | 00:32 | what a singly linked list actually is |
-| 2 | 01:24 | a tour of the animation's four panels |
-| 3 | 02:12 | **`reverse()` line by line** — the core of the video |
-| 4 | 06:38 | the recursive version and its O(n) stack |
-| 5 | 07:44 | every other operation, briefly |
-| 6 | 09:42 | why the list is generic |
-| 7 | 10:14 | running, testing and debugging it yourself |
+| — | 00:00 | what a linked list is, and how it differs from an array |
+| 1 | 01:16 | **the problem** — what reverse-between actually asks for |
+| 2 | 02:20 | meeting the list, and the animation's panels |
+| 3 | 03:43 | **the algorithm, step by step** — the core of the video |
+| 4 | 08:16 | what the sentinel actually saves |
+| 5 | 09:32 | the four edge cases |
+| 6 | 10:11 | the rest of the list operations |
+| 7 | 11:34 | why the list is generic |
+| 8 | 11:58 | running, testing and debugging it |
 
 It is 1920×1080, H.264/AAC, so it plays anywhere and uploads to YouTube as is.
 
@@ -370,7 +437,7 @@ It is 1920×1080, H.264/AAC, so it plays anywhere and uploads to YouTube as is.
 ## 5. Every operation, explained with diagrams
 
 ### 5.1 `addFirst(value)` — O(1)
-[Code → L238](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L238)
+[Code → L238](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L253)
 
 Make a node, point it at the old head, call it the new head. If the list was
 empty, it is also the new tail.
@@ -383,7 +450,7 @@ flowchart LR
 ```
 
 ### 5.2 `addLast(value)` — O(1)
-[Code → L257](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L257)
+[Code → L257](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L272)
 
 Because we cache `tail`, appending needs no walk at all.
 
@@ -395,7 +462,7 @@ flowchart LR
 ```
 
 ### 5.3 `insertAt(index, value)` — O(index)
-[Code → L280](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L280)
+[Code → L280](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L295)
 
 Walk to the node *before* the target slot, then re-hook two arrows. Index `0`
 delegates to `addFirst`, index `size` to `addLast`.
@@ -407,27 +474,27 @@ flowchart LR
 ```
 
 ### 5.4 `get(index)` / `set(index, value)` — O(index)
-[get → L139](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L139) ·
-[set → L153](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L153) ·
-[walker → nodeAt, L608](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L608)
+[get → L139](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L154) ·
+[set → L153](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L168) ·
+[walker → nodeAt, L608](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L730)
 
 There is no random access. `nodeAt` starts at `head` and follows `index` arrows.
 This is the single biggest practical difference from `ArrayList`.
 
 ### 5.5 `indexOf(value)` / `contains(value)` — O(n)
-[indexOf → L200](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L200) ·
-[contains → L219](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L219)
+[indexOf → L200](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L215) ·
+[contains → L219](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L234)
 
 Uses `Objects.equals(a, b)` rather than `a.equals(b)` so that `null` elements do
 not cause a `NullPointerException` — see
 [`indexOfAndContainsHandleNulls`](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java#L388).
 
 ### 5.6 `removeFirst()` — O(1)
-[Code → L312](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L312)
+[Code → L312](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L327)
 
 Move `head` one step forward and unlink the old node so the garbage collector
 can reclaim it (line
-[L316](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L316)).
+[L316](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L331)).
 
 ```mermaid
 flowchart LR
@@ -438,12 +505,12 @@ flowchart LR
 ```
 
 ### 5.7 `removeLast()` — O(n)
-[Code → L337](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L337)
+[Code → L337](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L352)
 
 **This is the operation a singly linked list is bad at.** A node has no arrow
 back to its predecessor, so to delete the tail we must walk from `head` to the
 *second-last* node (loop at
-[L343](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L343)). A
+[L343](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L358)). A
 *doubly* linked list does this in O(1) — that is its whole reason for existing.
 
 ```mermaid
@@ -454,23 +521,23 @@ flowchart LR
 ```
 
 ### 5.8 `removeAt(index)` / `remove(value)` — O(index) / O(n)
-[removeAt → L362](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L362) ·
-[remove → L386](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L386)
+[removeAt → L362](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L377) ·
+[remove → L386](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L401)
 
 Walk to `index - 1`, then skip over the doomed node. Note the `tail` fix-up at
-[L370](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L370) for when the
+[L370](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L385) for when the
 removed node was the last one.
 
 ### 5.9 `clear()` — O(1)
-[Code → L403](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L403)
+[Code → L403](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L418)
 
 Dropping `head` and `tail` is enough: nothing references the chain any more, so
 the whole thing becomes garbage. No loop needed.
 
 ### 5.10 `iterator()` and `toString()` / `toList()`
-[iterator → L557](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L557) ·
-[toString → L587](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L587) ·
-[toList → L537](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L537)
+[iterator → L557](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L679) ·
+[toString → L587](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L709) ·
+[toList → L537](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L659)
 
 Implementing `Iterable<T>` is what lets you write
 `for (String s : list) { ... }`. The iterator holds a single cursor and follows
@@ -483,24 +550,26 @@ Implementing `Iterable<T>` is what lets you write
 
 | Operation | Time | Space | Why |
 | --- | --- | --- | --- |
-| [`addFirst`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L238) | O(1) | O(1) | only touches `head` |
-| [`addLast`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L257) | O(1) | O(1) | only because we cache `tail` |
-| [`insertAt(i)`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L280) | O(i) | O(1) | walk to `i-1` |
-| [`get`/`set(i)`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L139) | O(i) | O(1) | no random access |
-| [`indexOf`/`contains`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L200) | O(n) | O(1) | linear scan |
-| [`removeFirst`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L312) | O(1) | O(1) | move `head` |
-| [`removeLast`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L337) | O(n) | O(1) | no back-arrows |
-| [`removeAt(i)`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L362) | O(i) | O(1) | walk to `i-1` |
-| [`clear`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L403) | O(1) | O(1) | drop the references |
-| **[`reverse`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L442)** | **O(n)** | **O(1)** | three cursors, one pass |
-| [`reverseRecursive`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L473) | O(n) | O(n) | one stack frame per node |
-| [`reversedCopy`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L518) | O(n) | O(n) | allocates n new nodes |
-| [`toList`/`toString`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L537) | O(n) | O(n) | builds a new object |
+| [`addFirst`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L253) | O(1) | O(1) | only touches `head` |
+| [`addLast`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L272) | O(1) | O(1) | only because we cache `tail` |
+| [`insertAt(i)`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L295) | O(i) | O(1) | walk to `i-1` |
+| [`get`/`set(i)`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L154) | O(i) | O(1) | no random access |
+| [`indexOf`/`contains`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L215) | O(n) | O(1) | linear scan |
+| [`removeFirst`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L327) | O(1) | O(1) | move `head` |
+| [`removeLast`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L352) | O(n) | O(1) | no back-arrows |
+| [`removeAt(i)`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L377) | O(i) | O(1) | walk to `i-1` |
+| [`clear`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L418) | O(1) | O(1) | drop the references |
+| **[`reverseBetween(f,t)`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L481)** | **O(t)** | **O(1)** | walk to the slice, then one pass over it |
+| [`reverseBetweenWithoutSentinel`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L543) | O(t) | O(1) | same, with two extra branches |
+| [`reverse()`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L592) | O(n) | O(1) | the slice `[0, size-1]` |
+| [`reversedBetweenCopy`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L611) | O(n) | O(n) | allocates n new nodes |
+| [`toList`/`toString`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L659) | O(n) | O(n) | builds a new object |
 
 **Reading Big-O:** it describes how the cost grows as the list grows, ignoring
 constants. O(1) = same cost no matter the size. O(n) = double the list, double
 the work. "Space" here means *extra* memory beyond the list itself — which is
-why in-place `reverse()` is O(1) space even though the list holds n nodes.
+why in-place `reverseBetween()` is O(1) space even though the list holds n
+nodes — the one sentinel node it allocates does not grow with the input.
 
 ---
 
@@ -692,31 +761,40 @@ Add `-q` (quiet) to hide Gradle's own chatter and see only the program output:
 ```
 
 The demo lives in [`Main.java`](src/main/java/org/jk/dsa/learning/Main.java) and
-prints five sections. Expected output (abridged):
+prints seven sections. Expected output (abridged):
 
 ```
 ======================================================================
-1. Reversing a list of Strings
+1. Reversing just the middle of the list
 ======================================================================
-before reverse : [A -> B -> C -> D]
-after  reverse : [D -> C -> B -> A]
-first = D, last = A
+before                : [A -> B -> C -> D -> E]
+reverseBetween(1, 3)  : [A -> D -> C -> B -> E]
+A and E never moved. Only the slice B C D was flipped.
 
 ...
 
 ======================================================================
-4. Step-by-step trace of the three-pointer reversal
+6. Step-by-step trace of reverseBetween(1, 3) on A B C D E
 ======================================================================
-step 0  previous=null current=A    reversed=null
-step 1  previous=A    current=B    reversed=A -> null
-step 2  previous=B    current=C    reversed=B -> A -> null
-step 3  previous=C    current=null reversed=C -> B -> A -> null
-done    new head = C, new tail = A
+beforeSlice = A   (the node that must point at the new first node)
+sliceTail   = B   (starts the slice, so it will END the slice)
+
+flip 1   previous=B    current=C    reversed slice=B -> null
+flip 2   previous=C    current=D    reversed slice=C -> B -> null
+flip 3   previous=D    current=E    reversed slice=D -> C -> B -> null
+
+stitch  beforeSlice(A) -> D
+stitch  sliceTail(B) -> E
+result  A -> D -> C -> B -> E -> null
 ```
 
-Compare that trace with the loop at
-[`SinglyLinkedList.java#L446-L451`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L446-L451)
-— it is the same four steps.
+Section 2 prints **every** slice of `A B C D E`, which is the quickest way to
+convince yourself the bounds are right. Compare the trace above with the flip
+loop at
+[`SinglyLinkedList.java#L506-L511`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L506-L511)
+and the two stitches at
+[`L516-L517`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L516-L517)
+— it is the same four steps, plus the bookkeeping.
 
 ### Running the jar directly (optional)
 
@@ -750,10 +828,10 @@ a browser for a clickable summary.
 
 ```bash
 # one test method
-./gradlew test --tests "*reversesAThreeElementList"
+./gradlew test --tests "*reversesOnlyTheSlice"
 
 # one nested group
-./gradlew test --tests "*SinglyLinkedListTest\$Reverse"
+./gradlew test --tests "*SinglyLinkedListTest\$ReverseBetween"
 
 # force a re-run even if nothing changed
 ./gradlew test --rerun-tasks
@@ -767,11 +845,12 @@ follows **arrange → act → assert**:
 
 ```java
 @Test
-@DisplayName("reverses a three element list")
-void reversesAThreeElementList() {
-    SinglyLinkedList<String> list = SinglyLinkedList.of("A", "B", "C"); // arrange
-    list.reverse();                                                     // act
-    assertEquals(List.of("C", "B", "A"), list.toList());                // assert
+@DisplayName("reverses only the middle slice, leaving the ends alone")
+void reversesOnlyTheSlice() {
+    SinglyLinkedList<String> list =
+            SinglyLinkedList.of("A", "B", "C", "D", "E");        // arrange
+    list.reverseBetween(1, 3);                                   // act
+    assertEquals(List.of("A", "D", "C", "B", "E"), list.toList()); // assert
 }
 ```
 
@@ -782,17 +861,23 @@ JUnit 5 pieces used here:
 | `@Test` | this method is a test |
 | `@DisplayName` | a readable name for the report |
 | `@Nested` | groups related tests (see the `Reverse`, `Removals`, … inner classes) |
-| `@ParameterizedTest` + `@ValueSource` | runs the *same* test for sizes 0, 1, 2, 3, 10 and 1000 — see [L106](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java#L97) |
+| `@ParameterizedTest` + `@ValueSource` | runs the *same* test for list sizes 1, 2, 3, 5 and 8 — and inside each, **every** `(from, to)` pair. See [L169](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java#L169) |
 | `assertEquals(expected, actual)` | fails if they differ (**expected comes first**) |
 | `assertThrows(Type.class, () -> …)` | fails unless that exception is thrown |
 
 ### Prove the tests actually test something
 
 Open
-[`SinglyLinkedList.java#L456`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L456)
-and delete `tail = oldHead;`. Run `./gradlew test`. You should see
-`fixesHeadAndTailPointers` fail. Put the line back. **Do this once — it is the
-fastest way to understand why `tail` matters.**
+[`SinglyLinkedList.java#L522`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L522)
+and delete `tail = sliceTail;`. Run `./gradlew test`. You should see
+`sliceAtTailFixesTail` fail — the list still *prints* correctly, but the next
+`addLast` appends to the wrong node. Put the line back.
+
+Then try a second one: delete the sentinel at
+[L489](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L489) and start
+the walk from `head` instead. Every slice with `from > 0` still works; only
+`from == 0` breaks. **Do both once — it is the fastest way to understand why the
+sentinel is there.**
 
 ---
 
@@ -808,25 +893,29 @@ this is the best way to *see* the pointers move.
    bottom progress bar to finish.
 2. **Set a breakpoint:** open
    [`SinglyLinkedList.java`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java)
-   and click in the left gutter next to **line 447**
-   (`Node<T> nextHop = current.next;`). A red dot appears.
+   and click in the left gutter next to **line 500**
+   (`Node<T> sliceTail = beforeSlice.next;`). A red dot appears. That is the
+   single most important line to watch.
 3. **Start debugging:** open
    [`Main.java`](src/main/java/org/jk/dsa/learning/Main.java), right-click inside
    `main` → **Debug 'Main.main()'**.
-4. **When it pauses**, look at the *Variables* pane. You will see `previous`,
-   `current` and `nextHop`. Expand `current` to see `value` and `next` — you can
-   literally unfold the whole chain.
+4. **When it pauses**, look at the *Variables* pane. You will see `sentinel`,
+   `beforeSlice` and `sliceTail`. Expand any of them to see `value` and `next` —
+   you can literally unfold the whole chain, sentinel included.
 5. **Step through** with these keys:
    * `F8` **Step Over** — run the current line, stay in this method
    * `F7` **Step Into** — jump inside the method being called
    * `Shift+F8` **Step Out** — finish this method and come back
    * `F9` **Resume** — run until the next breakpoint hit
-6. Press `F9` repeatedly and watch `previous` grow while `current` shrinks. That
-   is exactly the animation in [`docs/animation.html`](docs/animation.html).
+6. Move the breakpoint into the flip loop (line 507) and press `F9` repeatedly.
+   Watch `previous` grow while `current` walks to the end of the slice — and
+   watch `beforeSlice` and `sliceTail` sit perfectly still, waiting to be
+   stitched back. That is exactly the animation in
+   [`docs/animation.html`](docs/animation.html).
 
 **Debugging a test instead:** open
 [`SinglyLinkedListTest.java`](src/test/java/org/jk/dsa/learning/SinglyLinkedListTest.java),
-click the green arrow next to `reversesAThreeElementList` and choose **Debug**.
+click the green arrow next to `reversesOnlyTheSlice` and choose **Debug**.
 Tests are usually the nicest thing to debug because the setup is tiny.
 
 > **Conditional breakpoints** are great for long lists: right-click the red dot
@@ -836,7 +925,7 @@ Tests are usually the nicest thing to debug because the setup is tiny.
 ### 10.2 In VS Code
 
 1. Install the **Extension Pack for Java** (Microsoft).
-2. Open this folder. Click the gutter to set a breakpoint at line 447.
+2. Open this folder. Click the gutter to set a breakpoint at line 500.
 3. Open `Main.java`; a **Run | Debug** CodeLens appears above `main`. Click
    **Debug**.
 4. Use the floating toolbar: Step Over `F10`, Step Into `F11`, Continue `F5`.
@@ -855,28 +944,29 @@ then press Debug.
 
 ### 10.4 Poor-man's debugging: print statements
 
-Perfectly legitimate while learning. Temporarily add a line inside the loop in
-[`reverse()`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L446):
+Perfectly legitimate while learning. Temporarily add a line inside the flip loop in
+[`reverseBetween()`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L506):
 
 ```java
-while (current != null) {
-    System.out.println("previous=" + previous + " current=" + current);
+for (int i = 0; i <= to - from; i++) {
+    System.out.println("i=" + i + " previous=" + previous + " current=" + current);
     ...
 }
 ```
 
 Then `./gradlew run -q`. (This is exactly what
-[`Main.demoReverseTrace()`](src/main/java/org/jk/dsa/learning/Main.java#L102)
+[`Main.demoSliceTrace()`](src/main/java/org/jk/dsa/learning/Main.java#L142)
 does permanently, without polluting the data structure.)
 
 ### 10.5 Reading a failing test
 
 ```
-expected: <[C, B, A]> but was: <[A, B, C]>
-    at SinglyLinkedListTest.reversesAThreeElementList(SinglyLinkedListTest.java:43)
+expected: <[A, D, C, B, E]> but was: <[A, B, C, D, E]>
+    at SinglyLinkedListTest.reversesOnlyTheSlice(SinglyLinkedListTest.java:43)
 ```
 
-Read it as: *"at line 43 of the test, I wanted `[C, B, A]` and got `[A, B, C]`."*
+Read it as: *"at line 43 of the test, I wanted `[A, D, C, B, E]` and got the
+unchanged list."*
 Click the file:line in the console — IntelliJ and VS Code both make it a
 hyperlink — then debug that test.
 
@@ -886,20 +976,28 @@ hyperlink — then debug that test.
 
 Try these in order; each one has a test you can write yourself.
 
-1. **Break it on purpose.** Delete `Node<T> nextHop = current.next;` at
-   [L447](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L447) and make
-   the loop use `current.next` directly. Run the tests and explain the failure.
-2. **`reverseFirstK(int k)`** — reverse only the first `k` nodes and re-attach
-   the rest. Watch out for the `tail` pointer.
-3. **`isPalindrome()`** — return `true` when the list reads the same both ways.
-   Can you do it in O(n) time and O(1) space? (Hint: reverse the second half.)
-4. **`middle()`** — find the middle element in a *single* pass using the
-   slow/fast pointer trick.
-5. **`hasCycle()`** — detect whether the chain loops back on itself (Floyd's
-   tortoise and hare).
-6. **Make it a doubly linked list** — add a `previous` field to
-   [`Node`](src/main/java/org/jk/dsa/learning/Node.java) and see how
-   `removeLast()` drops from O(n) to O(1).
+1. **Break it on purpose.** Delete `tail = sliceTail;` at
+   [L522](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L522), run the
+   tests, and explain why the list still *prints* correctly.
+2. **Remove the sentinel.** Rewrite `reverseBetween` to walk from `head`
+   instead. Which tests fail, and why only those?
+3. **One-based indexing.** Add `reverseBetweenOneBased(int m, int n)` that
+   matches the classic interview statement. It should be a two-line wrapper — if
+   it is longer, you are duplicating logic.
+4. **`reverseKGroup(int k)`** — reverse *every* consecutive block of k nodes.
+   This is `reverseBetween` in a loop; leftover nodes at the end stay put.
+5. **`swapPairs()`** — swap every two adjacent nodes. That is `reverseKGroup`
+   with k = 2, so write it in terms of #4 and check they agree.
+6. **`rotateRight(int k)`** — move the last k nodes to the front. Hint: join the
+   list into a ring, then break it in the right place.
+7. **Use the sentinel everywhere else.** Refactor
+   [`insertAt`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L295) and
+   [`removeAt`](src/main/java/org/jk/dsa/learning/SinglyLinkedList.java#L377) to
+   use a sentinel and watch their `index == 0` special cases disappear.
+8. **Make it a doubly linked list** — add a `previous` field to
+   [`Node`](src/main/java/org/jk/dsa/learning/Node.java) and see which parts of
+   `reverseBetween` get easier, and which get *harder* (hint: you now have twice
+   as many arrows to fix).
 
 ---
 

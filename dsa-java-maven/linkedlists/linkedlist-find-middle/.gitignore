@@ -1,6 +1,5 @@
-# Gradle
-.gradle/
-build/
+# Maven
+target/
 
 # IDE
 .idea/
@@ -12,4 +11,7 @@ build/
 
 # OS
 .DS_Store
+
+# Videos (large media, not checked in)
 /demo-videos/
+/videos/

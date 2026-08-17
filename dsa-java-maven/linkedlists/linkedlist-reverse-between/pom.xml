@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ===========================================================================
+  pom.xml is the "Project Object Model". This single file IS the Maven build.
+  Everything Maven knows about this project is declared here: what it is
+  called, which Java version to use, which libraries to download, and which
+  plugins run during the build.
+
+  Every block below is explained in README.md, section "How Maven works".
+  ===========================================================================
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- The POM format version. Always 4.0.0; it has nothing to do with our
+         project's version. -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- The "coordinates": these three lines uniquely identify the artifact
+         this project produces, the same way they identify every library we
+         download. groupId is usually a domain you control, reversed. -->
+    <groupId>org.jk.dsa.learning</groupId>
+    <artifactId>linkedlist-reverse-between</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>linkedlist-reverse-between</name>
+    <description>
+        reverseBetween(from, to) -- reversing only a slice of a generic singly
+        linked list, in place, using a sentinel node. A demo and study project
+        (Java 21, Maven, JUnit 5, Lombok).
+    </description>
+
+    <properties>
+        <!-- Always set the encoding explicitly. Without it Maven uses the
+             platform default and warns; builds then differ between machines. -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Java 21. `release` (rather than the older source/target pair) also
+             checks that we only use APIs that exist in Java 21, so the build
+             cannot accidentally depend on a newer JDK's classes. -->
+        <maven.compiler.release>21</maven.compiler.release>
+
+        <!-- Versions kept here so each one appears exactly once. -->
+        <junit.version>5.11.0</junit.version>
+        <lombok.version>1.18.42</lombok.version>
+        <surefire.version>3.2.5</surefire.version>
+        <compiler.plugin.version>3.13.0</compiler.plugin.version>
+        <exec.plugin.version>3.2.0</exec.plugin.version>
+    </properties>
+
+    <dependencies>
+        <!-- JUnit 5. `test` scope means: available when compiling and running
+             tests, invisible to src/main/java, and never shipped in our jar. -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Lombok. `provided` scope means: needed to COMPILE, but not packaged
+             into the jar and not needed at runtime. It is the Maven equivalent
+             of Gradle's `compileOnly`. Declaring it without a scope (the
+             default, `compile`) would wrongly ship Lombok inside our jar. -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Compiles src/main/java and src/test/java. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${compiler.plugin.version}</version>
+                <configuration>
+                    <!-- Turning Lombok on. The `provided` dependency above only
+                         puts the jar on the compile classpath; THIS block is
+                         what actually runs Lombok as an annotation processor.
+                         Miss it and you get a wall of "cannot find symbol:
+                         method getName()". -->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
+            <!-- Runs the JUnit 5 tests during the `test` phase. Modern Surefire
+                 finds JUnit 5 on its own, no extra configuration needed. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
+            </plugin>
+
+            <!-- Lets us run the demo with:  ./mvnw compile exec:java
+                 Maven has no built-in "run my main class" command; this plugin
+                 is the usual way to get one. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>${exec.plugin.version}</version>
+                <configuration>
+                    <mainClass>org.jk.dsa.learning.Main</mainClass>
+                </configuration>
+                <executions>
+                    <!-- A named execution, run with:
+                             ./mvnw compile exec:exec@show-generated
+                         It calls the JDK's own `javap` to print the methods
+                         Lombok generated into the class files. Seeing them with
+                         your own eyes is the fastest cure for "where did that
+                         constructor come from?". -->
+                    <execution>
+                        <id>show-generated</id>
+                        <configuration>
+                            <executable>javap</executable>
+                            <arguments>
+                                <argument>-p</argument>
+                                <argument>${project.build.outputDirectory}/org/jk/dsa/learning/Node.class</argument>
+                                <argument>${project.build.outputDirectory}/org/jk/dsa/learning/Main$Student.class</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

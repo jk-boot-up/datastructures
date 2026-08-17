@@ -12,4 +12,6 @@ build/
 
 # OS
 .DS_Store
-/demo-videos/
+
+# Videos (large media, not checked in)
+/videos/

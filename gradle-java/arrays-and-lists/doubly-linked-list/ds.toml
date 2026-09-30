@@ -1,0 +1,461 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "doubly-linked-list"
+category = "arrays-and-lists"
+title = "Doubly Linked List"
+package = "doublylinkedlist"
+main_class = "DoublyLinkedListDemo"
+example = "A photo viewer with Previous and Next"
+tagline = "Pointers both ways"
+bold = "A doubly linked list gives every node a prev pointer as well as a next pointer, so you can walk either way and remove a node you are holding without searching for its neighbour; the price is a second pointer in every node and four pointers to set on every insert."
+analogy_short = "A train where every carriage is coupled to the one in front and the one behind"
+jdk = "`java.util.LinkedList` (a doubly linked list with head and tail)"
+thumb_lines = ["DOUBLY", "LINKED LIST"]
+thumb_code = "node.prev.next = node.next"
+youtube_title = "Doubly Linked List in Java - Insertion, Deletion, Display Backward, Reverse"
+youtube_tags = ["doubly linked list", "linked list java", "prev next pointers", "java linkedlist", "linked list remove"]
+youtube_description = """Doubly Linked List in Java, explained with a photo viewer that has Previous and Next buttons. We start with one-way pointers and see Previous from the last photo walk three steps from the start. Then we build the list by hand, as a C textbook does: every node holds data, a prev pointer and a next pointer, and the list keeps head and tail. We display it forward and backward, and count every textbook operation: insertAtBeginning and insertAtEnd with no walking, insertAtPosition setting four pointers, deleteAtEnd through the tail in O(1) where a singly list needs O(n), and deleteByKey with no prev pointer to keep. Then we forget one of the four pointers an insertion needs and watch the forward and backward walks disagree. We finish by reversing the list by swapping every node's prev and next, and with the bill: an extra pointer in every node."""
+
+[readme]
+intro = """A **doubly linked list** is a linked list where every **node** has its **data** and two pointers: `next`, to the node after it, and `prev`, to the node before it. The list remembers both ends, the **head** and the **tail**. Being able to go back as well as forward changes three things: you can walk the list in either direction, you can add at either end without walking, and you can remove a node you are already holding by joining its two neighbours, with no search for the node before it. This project builds one by hand, as a C textbook does with `struct node { data; struct node *prev, *next; }`, with the textbook operations: insertAtBeginning, insertAtEnd, insertAtPosition, deleteAtBeginning, deleteAtEnd, deleteAtPosition, deleteByKey, deleteNode, search, displayForward, displayBackward, count and reverse."""
+analogy = """Think of a train. Every carriage is coupled to the one in front and the one behind. A guard in any carriage can step forwards or backwards one carriage at a time. To take a carriage out of the middle, you uncouple it from both neighbours and couple those neighbours to each other: two couplings, and the rest of the train does not move. To add one, there are four couplings to make, and forgetting one leaves a carriage that can be reached from one direction but not the other."""
+example = """A photo viewer shows one photo at a time, with Previous and Next buttons. The album is beach, cake, dog, forest and mountain. The viewer must go back as easily as forward, add new photos at the end as they are taken, and delete the photo on screen. The demo first tries this with one-way pointers, then builds the doubly linked version, inserts and deletes at both ends and in the middle, forgets one pointer during an insertion, and reverses the list."""
+why = """With one-way pointers, Previous is a problem: from "mountain", the only way back to "forest" is to start again at "beach" and walk forward, three steps, and further for longer albums. Deleting the photo on screen has the same problem, because the node before it must be found to point past it. A second pointer in every node makes both one step."""
+when_use = [
+  "You need to move backwards as well as forwards.",
+  "You remove or insert next to a node you already hold, such as the item on screen or the item just used.",
+  "You add and remove at both ends: the list works as a queue from either side.",
+]
+when_not = [
+  "You only ever go forwards: a singly linked list does the job with one pointer per node.",
+  "You read by position: position n is still a walk.",
+  "Memory is tight: every node carries two pointers as well as its value.",
+]
+met_before = [
+  "A browser's Back and Forward history, a photo gallery, a music player's previous and next track.",
+  "`java.util.LinkedList` is a doubly linked list with a head and a tail.",
+  "An LRU cache (later in this course) keeps a doubly linked list so it can move any entry to the front in one step.",
+]
+
+[[word]]
+term = "node"
+meaning = "One element of the list: its `data` (a photo), a `prev` pointer and a `next` pointer."
+[[word]]
+term = "prev"
+meaning = "The pointer to the node before. The head's `prev` is `null`."
+[[word]]
+term = "next"
+meaning = "The pointer to the node after. The tail's `next` is `null`."
+[[word]]
+term = "head and tail"
+meaning = "The first and the last node. The list keeps both, so either end is one step away."
+[[word]]
+term = "traverse"
+meaning = "To visit nodes one by one by following next (or prev) pointers. Each move is one step; the demo counts them."
+[[word]]
+term = "pointer change"
+meaning = "Setting one head, tail, prev or next pointer to a different node. An insertion in the middle takes four; a deletion takes two."
+
+[[operation]]
+name = "Display forward / backward"
+does = "Follow next from head, or prev from tail"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "5 steps each way for 5 photos"
+[[operation]]
+name = "Count"
+does = "Traverse and count the nodes"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "one step per node"
+[[operation]]
+name = "Insert at beginning"
+does = "newNode.next = head; head.prev = newNode; head = newNode"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "3 pointer changes"
+[[operation]]
+name = "Insert at end"
+does = "newNode.prev = tail; tail.next = newNode; tail = newNode"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "0 steps, 3 pointer changes"
+[[operation]]
+name = "Insert at position"
+does = "Walk to the node before, then set 4 pointers"
+time = "O(1) at the ends / O(n) / O(n)"
+space = "O(1)"
+counted = "2 steps, 4 pointer changes"
+[[operation]]
+name = "Delete at beginning / at end"
+does = "Move head on, or tail back; clear the new end's pointer"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "0 steps, 2 pointer changes"
+[[operation]]
+name = "Delete a node already reached"
+does = "node.prev.next = node.next; node.next.prev = node.prev"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "0 steps, 2 pointer changes"
+[[operation]]
+name = "Delete by key / at position"
+does = "Walk to the node, then delete it as above"
+time = "O(1) at the head / O(n) / O(n)"
+space = "O(1)"
+counted = "3 comparisons, 2 pointer changes"
+[[operation]]
+name = "Search / get"
+does = "Compare each node's data / follow pos next pointers"
+time = "O(1) / O(n) / O(n)"
+space = "O(1)"
+counted = "one comparison per node looked at"
+[[operation]]
+name = "Reverse"
+does = "Swap prev and next in every node, then swap head and tail"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "12 pointer changes for 5 nodes"
+
+listing_intro = """The operations where a doubly linked list differs from a singly linked one, exactly as they appear in `DoublyLinkedList.java`."""
+[[listing]]
+op = "Insertion at the end"
+method = "DoublyLinkedList#insertAtEnd"
+note = """Through the `tail` pointer: the new node's `prev` is the old tail, the old tail's `next` is the new node, and `tail` moves. No walking, so O(1). An empty list is the special case: the new node is both head and tail."""
+[[listing]]
+op = "Insertion after a node"
+method = "DoublyLinkedList#insertAfter"
+note = """Four pointers: the new node's `prev` and `next`, then the node before it and the node after it are pointed at the new node. Forgetting the fourth, `following.prev`, leaves a list that looks right walking forwards but skips the new node walking backwards."""
+[[listing]]
+op = "Deletion of a node"
+method = "DoublyLinkedList#deleteNode"
+note = """The node knows both neighbours, so no search is needed: the one before is pointed past it with `next`, the one after with `prev`. At the ends, `head` or `tail` moves instead. Every deletion, at the beginning, the end, a position or by key, finishes here."""
+[[listing]]
+op = "Display backward"
+method = "DoublyLinkedList#displayBackward"
+note = """Start at `tail` and follow `prev` pointers to `null`. A singly linked list cannot do this without first reversing itself or using a stack."""
+[[listing]]
+op = "Reversal"
+method = "DoublyLinkedList#reverse"
+note = """Every node already has pointers both ways, so reversing only swaps each node's `prev` and `next`, then swaps `head` and `tail`. Note `current = t`: after the swap, the old next is in `prev`, so the walk continues through the saved value."""
+
+[compare]
+intro = """How a doubly linked list compares with the structures it is usually weighed against (n nodes):"""
+columns = ["Operation", "Doubly linked list", "Singly linked list", "Dynamic array"]
+rows = [
+  ["Access position i", "O(n)", "O(n)", "O(1)"],
+  ["Insert / delete at the beginning", "O(1)", "O(1)", "O(n) shifts"],
+  ["Insert at the end", "O(1) with tail", "O(n) (O(1) with a tail)", "O(1) amortised"],
+  ["Delete at the end", "O(1): tail.prev", "O(n): find the second-to-last", "O(1)"],
+  ["Delete a node already reached", "O(1)", "O(n): find the node before", "O(n) shifts"],
+  ["Walk backwards", "yes", "no", "yes"],
+  ["Pointers per node", "2 (prev, next)", "1 (next)", "none"],
+  ["Pointers set by an insertion in the middle", "4", "2", "none, but O(n) shifts"],
+]
+
+pros = [
+  "Walks both ways: display backward, Previous as well as Next.",
+  "O(1) insertion and deletion at both ends, and O(1) deletion of any node already reached.",
+  "No data is ever moved.",
+]
+cons = [
+  "Two pointers per node: more memory than a singly linked list.",
+  "Four pointers to set on every insertion in the middle: more places to make a mistake.",
+  "Still no random access: position i is a walk.",
+]
+
+[[mistake]]
+mistake = "Forgetting one of the four pointers of an insertion"
+happens = "Forwards and backwards walks disagree: one direction skips the new node."
+fix = "Set all four: `newNode.prev`, `newNode.next`, `node.next`, `following.prev`."
+[[mistake]]
+mistake = "Not updating head or tail at the ends"
+happens = "Deleting the last node leaves `tail` pointing at a deleted node; deleting the only node leaves `head` or `tail` behind."
+fix = "When `node.prev` is null, move `head`; when `node.next` is null, move `tail`."
+[[mistake]]
+mistake = "Reversing without swapping head and tail"
+happens = "Every node is reversed, but `head` still points at what is now the last node."
+fix = "After the loop, swap `head` and `tail`."
+[[mistake]]
+mistake = "Walking on with `current.next` after swapping in reverse"
+happens = "After the swap, `current.next` is the old prev, so the loop goes backwards and stops at once."
+fix = "Save the old next before the swap and continue from it."
+
+[[exercise]]
+level = "easy"
+question = """Write `String getFromEnd(int k)` that returns the data of the node k places from the end (k = 0 is the tail). What is its time complexity?"""
+answer = """```java
+String getFromEnd(int k) {
+    Node current = tail;
+    for (int i = 0; i < k && current != null; i++) {
+        current = current.prev;
+    }
+    if (current == null) throw new IndexOutOfBoundsException("no node " + k + " from the end");
+    return current.data;
+}
+```
+O(k) time, O(1) space; a singly linked list would need O(n), or two pointers k apart."""
+[[exercise]]
+level = "medium"
+question = """Write `void moveToFront(Node node)` that moves a node already reached to the head in O(1). Where is this used?"""
+answer = """```java
+void moveToFront(Node node) {
+    if (node == head) return;
+    deleteNode(node);                   // unlink: 2 pointers
+    node.prev = null;                   // relink at the front
+    node.next = head;
+    head.prev = node;
+    head = node;
+}
+```
+O(1): no search, only pointer changes. An LRU cache does exactly this every time an entry is used, which is why it keeps a doubly linked list."""
+[[exercise]]
+level = "harder"
+question = """Make `get(pos)` walk from whichever end is nearer. What extra field does the list need, which operations must maintain it, and what is the worst case now?"""
+answer = """The list needs a `size` field (without it, finding which end is nearer costs a count, O(n)). Every insertion adds one and every deletion subtracts one. Then:
+```java
+Node nodeAt(int pos) {
+    if (pos < size / 2) {
+        Node current = head;
+        for (int i = 0; i < pos; i++) current = current.next;
+        return current;
+    }
+    Node current = tail;
+    for (int i = size - 1; i > pos; i--) current = current.prev;
+    return current;
+}
+```
+The worst case is the middle, n / 2 steps: still O(n), but half the walk. `java.util.LinkedList` does exactly this."""
+
+[hero]
+caption = "every node has a prev and a next pointer; the list keeps head and tail"
+picture = { type = "linked", nodes = ["beach", "cake", "dog", "forest", "mountain"], double = true, pointers = [[0, "head"], [4, "tail"]] }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "A viewer with next pointers only"
+summary = "With next pointers only, Previous from mountain walks 3 steps from beach to reach forest; deleting the photo on screen has the same problem."
+detail = """Suppose each photo only knew the next one. Looking at "mountain" and pressing Previous, the viewer cannot step back: it must start at "beach" and walk forward until the next photo is "mountain", three steps, to find "forest". The longer the album, the longer the walk. Deleting the photo on screen has the same problem, because the photo before it must be found to point past it."""
+speech = """First, a photo viewer with next pointers only. [[slnc 400]] We are looking at the mountain, and press Previous. [[slnc 400]] The viewer cannot step back. [[slnc 300]] It must start again at the beach, and walk forward three steps to the forest. [[slnc 500]] Deleting the photo on screen has the same problem."""
+console = [["looking at \"mountain\", press Previous: walk from \"beach\", 3 steps to \"forest\"", "bad"], ["deleting the photo on screen means finding the one before it the same way", "bad"]]
+[[act.frame]]
+caption = "One-way pointers: to go back from mountain, start again at beach"
+say = """Here is the one-way album. [[slnc 300]] Every arrow points forward. [[slnc 300]] From the mountain, there is no arrow back."""
+picture = { type = "linked", nodes = ["beach", "cake", "dog", "forest", "mountain"], marks = { "4" = "hi" }, pointers = [[0, "start again"], [4, "on screen"]] }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Pointers both ways, and both ends"
+summary = "Built with insertAtEnd through tail: 0 steps; displayed forward from head and backward from tail."
+detail = """Each photo becomes a node with `data`, `prev` and `next`, and the list keeps `head` and `tail`. Building the album with `insertAtEnd` walks nowhere: the tail pointer is already at the last node, so each insertion sets three pointers, 14 pointer changes in all for five photos (the first sets just head and tail). `displayForward` follows next pointers from the head; `displayBackward` follows prev pointers from the tail, which a singly linked list cannot do."""
+speech = """Now the doubly linked list. [[slnc 400]] Each node holds a photo, a previous pointer, and a next pointer. [[slnc 400]] The list keeps both ends: the head and the tail. [[slnc 500]] Inserting at the end walks nowhere, because the tail is already there. [[slnc 400]] And the album can be displayed forward from the head, or backward from the tail."""
+console = [["built with insertAtEnd through tail: 0 steps, 14 pointer changes", "ok"], ["displayForward():  head -> beach <-> cake <-> dog <-> forest <-> mountain <- tail", "ok"], ["displayBackward(): tail -> mountain <-> forest <-> dog <-> cake <-> beach <- head", "ok"]]
+[[act.frame]]
+caption = "Five nodes, each linked both ways; head at beach, tail at mountain"
+say = """Here is the album. [[slnc 300]] Each pair of neighbours is linked both ways. [[slnc 400]] Head points at the beach, and tail at the mountain."""
+picture = { type = "linked", nodes = ["beach", "cake", "dog", "forest", "mountain"], double = true, pointers = [[0, "head"], [4, "tail"]] }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Insertion and deletion at both ends and in the middle"
+summary = "insertAtBeginning and insertAtEnd: 3 pointers, 0 steps; insertAtPosition(3): 2 steps, 4 pointers; deleteAtEnd: 0 steps, 2 pointers; deleteByKey: 3 comparisons, 2 pointers."
+detail = """Both ends cost O(1): `insertAtBeginning("airport")` sets three pointers, and so does `insertAtEnd("river")`, with no walking. `insertAtPosition(3, "garden")` walks two steps to "cake", the node before the position, and sets four pointers: the garden's prev and next, cake's next and dog's prev. `deleteAtEnd` goes through the tail, no walking, and changes two pointers: a singly linked list would have had to walk to the second-to-last node. `deleteByKey("cake")` compares three nodes, then unlinks cake by pointing its two neighbours at each other, with no separate prev pointer to keep."""
+speech = """Now the textbook operations. [[slnc 400]] Inserting at the beginning or at the end sets three pointers, with no walking. [[slnc 400]] Inserting at position three walks two steps, then sets four pointers. [[slnc 500]] Deleting at the end goes straight through the tail. [[slnc 300]] A singly linked list would have to walk the whole list. [[slnc 500]] And deleting the cake points its two neighbours at each other."""
+console = [["insertAtBeginning(\"airport\"): 3 pointer changes", "ok"], ["insertAtEnd(\"river\"): 0 steps, 3 pointer changes", "ok"], ["insertAtPosition(3, \"garden\"): 2 steps, 4 pointer changes", "amber"], ["deleteAtEnd() removed \"river\": 0 steps, 2 pointer changes, through tail", "ok"], ["deleteByKey(\"cake\"): 3 comparisons, 2 pointer changes, no prev pointer to keep", "ok"], ["head -> airport <-> beach <-> garden <-> dog <-> forest <-> mountain <- tail", "muted"]]
+[[act.frame]]
+caption = "insertAtPosition(3, \"garden\"): four pointers join garden to cake and dog"
+say = """Here is the insertion. [[slnc 300]] The garden's previous points to the cake, and its next to the dog. [[slnc 400]] Then the cake's next and the dog's previous point to the garden. [[slnc 300]] Four pointers."""
+picture = { type = "linked", nodes = ["beach", "cake", "garden", "dog"], double = true, marks = { "2" = "new" } }
+[[act.frame]]
+caption = "deleteByKey(\"cake\"): beach and garden now point at each other"
+say = """And the deletion. [[slnc 300]] The beach's next and the garden's previous are pointed at each other. [[slnc 300]] The cake is out, with two pointer changes."""
+picture = { type = "linked", nodes = ["airport", "beach", "garden", "dog"], double = true, marks = { "1" = "ok", "2" = "ok" } }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "The pointer nobody set"
+summary = "An insertion that sets only 3 of its 4 pointers: forwards reaches 6 photos, backwards only 5; deleting the only photo sets both head and tail to null."
+detail = """An insertion in the middle needs four pointers. Inserting "garden" after "beach" but forgetting the fourth, `cake.prev`, leaves the list half-joined: walking forwards reaches six photos, beach, garden, cake, dog, forest, mountain, but walking backwards from the tail reaches only five, because cake's prev still points to beach and skips the garden. A bug like this goes unnoticed until someone presses Previous. At the other extreme, deleting the only photo must set both `head` and `tail` to null."""
+speech = """What if one pointer is forgotten? [[slnc 400]] We insert the garden after the beach, setting only three of the four pointers. [[slnc 400]] Walking forwards, there are six photos. [[slnc 300]] Walking backwards, only five. [[slnc 400]] The cake still points back to the beach, and skips the garden. [[slnc 500]] Forwards and backwards now disagree."""
+console = [["insert \"garden\" after \"beach\", setting 3 of the 4 pointers", "amber"], ["forwards:  [beach <-> garden <-> cake <-> dog <-> forest <-> mountain], 6 photos", "ok"], ["backwards: 5 photos; \"cake\".prev still points to \"beach\"", "bad"], ["delete the only photo: head is null, tail is null", "muted"]]
+[[act.frame]]
+caption = "The garden is reachable forwards, but cake.prev still points to beach"
+say = """Here is the broken list. [[slnc 300]] Forwards, beach, garden, cake. [[slnc 300]] Backwards from the cake, the arrow goes straight to the beach, skipping the garden."""
+picture = { type = "linked", nodes = ["beach", "garden", "cake", "dog"], marks = { "1" = "bad" }, loops = [[2, 0, "bad"]] }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "Reversal, and the bill"
+summary = "reverse() swaps prev and next in 5 nodes and swaps head and tail: 12 pointer changes, no data moved; every node carries one more pointer than a singly linked list."
+detail = """Reversing a doubly linked list needs no three-pointer dance: every node already points both ways, so each node's `prev` and `next` are simply swapped, 10 pointer changes for 5 nodes, and then `head` and `tail` are swapped, 2 more. The album now runs from mountain to beach. The bill: every node carries two pointers, one more than a singly linked list, and an insertion in the middle sets 4 pointers instead of 2. Java's `java.util.LinkedList` is a doubly linked list with head and tail."""
+speech = """Now reversal. [[slnc 400]] Every node already points both ways. [[slnc 300]] So each node's previous and next are simply swapped. [[slnc 400]] Then the head and the tail are swapped. [[slnc 300]] Twelve pointer changes, and no photo moves. [[slnc 500]] And the bill: one more pointer in every node, and four pointers for every insertion in the middle."""
+console = [["reverse(): 12 pointer changes (prev and next swapped in 5 nodes, then head and tail)", "ok"], ["head -> mountain <-> forest <-> dog <-> cake <-> beach <- tail", "muted"], ["every node carries two pointers: one more pointer per photo than a singly linked list", "amber"], ["an insertion in the middle sets 4 pointers, where a singly linked list sets 2", "amber"], ["already in Java: java.util.LinkedList is a doubly linked list with head and tail", "muted"]]
+[[act.frame]]
+caption = "After reverse: head at mountain, tail at beach"
+say = """Here is the reversed album. [[slnc 300]] Head now points at the mountain, and tail at the beach."""
+picture = { type = "linked", nodes = ["mountain", "forest", "dog", "cake", "beach"], double = true, pointers = [[0, "head"], [4, "tail"]] }
+
+[animation]
+subtitle = "A photo viewer as a doubly linked list: prev and next pointers, head and tail, O(1) work at both ends, four pointers per insertion, the pointer nobody set, and reversal by swapping."
+
+[docs.problem]
+scenario = """A photo viewer needs Previous as well as Next, adds photos at the end, deletes the photo on screen, and sometimes shows the album in reverse."""
+naive = """With next pointers only, Previous and deleting the photo on screen both walk from the start to find the node before."""
+deliver = [
+  "A `DoublyLinkedList` of `Node`s (`data`, `prev`, `next`) with `head` and `tail`, written by hand.",
+  "The textbook operations: insertAtBeginning, insertAtEnd, insertAtPosition, deleteAtBeginning, deleteAtEnd, deleteAtPosition, deleteByKey, deleteNode, search, get, displayForward, displayBackward, count, reverse.",
+  "Steps, comparisons and pointer changes counted; underflow reported.",
+  "The forgotten-pointer insertion reproduced.",
+  "Time and space complexity of every operation, and a comparison with the singly linked list and the dynamic array.",
+]
+
+[docs.prerequisites]
+required = ["The singly-linked-list project", "Java basics: classes, objects, loops"]
+not_required = ["C pointers"]
+
+[docs.session]
+objectives = [
+  "Draw a doubly linked list with head, tail, prev and next.",
+  "Implement insertion and deletion at both ends in O(1), and in the middle with four and two pointers.",
+  "Explain why deleting a node already reached is O(1).",
+  "Reverse the list by swapping pointers, and state every operation's complexity.",
+]
+walkthrough = """Start with the train analogy. Run the demo; in act one, ask how a singly list goes back. In act three, draw the four pointers of insertAtPosition on the board. In act four, remove one arrow and walk backwards. In act five, reverse on paper by swapping arrows. Finish with the comparison table and point to the LRU cache."""
+
+[docs.explained]
+sentence = """A doubly linked list gives every node prev and next pointers and keeps head and tail, so it walks both ways and inserts and deletes at either end, or at a node already reached, in O(1), at the price of a second pointer per node."""
+verdict = """Use a doubly linked list when you move both ways, delete nodes you already hold, or work at both ends: browser history, playlists, LRU caches, deques. If you only ever go forwards, a singly linked list is lighter."""
+recognise = [
+  "A `Node` with `prev` and `next`, and a list with `head` and `tail`.",
+  "`node.prev.next = node.next; node.next.prev = node.prev;`.",
+  "A walk from `tail` following `prev`.",
+]
+
+[spec]
+purpose = """Teach the doubly linked list with the operations of a data-structures textbook, their costs, and the pointer mistakes it invites."""
+requirements = [
+  "Written by hand: `Node` with `data`, `prev` and `next`; the list holds `head` and `tail`; no Java collections.",
+  "The textbook operations listed above; underflow on deleting from an empty list.",
+  "Steps, comparisons and pointer changes counted.",
+  "`insertAfterForgettingPrev` reproduces the forward/backward disagreement.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["A size field (exercise three)", "Recursive versions (doubly-linked-list-recursive)", "Generic element types (doubly-linked-list-generic)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Doubly Linked List: the pieces"
+caption = "The list keeps head and tail; every node points to its neighbours both ways."
+nodes = [
+  { id = "demo", label = "Demo", sub = "DoublyLinkedListDemo, five acts", col = 0, row = 0, colour = "client" },
+  { id = "list", label = "DoublyLinkedList", sub = "head, tail", col = 1, row = 0, colour = "accent" },
+  { id = "n1", label = "Node", sub = "prev, data, next", col = 2, row = 0, colour = "green" },
+  { id = "n2", label = "Node", sub = "prev, data, next", col = 2, row = 1, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = "steps, comparisons, pointer changes", col = 1, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "list", label = "insertAtEnd(photo)" }, { from = "list", to = "n1", label = "head" }, { from = "n1", to = "n2", label = "next" }, { from = "n2", to = "n1", label = "prev", dashed = true }, { from = "list", to = "steps", label = "counts" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Doubly Linked List: the classes"
+caption = "`DoublyLinkedList` holds head and tail; each `Node` holds data, prev and next."
+nodes = [
+  { id = "list", label = "DoublyLinkedList", sub = ["- Node head, tail", "+ insertAtBeginning / AtEnd", "+ insertAtPosition / insertAfter", "+ deleteAtBeginning / AtEnd", "+ deleteAtPosition / ByKey", "+ deleteNode(node)", "+ search / get / count", "+ displayForward / Backward", "+ reverse"], col = 0, row = 0, colour = "accent" },
+  { id = "node", label = "Node", sub = ["data: String", "prev: Node", "next: Node"], col = 1, row = 0, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = ["steps, compares", "pointerChanges"], col = 0, row = 1, colour = "amber" },
+]
+edges = [ { from = "list", to = "node", label = "head, tail" }, { from = "list", to = "steps", label = "has one" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Doubly Linked List: deleteNode(node)"
+caption = "Two pointer changes; head or tail move at the ends."
+nodes = [
+  { id = "in", label = "deleteNode(node)", sub = "a node already reached", col = 0, row = 0, colour = "client" },
+  { id = "p", label = "node.prev == null?", sub = "yes: head = node.next", col = 1, row = 0, colour = "amber" },
+  { id = "pn", label = "node.prev.next = node.next", sub = "otherwise", col = 1, row = 1, colour = "green" },
+  { id = "n", label = "node.next == null?", sub = "yes: tail = node.prev", col = 2, row = 0, colour = "amber" },
+  { id = "np", label = "node.next.prev = node.prev", sub = "otherwise", col = 2, row = 1, colour = "green" },
+]
+edges = [ { from = "in", to = "p", label = "" }, { from = "p", to = "pn", label = "no" }, { from = "p", to = "n", label = "then" }, { from = "n", to = "np", label = "no" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Doubly Linked List: insertAtPosition(3, \"garden\")"
+caption = "Walk two steps to cake, then four pointers."
+participants = ["Demo", "DoublyLinkedList", "cake", "garden", "dog"]
+steps = [
+  ["Demo", "DoublyLinkedList", "insertAtPosition(3, \"garden\")"],
+  ["DoublyLinkedList", "cake", "walk: 2 steps"],
+  ["DoublyLinkedList", "garden", "garden.prev = cake; garden.next = dog"],
+  ["DoublyLinkedList", "cake", "cake.next = garden"],
+  ["DoublyLinkedList", "dog", "dog.prev = garden"],
+  ["DoublyLinkedList", "Demo", "4 pointer changes", "reply"],
+]
+
+[poster]
+headline = [["DOUBLY LINKED LIST", "text"], ["IN JAVA", "accent"]]
+before = { code = "next only", note = "Previous walks from the start", tag = "ONE WAY" }
+after = { code = "prev and next", note = "Previous is one step", tag = "BOTH WAYS" }
+taglines = [["Pointers both ways.", "text"], ["O(1) at both ends.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Doubly Linked List"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the doubly linked list, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] A doubly linked list is a chain of nodes, where every node points to the node after it, and to the node before it. [[slnc 400]] The list keeps both ends, the head and the tail. [[slnc 400]] So you can walk either way, and work at either end in one step. [[slnc 700]] Our example is a photo viewer, with Previous and Next buttons. [[slnc 400]] By the end, you will know every textbook operation on a doubly linked list, what each one costs, and the pointer that is easiest to forget."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "A train: every carriage coupled to the one in front and the one behind"
+picture = { type = "linked", nodes = ["engine", "coach A", "coach B", "guard"], double = true }
+narration = """Think of a train. [[slnc 400]] Every carriage is coupled to the one in front, and the one behind. [[slnc 400]] A guard can walk forwards or backwards, one carriage at a time. [[slnc 500]] To take a carriage out of the middle, you uncouple it from both neighbours, and couple the neighbours to each other. [[slnc 400]] Nothing else moves. [[slnc 500]] That is a doubly linked list."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["node: data, prev and next", "prev: the node before; null at the head", "next: the node after; null at the tail", "head and tail: both ends, kept by the list"]
+narration = """The words a textbook uses. [[slnc 400]] A node holds its data, a previous pointer, and a next pointer. [[slnc 400]] The previous pointer points to the node before, and is null at the head. [[slnc 400]] The next pointer points to the node after, and is null at the tail. [[slnc 400]] And the list keeps both ends: the head and the tail."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["insert, delete at beginning or end: O(1)", "delete a node already reached: O(1)", "at a position: O(n) to reach, O(1) to link", "search, get, count, display, reverse: O(n)", "", "extra space: O(1) for every operation"]
+narration = """Here are the costs in time and space. [[slnc 400]] Insertion and deletion at the beginning or the end are order one. [[slnc 400]] Deleting a node you already hold is order one. [[slnc 400]] At a position, reaching it is order n, and linking is order one. [[slnc 400]] Search, get, count, display and reverse are order n. [[slnc 500]] And every operation uses order one extra space."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Compared With Related Structures"
+body = ["delete at end: doubly O(1), singly O(n)", "delete a held node: doubly O(1), singly O(n)", "walk backwards: doubly yes, singly no", "pointers per node: doubly 2, singly 1", "", "access position i: list O(n), array O(1)"]
+narration = """How does it compare? [[slnc 400]] Deleting at the end is order one in a doubly linked list, and order n in a singly linked list. [[slnc 400]] So is deleting a node you already hold. [[slnc 400]] A doubly linked list can walk backwards. [[slnc 400]] The price is two pointers per node instead of one. [[slnc 500]] And like every list, it cannot jump to a position the way an array can."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["forgetting one of the four insertion pointers", "not updating head or tail at the ends", "reversing without swapping head and tail", "walking on with next after the swap"]
+narration = """Four mistakes to watch for. [[slnc 400]] Forgetting one of the four pointers of an insertion. [[slnc 400]] Not updating the head or the tail when working at the ends. [[slnc 400]] Reversing every node, but not swapping the head and the tail. [[slnc 400]] And, in reverse, following next after the swap, which now points backwards."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the doubly linked list. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] A second pointer in every node lets you walk both ways, and work at both ends in one step. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Move a node to the front in order one, the way an LRU cache does. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

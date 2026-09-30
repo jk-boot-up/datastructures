@@ -1,0 +1,410 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "singly-linked-list-generic-recursive"
+category = "arrays-and-lists"
+title = "Singly Linked List (Generic, Recursive)"
+package = "singlylinkedlistgenericrecursive"
+main_class = "GenericRecursiveSinglyLinkedListDemo"
+example = "A treasure hunt of Clue records, every operation recursive"
+tagline = "Node<T>, then a smaller list"
+bold = "The generic recursive singly linked list holds any type T in Node<T>s, matches with equals, and writes every walk as a recursion on node.next, returning the new first node when it changes the list; the time is that of the loop version and the extra space is one frame per node visited."
+analogy_short = "A line of finders comparing cards of any kind"
+jdk = "Nothing: `java.util.LinkedList<E>` uses loops"
+thumb_lines = ["LINKED LIST", "GENERIC + RECURSIVE"]
+thumb_code = "search(node.next, key)"
+youtube_title = "Generic Recursive Linked List in Java - Node<T>, equals and Recursion"
+youtube_tags = ["generic linked list", "recursive linked list", "java generics", "recursion", "Node<T>", "call stack"]
+youtube_description = """Generic Recursive Singly Linked List in Java, explained with a treasure hunt of Clue records. We trace a recursive search for a separately made Clue("the red gate", 60): each call asks equals, and on no match searches the rest, until the match at depth 3. We count and print backwards a list of Integers with the same recursion, insert at the end by replacing the empty list at the end with a new node, delete by key by returning node.next from the matching call, delete at the end, and reverse a list of Strings recursively. We finish at the limit: counting a million nodes throws a real StackOverflowError."""
+
+[readme]
+intro = """This project combines the two variations of the **singly linked list**. Like `singly-linked-list-generic`, the class has a **type parameter** `T`: each `Node<T>` holds a **reference** to a `T` and a `next` pointer, and elements are matched with **`equals`**. Like `singly-linked-list-recursive`, every walk is a **recursion**: a list is empty or a node followed by a smaller list, so each operation handles one node and calls itself on `node.next`, stopping at a **base case**; operations that change the list **return the new first node**. The time of every operation is that of the loop version; the extra space is one call-stack **frame** per node visited."""
+analogy = """Picture the line of finders from the recursive list, one per clue, but now each holds a card that could be anything: a place, a number, a photograph. You hand the first finder a card and ask where the matching one is. They compare their card with yours; if it does not match, they pass the question to the next finder and wait. Each finder only needs to know how to compare two cards of that kind."""
+example = """The treasure hunt of `Clue(place, metres)` records, beside the same class holding distances and place names. The demo traces a recursive search, counts and prints backwards, inserts, deletes by key and at the end, reverses, and finally counts a million nodes recursively."""
+why = """Generic recursive code over nodes is the form of almost every tree algorithm later in the course: `insert(node.left, key)`, `search(node.right, key)`, with `compareTo` or `equals` on a type parameter. Seeing it first on a list, where there is only one recursive call per node, makes those algorithms easier to read."""
+when_use = [
+  "Learning the generic recursive style used for trees.",
+  "Short lists, or operations whose work is on the way back, such as display in reverse.",
+]
+when_not = [
+  "Long lists: one frame per node overflows the call stack. Use `singly-linked-list-generic`.",
+]
+met_before = [
+  "`singly-linked-list-generic` and `singly-linked-list-recursive`.",
+  "Generic recursive methods such as `<T> int count(Node<T> node)` in textbooks.",
+]
+
+[[word]]
+term = "Node<T>"
+meaning = "A node whose `data` is a `T` and whose `next` is the rest of the list."
+[[word]]
+term = "equals"
+meaning = "How nodes are matched: by contents. A record's `equals` compares its fields."
+[[word]]
+term = "base case"
+meaning = "The empty list, or the node being looked for."
+[[word]]
+term = "returning the new first node"
+meaning = "A changing operation returns the first node of the list it was given; the caller stores it in `node.next` or `head`."
+[[word]]
+term = "recursion depth"
+meaning = "The most frames on the call stack at once: one per node visited."
+
+[[operation]]
+name = "Display / display in reverse / count"
+does = "This node and the rest, recursively"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 6 for 6 nodes"
+[[operation]]
+name = "Insert / delete at beginning"
+does = "Change head; no recursion"
+time = "O(1) / O(1) / O(1)"
+recursive_space = "O(1)"
+space = "O(1)"
+counted = "2 and 1 pointer changes"
+[[operation]]
+name = "Insert at end / at position"
+does = "Recurse to the empty list (or position 0 of the rest), return the new node"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n), O(pos)"
+space = "O(1)"
+counted = "depth 6; depth 1 for position 1"
+[[operation]]
+name = "Delete at end"
+does = "The last node is replaced by null"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 6 on 7 nodes"
+[[operation]]
+name = "Delete by key"
+does = "The matching call returns node.next (equals)"
+time = "O(1) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "4 equals calls, depth 4"
+[[operation]]
+name = "Search / get"
+does = "equals here, or search the rest"
+time = "O(1) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "3 equals calls, depth 3"
+[[operation]]
+name = "Reverse"
+does = "Reverse the rest, hang this node on its end"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 5 on 6 nodes"
+
+listing_intro = """The recursive methods over `Node<T>`. Compare them with `singly-linked-list-recursive`: the recursion is identical; `String` has become `T`, and matching uses `equals`."""
+[[listing]]
+op = "Search with equals"
+method = "GenericRecursiveSinglyLinkedList#search"
+note = """Two base cases: the empty list (-1) and a match found with `equals`. Otherwise search the rest with position + 1. A separately made `Clue` with the same fields matches."""
+[[listing]]
+op = "Deletion by key"
+method = "GenericRecursiveSinglyLinkedList#deleteByKey"
+note = """The call whose node matches returns `node.next` in its place; the caller stores it in its own `next`, and the node is skipped. No `prev` pointer is needed."""
+[[listing]]
+op = "Insertion at the end"
+method = "GenericRecursiveSinglyLinkedList#insertAtEnd"
+note = """The empty list at the end is replaced by `new Node<>(data, null)`. Each call stores the result in `node.next` and returns `node`."""
+
+[compare]
+intro = """The four singly-linked-list projects side by side (n nodes):"""
+columns = ["Property", "Generic, recursive (this)", "Generic, loops", "String, recursive", "String, loops"]
+rows = [
+  ["Element types", "any T", "any T", "String", "String"],
+  ["Insert / delete at the beginning", "O(1)", "O(1)", "O(1)", "O(1)"],
+  ["Walks (search, count, at end)", "O(n) time and stack", "O(n) time, O(1) space", "O(n) time and stack", "O(n) time, O(1) space"],
+  ["Matching", "equals", "equals", "equals", "equals"],
+  ["A million nodes", "StackOverflowError", "fine", "StackOverflowError", "fine"],
+]
+
+pros = [
+  "One class for every type, with recursive methods that follow the definition of a list.",
+  "The exact style of generic recursive tree code.",
+  "Some operations are simpler: display in reverse, delete by key without prev, reverse.",
+]
+cons = [
+  "O(n) stack for every walk; long lists overflow.",
+  "Each element costs a node and a separate object.",
+  "Matching depends on a correct `equals` for T.",
+]
+
+[[mistake]]
+mistake = "Not storing the returned node"
+happens = "`insertAtEnd(node.next, data);` without `node.next =` never links the new node."
+fix = "`node.next = insertAtEnd(node.next, data);` and `head = ...` at the top."
+[[mistake]]
+mistake = "Matching with `==`"
+happens = "An equal object made elsewhere is not found."
+fix = "Use `equals`."
+[[mistake]]
+mistake = "No base case for the empty list"
+happens = "`node.data` on `null` throws NullPointerException."
+fix = "Check `node == null` first."
+[[mistake]]
+mistake = "Recursing over long lists"
+happens = "A million nodes overflow the call stack."
+fix = "Use the loop version for long lists."
+
+[[exercise]]
+level = "easy"
+question = """Write a recursive `boolean contains(Node<T> node, T key)`. What are its two base cases?"""
+answer = """```java
+boolean contains(Node<T> node, T key) {
+    if (node == null) return false;                // base case: empty list
+    if (node.data.equals(key)) return true;        // base case: found
+    return contains(node.next, key);
+}
+```
+O(n) time and stack."""
+[[exercise]]
+level = "medium"
+question = """Write a recursive `int totalMetres(Node<Clue> node)` as a static method outside the generic class. Why can it not be an instance method of `GenericRecursiveSinglyLinkedList<T>`?"""
+answer = """```java
+static int totalMetres(Node<Clue> node) {
+    if (node == null) return 0;
+    return node.data().metres() + totalMetres(node.next());
+}
+```
+Inside the generic class, `T` could be any type, so `node.data.metres()` would not compile: only `Clue` has `metres()`. On the six clues it returns 230."""
+[[exercise]]
+level = "harder"
+question = """Write a recursive `Node<T> removeAll(Node<T> node, T key)` that deletes every node equal to `key`, returning the new first node. What does it cost?"""
+answer = """```java
+Node<T> removeAll(Node<T> node, T key) {
+    if (node == null) return null;
+    Node<T> rest = removeAll(node.next, key);
+    if (node.data.equals(key)) return rest;        // drop this node
+    node.next = rest;
+    return node;
+}
+```
+Called as `head = removeAll(head, key)`. Every node is visited once: O(n) time and O(n) stack."""
+
+[hero]
+caption = "search(new Clue(\"the red gate\", 60)): each call asks equals, then passes the rest on"
+picture = { type = "stack", cells = ["search(oak tree): no", "search(old well): no", "search(red gate): equals"], width = 300, marks = { "2" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "Recursion over Node<T>, with equals"
+summary = "A recursive search for a separately made Clue(\"the red gate\", 60): not equal at the oak tree and the old well, equal at the red gate: position 2, 3 equals calls, depth 3."
+detail = """The recursive search asks one question per call: does this node's data equal the key? The key is a new `Clue("the red gate", 60)`, a different object from the one in the list. At the oak tree and the old well the answer is no, so each call searches the rest and waits. At the red gate, `equals` compares place and metres and says yes: a base case, returning position 2. Three calls were waiting at the deepest point."""
+speech = """First, a recursive search on any type. [[slnc 400]] The key is a new clue: the red gate, sixty metres. [[slnc 400]] The oak tree: not equal, search the rest. [[slnc 300]] The old well: not equal, search the rest. [[slnc 300]] The red gate: equal. [[slnc 400]] Equals compared the place and the distance. [[slnc 300]] Three calls deep."""
+console = [["search(the oak tree (40 m)): not equal -> search(rest)", "muted"], ["  search(the old well (25 m)): not equal -> search(rest)", "muted"], ["    search(the red gate (60 m)): equals -> position 2   <- base case: found", "ok"], ["search(new Clue(\"the red gate\", 60)) = position 2: 3 equals calls, depth 3", "amber"]]
+[[act.frame]]
+caption = "Three search calls; the third finds an equal Clue"
+say = """Here is the call stack. [[slnc 300]] Two calls that did not match, waiting. [[slnc 300]] And the third, which found the red gate."""
+picture = { type = "stack", cells = ["search(oak tree): no", "search(old well): no", "search(red gate): equals"], width = 300, marks = { "2" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "The same recursion, any type"
+summary = "count() on six Integers and six Strings goes 6 deep each; displayReverse prints the distances from the last to the first."
+detail = """The same recursive methods work for every `T`. Counting six distances and counting six place names both go six calls deep. `displayReverse` on the distances prints 20 first and 40 last, because each call prints its node after the call on the rest returns."""
+speech = """The same recursion, for any type. [[slnc 400]] Counting six distances goes six calls deep. [[slnc 300]] So does counting six place names. [[slnc 500]] And display reverse prints the distances from last to first, because each call prints after the rest."""
+console = [["<Integer> count() = 6, depth 6", "ok"], ["<Integer> displayReverse(): 20 <- 50 <- 35 <- 60 <- 25 <- 40 <- (head)", "ok"], ["<String>  count() = 6, depth 6", "ok"]]
+[[act.frame]]
+caption = "The distances, displayed in reverse: the deepest call prints first"
+say = """Here are the distances. [[slnc 300]] The last node's call prints first, twenty, and the head's call prints last, forty."""
+picture = { type = "linked", nodes = [40, 25, 60, 35, 50, 20], marks = { "5" = "ok" }, pointers = [[0, "printed last"], [5, "printed first"]] }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Insertion, recursively"
+summary = "insertAtEnd goes 6 deep and replaces the empty list at the end with the new node; insertAtPosition(1) goes 1 deep and changes 2 pointers."
+detail = """`insertAtEnd(the island)` recurses along six nodes; the base case, the empty list after the chest, returns `new Node<>(clue, null)`, and the chest's call stores it in its `next`. `insertAtPosition(1, the mill)` recurses once, then at position 0 of the rest returns a new node that points to the old well: 2 pointer changes."""
+speech = """Insertion, recursively. [[slnc 400]] Insert at end goes six calls deep, to the empty list after the chest. [[slnc 400]] That empty list is replaced by the new node, the island. [[slnc 500]] Insert at position one goes one call deep, and changes two pointers."""
+console = [["insertAtEnd(the island (70 m)): depth 6; the empty list at the end is replaced by the new node", "ok"], ["insertAtPosition(1, the mill (30 m)): depth 1, 2 pointers changed", "ok"]]
+[[act.frame]]
+caption = "The island replaces the empty list after the chest"
+say = """Here is the end of the list. [[slnc 300]] The chest's next was null. [[slnc 300]] The base case returned the island, and the chest stored it."""
+picture = { type = "linked", nodes = ["fountain", "chest", "island"], marks = { "2" = "new" } }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Deletion and reversal, recursively"
+summary = "deleteByKey finds the red gate with 4 equals calls at depth 4 and returns node.next in its place; deleteAtEnd is 6 deep; reversing six Strings is 5 deep."
+detail = """`deleteByKey(new Clue("the red gate", 60))` compares four nodes with `equals`; the matching call returns `node.next`, the bridge, and the old well stores it: the red gate is skipped. `deleteAtEnd` recurses to the island, whose call returns `null`. Reversing the six place names goes five calls deep and returns the chest as the new head."""
+speech = """Deletion and reversal. [[slnc 400]] Delete by key compares with equals, four calls deep. [[slnc 300]] The matching call returns the node after it, and the red gate is skipped. [[slnc 500]] Delete at end goes six deep. [[slnc 300]] And reverse, on the place names, goes five deep."""
+console = [["deleteByKey(new Clue(\"the red gate\", 60)) = true: 4 equals calls, depth 4; the matching call returns node.next", "ok"], ["deleteAtEnd() = the island (70 m): depth 6", "amber"], ["<String> reverse(): depth 5; head -> the chest -> ... -> the oak tree -> null", "ok"]]
+[[act.frame]]
+caption = "deleteByKey: the red gate's call returns the bridge; the old well stores it"
+say = """Here is the deletion. [[slnc 300]] The old well now points to the bridge, and the red gate is gone."""
+picture = { type = "linked", nodes = ["old well", "red gate", "bridge"], marks = { "1" = "bad" }, pointers = [[1, "returns next"]] }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The limit of recursion"
+summary = "Counting a million nodes recursively throws StackOverflowError."
+detail = """A million-node list built with `insertAtBeginning` needs no recursion. Counting it recursively needs a frame per node, and Java throws `StackOverflowError`. Generics change what each node refers to; recursion changes how much stack each walk needs."""
+speech = """And the limit. [[slnc 400]] A million nodes. [[slnc 300]] Counting them recursively needs a million frames. [[slnc 300]] The stack overflows. [[slnc 500]] Generics change what a node refers to. [[slnc 300]] Recursion changes how much stack a walk needs."""
+console = [["count() of 1,000,000 nodes: StackOverflowError, one frame per node", "bad"], ["generics change what each node refers to; recursion changes how much stack each walk needs", "muted"]]
+[[act.frame]]
+caption = "One frame per node: a million-node count overflows"
+say = """One count call per node. [[slnc 300]] Far too many."""
+picture = { type = "stack", cells = ["count(node 0)", "count(node 1)", "...", "StackOverflowError"], width = 240, marks = { "3" = "bad" }, top_label = "overflow" }
+
+[animation]
+subtitle = "A treasure hunt of Clue records in a generic recursive linked list: recursive search with equals, any-type count and reverse display, recursive insertion and deletion, and a stack overflow."
+
+[docs.problem]
+scenario = """The treasure hunt's clues, distances and places, in one generic linked-list class whose operations are recursive."""
+naive = """Separate recursive classes per type; or recursion that matches with `==`, forgets to store returned nodes, or runs over long lists."""
+deliver = [
+  "A `GenericRecursiveSinglyLinkedList<T>` of `Node<T>`s with recursive display, displayReverse, count, insertAtEnd, insertAtPosition, deleteAtEnd, deleteByKey, search, get and reverse.",
+  "Matching with equals; recursion depth counted; a real StackOverflowError.",
+  "Time and stack space of every operation, compared with the other three singly lists.",
+]
+
+[docs.prerequisites]
+required = ["singly-linked-list-generic and singly-linked-list-recursive"]
+not_required = ["Functional programming"]
+
+[docs.session]
+objectives = [
+  "Write recursive methods over `Node<T>` that match with equals.",
+  "Use the return-the-new-first-node pattern.",
+  "State the time and stack space of each operation.",
+]
+walkthrough = """Trace the recursive search for a new Clue on the board. Run the demo; in act two, stress that the recursion does not depend on T. In act four, trace deleteByKey returning node.next. Finish with the four-column table."""
+
+[docs.explained]
+sentence = """The generic recursive singly linked list matches Node<T> data with equals and walks by calling itself on node.next, so it holds any type, keeps the loop version's time, and uses a frame per node visited."""
+verdict = """The bridge to generic recursive trees; for long lists in real code, use loops."""
+recognise = [
+  "`private int search(Node<T> node, T key, int pos)` calling `search(node.next, key, pos + 1)`.",
+  "`node.data.equals(key)` inside a recursive method.",
+]
+
+[spec]
+purpose = """Combine generics and recursion on the singly linked list."""
+requirements = [
+  "Written by hand: `Node<T>`; the list holds only `head`; no Java collections.",
+  "Recursive walks, matching with equals; insertAtBeginning and deleteAtBeginning O(1).",
+  "Recursion depth counted; a real StackOverflowError.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["Loop versions (singly-linked-list, singly-linked-list-generic)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Singly Linked List (Generic, Recursive): the pieces"
+caption = "Public operations pass head to private recursive methods over Node<T>."
+nodes = [
+  { id = "demo", label = "Demo", sub = "GenericRecursiveSinglyLinkedListDemo", col = 0, row = 0, colour = "client" },
+  { id = "list", label = "GenericRecursiveSinglyLinkedList<T>", sub = "head", col = 1, row = 0, colour = "accent" },
+  { id = "rec", label = "search(node, key, pos)", sub = "calls search(node.next, ...)", col = 2, row = 0, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = "compares, maxDepth", col = 1, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "list", label = "search(clue)" }, { from = "list", to = "rec", label = "head" }, { from = "rec", to = "steps", label = "depth" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Singly Linked List (Generic, Recursive): the classes"
+caption = "Public operations, and the recursive versions that take a Node<T>."
+nodes = [
+  { id = "list", label = "GenericRecursiveSinglyLinkedList<T>", sub = ["- Node<T> head", "+ display / displayReverse / count", "+ insertAtBeginning / AtEnd / AtPosition", "+ deleteAtBeginning / AtEnd / ByKey", "+ search / get / reverse", "- the same, taking Node<T>"], col = 0, row = 0, colour = "accent" },
+  { id = "node", label = "Node<T>", sub = ["data: T", "next: Node<T>"], col = 1, row = 0, colour = "green" },
+  { id = "clue", label = "Clue", sub = ["record: place, metres"], col = 1, row = 1, colour = "client" },
+]
+edges = [ { from = "list", to = "node", label = "head" }, { from = "node", to = "clue", label = "T = Clue" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Singly Linked List (Generic, Recursive): search(node, key)"
+caption = "Two base cases, then a call on the rest."
+nodes = [
+  { id = "in", label = "search(node, key, pos)", sub = "", col = 0, row = 0, colour = "client" },
+  { id = "null", label = "node == null?", sub = "yes: -1", col = 1, row = 0, colour = "red" },
+  { id = "eq", label = "node.data.equals(key)?", sub = "yes: pos", col = 2, row = 0, colour = "green" },
+  { id = "rec", label = "search(node.next, key, pos + 1)", sub = "this frame waits", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "in", to = "null", label = "" }, { from = "null", to = "eq", label = "no" }, { from = "eq", to = "rec", label = "no" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Singly Linked List (Generic, Recursive): search for the red gate"
+caption = "Three calls; the third matches with equals."
+participants = ["Demo", "search(oak tree)", "search(old well)", "search(red gate)"]
+steps = [
+  ["Demo", "search(oak tree)", "search(new Clue(red gate, 60))"],
+  ["search(oak tree)", "search(old well)", "not equal"],
+  ["search(old well)", "search(red gate)", "not equal"],
+  ["search(red gate)", "search(old well)", "equals: 2", "reply"],
+  ["search(old well)", "search(oak tree)", "2", "reply"],
+  ["search(oak tree)", "Demo", "position 2, depth 3", "reply"],
+]
+
+[poster]
+headline = [["LINKED LIST", "text"], ["GENERIC + RECURSIVE", "accent"]]
+before = { code = "current == key", note = "misses equal objects", tag = "WRONG" }
+after = { code = "search(node.next, key)", note = "equals, then the rest", tag = "RIGHT" }
+taglines = [["Node<T>, then a smaller list.", "text"], ["equals, and a base case.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Singly Linked List (Generic, Recursive)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the generic, recursive singly linked list, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] It is a chain of nodes holding any type of data, where every operation calls itself on the rest of the list. [[slnc 400]] Elements are matched with equals, and every call waiting uses a frame on the call stack. [[slnc 700]] Our example is a treasure hunt of clues. [[slnc 400]] By the end, you will know how generics and recursion combine on a list, the same way they will on trees."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Each finder compares their card, or passes the question on and waits"
+picture = { type = "linked", nodes = ["finder 1", "finder 2", "finder 3", "nobody"], marks = { "3" = "ok" }, pointers = [[0, "you ask"], [3, "not found"]] }
+narration = """Think of a line of finders, each holding a card. [[slnc 400]] The cards could be places, numbers, or photographs. [[slnc 400]] You ask the first finder whether their card matches yours. [[slnc 300]] If not, they ask the next finder, and wait. [[slnc 500]] Each finder only needs to know how to compare two cards. [[slnc 400]] That is a generic, recursive list."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["Node<T>: data of type T, and the rest", "equals: compare contents", "base case: the empty list, or the match", "return the new first node when changing", "", "depth: one frame per node visited"]
+narration = """The words. [[slnc 400]] A node of T holds data of type T, and the rest of the list. [[slnc 400]] Equals compares contents. [[slnc 400]] The base case is the empty list, or the match. [[slnc 400]] A changing method returns the new first node. [[slnc 400]] And the depth is one frame per node visited."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["insert, delete at beginning: O(1)", "search, count, display: O(n) time and stack", "insert, delete at end, reverse: O(n) time and stack", "", "the loop version: the same time, O(1) space"]
+narration = """Here are the costs. [[slnc 400]] Insertion and deletion at the beginning are order one. [[slnc 400]] Search, count and display take order n time and stack. [[slnc 400]] So do insertion and deletion at the end, and reverse. [[slnc 500]] The loop version takes the same time, with order one space."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "The Four Singly Linked Lists"
+body = ["String, loops", "String, recursive", "generic, loops", "generic, recursive: any type, O(n) stack", "", "a million nodes: only the loops finish"]
+narration = """The four singly linked lists. [[slnc 400]] Strings with loops. [[slnc 300]] Strings with recursion. [[slnc 300]] Any type with loops. [[slnc 300]] And any type with recursion, this one. [[slnc 500]] On a million nodes, only the loop versions finish."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["not storing the returned node", "matching with ==", "no base case for the empty list", "recursing over long lists"]
+narration = """Four mistakes. [[slnc 400]] Not storing the returned node. [[slnc 400]] Matching with double equals. [[slnc 400]] Forgetting the empty list. [[slnc 400]] And recursing over long lists."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the generic, recursive singly linked list. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] Match with equals, handle one node, and let the call on the rest do the remainder. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Write a recursive remove all, that deletes every matching node. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

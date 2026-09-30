@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercises — Circular Linked List</title>
+<style>
+:root{color-scheme:light dark;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+@media (prefers-color-scheme:dark){:root{--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;
+--line:#334155;--accent:#a78bfa;--code:#020617;--link:#93c5fd}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+<h1 id="exercises-circular-linked-list">Exercises — Circular Linked List</h1>
+<p>Try each one before opening its answer. They start easy and get harder.</p>
+<h2 id="1-easy">1. Easy</h2>
+<p>Write <code>String playerAfter(String name, int k)</code> that returns the player k turns after <code>name</code>, going round as often as needed. What is its time complexity?</p>
+<h2 id="2-medium">2. Medium</h2>
+<p>Write <code>void split(CircularLinkedList a, CircularLinkedList b)</code> that splits a circular list with an even number of nodes into two circular halves. How many pointers change?</p>
+<h2 id="3-harder">3. Harder</h2>
+<p>In the counting-out game with n players and k = 2, where should you sit to win? Work out n = 5 and n = 8 with the list, then find the pattern.</p>
+<hr>
+<h2 id="answers">Answers</h2>
+<details>
+<summary>Answer 1</summary>
+<pre><code>String playerAfter(String name, int k) {
+    Node current = last.next;
+    while (!current.data.equals(name)) current = current.next;   // assumes the name is present
+    for (int i = 0; i &lt; k; i++) current = current.next;
+    return current.data;
+}</code></pre>
+<p>O(n + k): finding the player, then k steps; no special case at the end of the circle.</p>
+</details>
+<details>
+<summary>Answer 2</summary>
+<p>Walk <code>slow</code> one step and <code>fast</code> two steps from <code>last.next</code> until <code>fast</code> reaches <code>last</code> (or the node before it): <code>slow</code> is then the end of the first half. Then:</p>
+<pre><code>Node firstA = last.next, firstB = slow.next;
+slow.next = firstA;          // close the first half into a circle
+last.next = firstB;          // close the second half into a circle
+a.last = slow;
+b.last = last;</code></pre>
+<p>Two next pointers change, plus the two lists' <code>last</code>. O(n) for the walk.</p>
+</details>
+<details>
+<summary>Answer 3</summary>
+<p>With k = 2 every second player leaves. For n = 5 the winner is the 3rd seat; for n = 8 it is the 1st. Writing n = 2^m + L (with 2^m the largest power of two not above n), the winner is seat 2L + 1: 5 = 4 + 1 gives 3; 8 = 8 + 0 gives 1. The list simulation costs O(n k); the formula answers in O(1), which is why this is also a classic mathematics puzzle.</p>
+</details>
+</main>
+<footer>Generated from <code>exercises.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

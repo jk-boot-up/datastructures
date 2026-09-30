@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercises — Static Array (Generic, Recursive)</title>
+<style>
+:root{color-scheme:light dark;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+@media (prefers-color-scheme:dark){:root{--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;
+--line:#334155;--accent:#a78bfa;--code:#020617;--link:#93c5fd}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+<h1 id="exercises-static-array-generic-recursive">Exercises — Static Array (Generic, Recursive)</h1>
+<p>Try each one before opening its answer. They start easy and get harder.</p>
+<h2 id="1-easy">1. Easy</h2>
+<p>Write a recursive <code>int count(T key, int i)</code> returning how many elements from index i on are equal to <code>key</code>. Name its base case and its extra space.</p>
+<h2 id="2-medium">2. Medium</h2>
+<p>Write a recursive <code>boolean isSorted(int i)</code> using <code>compareTo</code>. How deep does it go on the day names in week order, [Mon, Tue, Wed, Thu, Fri, Sat, Sun]?</p>
+<h2 id="3-harder">3. Harder</h2>
+<p>Write a generic recursive <code>int findMin(int i)</code> that returns the index of the smallest element. Then change <code>Reading.compareTo</code> to order by day name and say what <code>findMin</code> returns on the readings, without changing the array class.</p>
+<hr>
+<h2 id="answers">Answers</h2>
+<details>
+<summary>Answer 1</summary>
+<pre><code>int count(T key, int i) {
+    if (i == n) return 0;                                    // base case: none left
+    return (arr[i].equals(key) ? 1 : 0) + count(key, i + 1);
+}</code></pre>
+<p>Called as <code>count(key, 0)</code>. The base case is <code>i == n</code>. O(n) time and O(n) stack, one frame per element.</p>
+</details>
+<details>
+<summary>Answer 2</summary>
+<pre><code>boolean isSorted(int i) {
+    if (i &gt;= n - 1) return true;                             // zero or one element left
+    if (arr[i].compareTo(arr[i + 1]) &gt; 0) return false;      // a pair out of order
+    return isSorted(i + 1);
+}</code></pre>
+<p>The first call checks "Mon" before "Tue": in order, so it calls again. The second checks "Tue" before "Wed": in order, so it calls again. The third finds "Wed" after "Thu" alphabetically and returns false. Depth 3.</p>
+</details>
+<details>
+<summary>Answer 3</summary>
+<pre><code>int findMin(int i) {
+    if (i == n - 1) return i;                                 // base case: last element
+    int restMin = findMin(i + 1);
+    return arr[i].compareTo(arr[restMin]) &lt;= 0 ? i : restMin;
+}</code></pre>
+<p>With readings ordered by day name, the smallest is "Fri" (24 C), the first alphabetically. The array class is unchanged: the element decides the order through its own <code>compareTo</code>.</p>
+</details>
+</main>
+<footer>Generated from <code>exercises.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

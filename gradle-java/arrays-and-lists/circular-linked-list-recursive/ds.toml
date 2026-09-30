@@ -1,0 +1,406 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "circular-linked-list-recursive"
+category = "arrays-and-lists"
+title = "Circular Linked List (Recursive)"
+package = "circularlinkedlistrecursive"
+main_class = "RecursiveCircularLinkedListDemo"
+example = "Players round a board game, every lap walked recursively"
+tagline = "A recursion that stops at last, not null"
+bold = "A recursion over a circular linked list cannot stop at null, because there is none: its base case is reaching last, the end of one lap; work at both ends needs no recursion, finding a node is recursive, and the counting-out winner has a recursive formula of its own."
+analogy_short = "Asking round the table until the question comes back to the dealer"
+jdk = "Nothing: no circular list in `java.util`"
+thumb_lines = ["CIRCULAR LIST", "RECURSIVE"]
+thumb_code = "node == last ? 1 : ..."
+youtube_title = "Circular Linked List in Java, Recursively - Base Case, Laps and Josephus"
+youtube_tags = ["circular linked list", "recursion", "josephus problem", "base case", "call stack", "stack overflow"]
+youtube_description = """Circular Linked List in Java, written recursively, explained with players taking turns round a board game. We trace count(Ann) = 1 + count(Ben) round the table and see why the base case must be reaching last, the end of one lap: a recursion waiting for null would never stop. We display one lap recursively, insert at both ends with no recursion, and find nodes recursively before linking them in O(1): search, insertAtPosition, deleteByKey and deleteAtEnd, each with its depth. Then we solve the counting-out game without the list, by the recursive Josephus formula J(n) = (J(n - 1) + k) mod n, and finish at the limit: counting a million players recursively throws a real StackOverflowError."""
+
+[readme]
+intro = """A **circular linked list** points its last node back to its first and keeps a single pointer, **last**; the first node is `last.next`. This project writes its walks **recursively**. The important difference from other lists is the **base case**: there is no `null` in a circle, so a recursion stops when it reaches **last**, the end of one **lap**. Work at the beginning and the end needs no recursion. Finding a node (to search, to insert at a position, to delete by key, or to find the node before last) is recursive, and linking it is O(1). The counting-out game gets a second, recursive solution: the **Josephus formula**, which finds the winner without building the circle at all. Every recursive lap uses one call-stack frame per node."""
+analogy = """Picture the players round the table, and the dealer wants to know how many are playing. The dealer asks the player on the left, "how many from you round to me?", and waits. Each player asks the next and waits. The player just before the dealer, the last one, answers "one: just me", and does not ask further: that is the base case. If the players waited for someone with nobody to their left, the question would go round for ever."""
+example = """The board game from `circular-linked-list`: Ann, Ben, Cat and Dan round the table, then Eve, Fay and Gus. The demo traces a recursive count, displays one lap, works at both ends, searches, inserts, deletes by key and at the end recursively, solves counting-out by formula, and counts a million players."""
+why = """Every recursion needs a base case the recursion is sure to reach. On a straight list that is `null`; on a circular list it cannot be, and choosing the wrong one means infinite recursion and a stack overflow. Writing the circular list recursively forces that choice into the open. The Josephus formula also shows that some problems stated on a circle have a recursive solution that needs no list at all."""
+when_use = [
+  "Learning how to choose a base case when there is no null.",
+  "Short circles, such as the players at one table.",
+  "The counting-out winner for any n, by the O(n) recursive formula.",
+]
+when_not = [
+  "Long circles: one frame per node overflows the call stack. Use the do-while loops of `circular-linked-list`.",
+]
+met_before = [
+  "`circular-linked-list`: the same structure with do-while loops.",
+  "The Josephus problem, from recreational mathematics.",
+]
+
+[[word]]
+term = "last"
+meaning = "The only pointer the list keeps; the first node is `last.next`."
+[[word]]
+term = "lap"
+meaning = "One trip round the circle, from `last.next` to `last`."
+[[word]]
+term = "base case"
+meaning = "Here: reaching `last`, the end of the lap, or the node being looked for. Never `null`, which does not exist."
+[[word]]
+term = "Josephus formula"
+meaning = "J(1) = 0, J(n) = (J(n - 1) + k) mod n: the winner's position (from 0) when every k-th of n players leaves."
+[[word]]
+term = "recursion depth"
+meaning = "One frame per node visited in the lap."
+
+[[operation]]
+name = "Display / count"
+does = "This node, then the rest of the lap; stop at last"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 4 for 4 players"
+[[operation]]
+name = "Insert at beginning / end, delete at beginning"
+does = "Through last and last.next; no recursion"
+time = "O(1) / O(1) / O(1)"
+recursive_space = "O(1)"
+space = "O(1)"
+counted = "depth 0"
+[[operation]]
+name = "Insert at position"
+does = "Find the node before recursively, then 2 pointers"
+time = "O(1) at 0 / O(n) / O(n)"
+recursive_space = "O(pos)"
+space = "O(1)"
+counted = "depth 2"
+[[operation]]
+name = "Delete at end"
+does = "Find the node before last recursively; it becomes last"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 4"
+[[operation]]
+name = "Delete by key / search"
+does = "Recurse round one lap; stop at a match or at last"
+time = "O(1) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "5 comparisons, depth 5"
+[[operation]]
+name = "Counting-out winner (formula)"
+does = "J(n) = (J(n - 1) + k) mod n, J(1) = 0"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1) as a loop"
+counted = "depth 5 for 5 players, 41 for 41"
+
+listing_intro = """The recursive methods of the circular list. In each, the base case is reaching `last` (or the node wanted), never `null`."""
+[[listing]]
+op = "Count"
+method = "RecursiveCircularLinkedList#count"
+note = """`count(last)` is 1: the end of the lap. Every other node counts 1 plus the rest of the lap. Writing `if (node == null)` instead would never be true, and the recursion would go round until the call stack overflowed."""
+[[listing]]
+op = "Search"
+method = "RecursiveCircularLinkedList#search"
+note = """Two base cases: a match, and reaching `last` without one. The lap is searched once."""
+[[listing]]
+op = "Deletion at the end"
+method = "RecursiveCircularLinkedList#deleteAtEnd,nodeBeforeLast"
+note = """`nodeBeforeLast` recurses until the next node is `last`. That node points to the first node and becomes the new `last`: O(n), because a singly linked circle cannot step back."""
+[[listing]]
+op = "The Josephus formula"
+method = "RecursiveCircularLinkedList#winnerPosition"
+note = """With one player, the winner is at position 0. With n players, the first to leave is at position k - 1; the game then continues with n - 1 players starting just after, so the winner is J(n - 1) positions further on, wrapped round with mod n. No list is needed, and the recursion is n deep."""
+
+[compare]
+intro = """The recursive circular list against the loop version and the recursive singly list (n nodes):"""
+columns = ["Property", "Recursive circular list", "Circular list (loops)", "Recursive singly list"]
+rows = [
+  ["Base case of a walk", "reaching last", "do-while back at the start", "null"],
+  ["Insert at both ends", "O(1), no recursion", "O(1)", "O(1) at the beginning, O(n) at the end"],
+  ["Delete at the end", "O(n) time and stack", "O(n) time, O(1) space", "O(n) time and stack"],
+  ["Search, display, count", "O(n) time and stack", "O(n) time, O(1) space", "O(n) time and stack"],
+  ["A million nodes", "StackOverflowError", "fine", "StackOverflowError"],
+]
+
+pros = [
+  "Makes the choice of base case explicit: last, not null.",
+  "Work at both ends needs no recursion.",
+  "The Josephus formula solves counting-out without building the circle.",
+]
+cons = [
+  "O(n) stack for every recursive lap; long circles overflow.",
+  "A wrong base case (waiting for null) recurses for ever.",
+]
+
+[[mistake]]
+mistake = "Base case `node == null`"
+happens = "There is no null in a circle, so the recursion goes round until the call stack overflows."
+fix = "Stop at `node == last`, the end of the lap."
+[[mistake]]
+mistake = "Starting the lap at last"
+happens = "The recursion stops at once and counts one node."
+fix = "Start at `last.next`, the first node."
+[[mistake]]
+mistake = "Recursing to reach the end"
+happens = "O(n) for something `last` gives in O(1)."
+fix = "Use `last` and `last.next` for work at the ends."
+[[mistake]]
+mistake = "Recursing round long circles"
+happens = "StackOverflowError."
+fix = "Use do-while loops."
+
+[[exercise]]
+level = "easy"
+question = """Write a recursive `boolean contains(Node node, String key)` for one lap starting at `node`. What are its base cases?"""
+answer = """```java
+boolean contains(Node node, String key) {
+    if (node.data.equals(key)) return true;      // found
+    if (node == last) return false;              // the lap is over
+    return contains(node.next, key);
+}
+```
+Called as `contains(last.next, key)` on a non-empty list. O(n) time and stack."""
+[[exercise]]
+level = "medium"
+question = """Write a recursive `String displayFrom(Node start, Node node)` that displays one lap starting at any node, not just the first. What is the base case now?"""
+answer = """```java
+String displayFrom(Node start, Node node) {
+    if (node.next == start) return node.data;             // the next node is where we began
+    return node.data + " -> " + displayFrom(start, node.next);
+}
+```
+Called as `displayFrom(n, n)`. The base case is the node whose next is the starting node, because any node can be the start of a lap."""
+[[exercise]]
+level = "harder"
+question = """Rewrite `winnerPosition(n, k)` as a loop. Why can every tail-recursive or simple linear recursion like this be turned into a loop, and what does it save?"""
+answer = """```java
+int winnerPosition(int n, int k) {
+    int j = 0;                            // J(1)
+    for (int m = 2; m <= n; m++) {
+        j = (j + k) % m;                  // J(m) from J(m - 1)
+    }
+    return j;
+}
+```
+The recursion computes J(n) from J(n - 1), so the values can be built upwards from J(1) in a loop. It saves the n stack frames: O(1) extra space, and no StackOverflowError for a million players."""
+
+[hero]
+caption = "count(Ann) waits for count(Ben) ... count(Dan) is 1: Dan is last, the lap is over"
+picture = { type = "stack", cells = ["count(Ann)", "count(Ben)", "count(Cat)", "count(Dan) = 1"], width = 220, marks = { "3" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "The base case is last, not null"
+summary = "count(Ann) = 1 + count(Ben), and so on until count(Dan) = 1, because Dan is last: count() = 4 at depth 4."
+detail = """Counting recursively round the table: `count(Ann) = 1 + count(Ben)`, `count(Ben) = 1 + count(Cat)`, `count(Cat) = 1 + count(Dan)`. Dan is `last`, the end of the lap, so `count(Dan)` is simply 1: the base case. The answer is 4, with four calls waiting at the deepest point. A recursion written for a straight list, waiting for `null`, would go round the circle for ever and overflow the call stack."""
+speech = """First, the base case. [[slnc 400]] Count of Ann is one, plus count of Ben. [[slnc 300]] Count of Ben is one, plus count of Cat. [[slnc 300]] And so on, to Dan. [[slnc 400]] Dan is last, the end of the lap. [[slnc 300]] So count of Dan is just one. [[slnc 500]] In a circle there is no null. [[slnc 300]] A recursion waiting for null would go round for ever."""
+console = [["count(Ann) = 1 + count(Ben)", "muted"], ["  count(Ben) = 1 + count(Cat), count(Cat) = 1 + count(Dan)", "muted"], ["    count(Dan) = 1   <- base case: this is last, the lap is over", "ok"], ["count() = 4, depth 4; waiting for null would recurse for ever and overflow", "amber"]]
+[[act.frame]]
+caption = "Four count calls; the base case is Dan, the last node"
+say = """Here is the call stack. [[slnc 300]] Four calls, one per player. [[slnc 300]] On top, Dan: the last node."""
+picture = { type = "stack", cells = ["count(Ann)", "count(Ben)", "count(Cat)", "count(Dan) = 1"], width = 220, marks = { "3" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "One lap, recursively"
+summary = "display() goes one lap, 4 calls deep; inserting at both ends needs no recursion: depth 0, 5 pointer changes."
+detail = """`display` appends each player and recurses on the next until it has appended `last`: one lap, four calls deep. Inserting "Eve" at the beginning and "Fay" at the end uses `last` and `last.next` directly: depth 0, 5 pointer changes."""
+speech = """Display goes one lap, four calls deep, and stops at the last player. [[slnc 500]] Inserting at the beginning and at the end needs no recursion at all: the last pointer reaches both."""
+console = [["display(): Ann -> Ben -> Cat -> Dan -> (back to Ann), depth 4", "ok"], ["insertAtBeginning(\"Eve\") and insertAtEnd(\"Fay\"): depth 0, 5 pointer changes", "ok"]]
+[[act.frame]]
+caption = "Eve at the beginning, Fay at the end: both through last"
+say = """Here is the table now. [[slnc 300]] Eve is first, Fay is last."""
+picture = { type = "linked", nodes = ["Eve", "Ann", "Ben", "Cat", "Dan", "Fay"], circular = true, marks = { "0" = "new", "5" = "new" }, pointers = [[0, "last.next"], [5, "last"]] }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Find recursively, link in O(1)"
+summary = "search(\"Dan\"): 5 comparisons, depth 5; insertAtPosition(3): depth 2; deleteByKey(\"Cat\"): 5 comparisons, depth 5; deleteAtEnd: the node before last at depth 4."
+detail = """Operations inside the circle find their node recursively and then link it. `search("Dan")` compares five players, five calls deep. `insertAtPosition(3, "Gus")` finds Ben, the node before the position, two calls deep, and links Gus with two pointers. `deleteByKey("Cat")` looks for the node before Cat, starting from `last`: five comparisons. `deleteAtEnd` finds Dan, the node before Fay, four calls deep; Dan then points to Eve and becomes `last`."""
+speech = """Inside the circle, find first, then link. [[slnc 400]] Search for Dan: five comparisons, five calls deep. [[slnc 400]] Insert Gus at position three: the node before found two calls deep. [[slnc 400]] Delete Cat: five comparisons. [[slnc 400]] Delete at the end: the node before last found four calls deep."""
+console = [["search(\"Dan\") = position 4: 5 comparisons, depth 5", "amber"], ["insertAtPosition(3, \"Gus\"): the node before found at depth 2, 2 pointers changed", "ok"], ["deleteByKey(\"Cat\"): 5 comparisons, depth 5", "ok"], ["deleteAtEnd() removed Fay: the node before last found at depth 4", "amber"], ["Eve -> Ann -> Ben -> Gus -> Dan -> (back to Eve)", "muted"]]
+[[act.frame]]
+caption = "After the changes: Gus in, Cat and Fay out; Dan is last"
+say = """Here is the table now. [[slnc 300]] Dan is last, and points back to Eve."""
+picture = { type = "linked", nodes = ["Eve", "Ann", "Ben", "Gus", "Dan"], circular = true, marks = { "3" = "new" }, pointers = [[4, "last"]] }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Counting out, by a recursive formula"
+summary = "J(1) = 0, J(n) = (J(n - 1) + k) mod n gives position 3, Dan, for 5 players and k = 3, depth 5; for 41 players, position 30, depth 41."
+detail = """The counting-out game can be solved without the circle. With one player, the winner is at position 0. With n players, the first to leave is at position k - 1, and the game carries on with n - 1 players starting just after; so the winner is J(n - 1) places further on, wrapped round with mod n. For five players and k = 3 the formula gives position 3: Dan, the same winner the list simulation finds. For 41 players it gives position 30, the classic answer, 41 calls deep."""
+speech = """The counting-out game has a recursive formula. [[slnc 400]] With one player, the winner is at position zero. [[slnc 400]] With n players, the winner is the winner for n minus one, moved on k places, round the circle. [[slnc 500]] For five players, counting in threes, the formula says position three: Dan. [[slnc 400]] The same winner, without building the circle."""
+console = [["J(1) = 0, J(n) = (J(n - 1) + k) mod n: winner at position 3 of 5 with k = 3, depth 5", "ok"], ["position 3 is Dan: the same winner the list simulation finds, without the list", "ok"], ["41 players, k = 3: winner at position 30, depth 41", "muted"]]
+[[act.frame]]
+caption = "The formula's winner: position 3, Dan"
+say = """Here is the circle of five. [[slnc 300]] The formula picks position three: Dan."""
+picture = { type = "linked", nodes = ["Ann", "Ben", "Cat", "Dan", "Eve"], circular = true, marks = { "3" = "ok" }, pointers = [[3, "J(5) = 3"]] }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The limit of recursion"
+summary = "A million players joined with insertAtEnd (no recursion); a recursive count throws StackOverflowError."
+detail = """A million `insertAtEnd` calls use `last` and never recurse. A recursive count of the million needs one frame per player in the lap, and Java throws `StackOverflowError`. The do-while loops of `circular-linked-list` go round in O(1) extra space, and the Josephus formula can be rewritten as a loop the same way."""
+speech = """And the limit. [[slnc 400]] A million players join with no recursion. [[slnc 400]] Counting them recursively needs a million frames, and the stack overflows. [[slnc 400]] The loop version goes round with order one extra space."""
+console = [["1,000,000 players, joined with insertAtEnd: no recursion, O(1) each", "muted"], ["count(): StackOverflowError, one frame per player in the lap", "bad"], ["the do-while loops of the circular-linked-list project need O(1) extra space", "muted"]]
+[[act.frame]]
+caption = "One frame per player: a million-player lap overflows"
+say = """One call per player. [[slnc 300]] Far too many."""
+picture = { type = "stack", cells = ["count(player 0)", "count(player 1)", "...", "StackOverflowError"], width = 240, marks = { "3" = "bad" }, top_label = "overflow" }
+
+[animation]
+subtitle = "Players round a board game as a recursive circular list: a base case at last instead of null, one lap at a time, O(1) ends, find then link, and the Josephus formula."
+
+[docs.problem]
+scenario = """The board game's circle of players, with every walk written recursively, and the counting-out winner found by formula."""
+naive = """A recursion that waits for null on a circle, which never stops; or recursing to reach the ends, which last reaches in one step."""
+deliver = [
+  "A `RecursiveCircularLinkedList` keeping only `last`, with recursive display, count, search, nodeAt, nodeBeforeLast and beforeKey, each stopping at `last`.",
+  "insertAtBeginning, insertAtEnd and deleteAtBeginning in O(1) with no recursion.",
+  "The recursive Josephus formula, `winnerPosition(n, k)`.",
+  "Recursion depth counted; a real StackOverflowError.",
+]
+
+[docs.prerequisites]
+required = ["The circular-linked-list project", "The singly-linked-list-recursive project, or recursion basics"]
+not_required = ["The Josephus problem"]
+
+[docs.session]
+objectives = [
+  "Choose the base case of a recursion on a circle: last, not null.",
+  "Write recursive laps that find nodes, and O(1) linking.",
+  "Derive and use the Josephus formula.",
+]
+walkthrough = """Ask what the base case of count should be on a circle, and let the class discover that null never comes. Run the demo; in act one, trace count round the table. In act four, derive the Josephus formula from one round of the game. Finish with the StackOverflowError and the loop version of the formula."""
+
+[docs.explained]
+sentence = """A recursive circular linked list stops each recursion at last, the end of one lap, because a circle has no null; it works at both ends without recursion and finds the counting-out winner by the formula J(n) = (J(n - 1) + k) mod n."""
+verdict = """Use it to learn how to choose a base case; in real code, go round with do-while loops."""
+recognise = [
+  "`if (node == last) return ...;` in a recursive method on a circular list.",
+  "`(winner(n - 1, k) + k) % n`.",
+]
+
+[spec]
+purpose = """Teach recursion on a circular list: base cases without null, and the Josephus formula."""
+requirements = [
+  "Written by hand: `Node` with `data` and `next`; only `last`; no Java collections.",
+  "Recursive laps that stop at last; O(1) work at the ends; the recursive Josephus formula.",
+  "Recursion depth counted; underflow; a real StackOverflowError.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["The loop version (circular-linked-list)", "Generic element types (circular-linked-list-generic-recursive)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Circular Linked List (Recursive): the pieces"
+caption = "Recursive laps from last.next to last; O(1) work at the ends through last."
+nodes = [
+  { id = "demo", label = "Demo", sub = "RecursiveCircularLinkedListDemo", col = 0, row = 0, colour = "client" },
+  { id = "list", label = "RecursiveCircularLinkedList", sub = "last only", col = 1, row = 0, colour = "accent" },
+  { id = "rec", label = "count(node)", sub = "stops at last", col = 2, row = 0, colour = "green" },
+  { id = "jos", label = "winnerPosition(n, k)", sub = "Josephus formula", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "list", label = "count()" }, { from = "list", to = "rec", label = "count(last.next)" }, { from = "demo", to = "jos", label = "winner" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Circular Linked List (Recursive): the classes"
+caption = "Public operations; recursive helpers that stop at last."
+nodes = [
+  { id = "list", label = "RecursiveCircularLinkedList", sub = ["- Node last", "+ display / count / search", "+ insertAtBeginning / AtEnd", "+ insertAtPosition", "+ deleteAtBeginning / AtEnd", "+ deleteByKey", "+ winnerPosition(n, k)", "- nodeAt / nodeBeforeLast / beforeKey"], col = 0, row = 0, colour = "accent" },
+  { id = "node", label = "Node", sub = ["data", "next (never null)"], col = 1, row = 0, colour = "green" },
+]
+edges = [ { from = "list", to = "node", label = "last" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Circular Linked List (Recursive): count(node)"
+caption = "The base case is last."
+nodes = [
+  { id = "in", label = "count(node)", sub = "starts at last.next", col = 0, row = 0, colour = "client" },
+  { id = "base", label = "node == last?", sub = "yes: 1", col = 1, row = 0, colour = "green" },
+  { id = "rec", label = "1 + count(node.next)", sub = "this frame waits", col = 2, row = 0, colour = "amber" },
+]
+edges = [ { from = "in", to = "base", label = "" }, { from = "base", to = "rec", label = "no" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Circular Linked List (Recursive): count() round four players"
+caption = "Each call waits; Dan, the last node, answers 1."
+participants = ["Demo", "count(Ann)", "count(Ben)", "count(Cat)", "count(Dan)"]
+steps = [
+  ["Demo", "count(Ann)", "count()"],
+  ["count(Ann)", "count(Ben)", "1 + ..."],
+  ["count(Ben)", "count(Cat)", "1 + ..."],
+  ["count(Cat)", "count(Dan)", "1 + ..."],
+  ["count(Dan)", "count(Cat)", "1: last", "reply"],
+  ["count(Ann)", "Demo", "4", "reply"],
+]
+
+[poster]
+headline = [["CIRCULAR LIST", "text"], ["RECURSIVE", "accent"]]
+before = { code = "if (node == null)", note = "never true: overflow", tag = "WRONG" }
+after = { code = "if (node == last)", note = "one lap, then stop", tag = "RIGHT" }
+taglines = [["No null in a circle.", "text"], ["Stop at last.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Circular Linked List (Recursive)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the circular linked list, written recursively, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] A circular linked list has no null: the last node points back to the first. [[slnc 400]] So a recursion over it must stop somewhere else: at the last node, the end of one lap. [[slnc 700]] Our example is players taking turns round a board game. [[slnc 400]] By the end, you will know how to choose that base case, and a recursive formula for the counting-out game."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Each player asks the next, until the one before the dealer answers"
+picture = { type = "linked", nodes = ["dealer", "Ann", "Ben", "Cat"], circular = true, marks = { "3" = "ok" }, pointers = [[3, "answers 1"]] }
+narration = """Picture the players round the table. [[slnc 400]] The dealer asks the player on the left: how many from you round to me? [[slnc 400]] Each player asks the next, and waits. [[slnc 400]] The player just before the dealer answers: one, just me. [[slnc 300]] That is the base case. [[slnc 500]] If everyone waited for a player with nobody to their left, the question would go round for ever."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["lap: from last.next round to last", "base case: last, never null", "find recursively, link in O(1)", "Josephus: J(n) = (J(n - 1) + k) mod n"]
+narration = """The words. [[slnc 400]] A lap goes from the first node round to the last. [[slnc 400]] The base case is the last node, never null. [[slnc 400]] Nodes are found recursively and linked in one step. [[slnc 400]] And the Josephus formula finds the counting-out winner."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["both ends: O(1), no recursion", "display, count, search: O(n) time and stack", "delete at end: O(n) time and stack", "Josephus formula: O(n) time and stack", "", "the loop versions: the same time, O(1) space"]
+narration = """Here are the costs. [[slnc 400]] Both ends are order one, with no recursion. [[slnc 400]] Display, count and search take order n time and stack. [[slnc 400]] So does deleting at the end, and the Josephus formula. [[slnc 500]] The loop versions take the same time, with order one space."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Recursive or Loop?"
+body = ["recursion: stop at last", "loop: do-while back to the start", "the same time", "", "a million nodes: only the loop finishes"]
+narration = """Recursive or loop? [[slnc 400]] The recursion stops at the last node; the loop is a do while that comes back to the start. [[slnc 400]] The time is the same. [[slnc 400]] On a million nodes, only the loop finishes."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["base case node == null", "starting the lap at last", "recursing to reach an end", "recursing round long circles"]
+narration = """Four mistakes. [[slnc 400]] A base case waiting for null. [[slnc 400]] Starting the lap at the last node instead of the first. [[slnc 400]] Recursing to reach an end, which the last pointer gives for free. [[slnc 400]] And recursing round long circles."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the circular linked list, written recursively. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] In a circle there is no null, so every recursion stops at the last node. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Rewrite the Josephus formula as a loop. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

@@ -1,0 +1,423 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "dynamic-array-generic-recursive"
+category = "arrays-and-lists"
+title = "Dynamic Array (Generic, Recursive)"
+package = "dynamicarraygenericrecursive"
+main_class = "GenericRecursiveDynamicArrayDemo"
+example = "A playlist of Song records, with every loop written as a recursion"
+tagline = "Any type, growing one call at a time"
+bold = "The generic recursive dynamic array holds references to any type T, doubles when full and halves when a quarter full, finds elements with equals, and does every linear pass, including the copy inside a resize, as a recursion: the time is unchanged, the extra space is one frame per element, and a large resize overflows the stack."
+analogy_short = "A line of helpers copying a list of addresses, one line each"
+jdk = "Nothing: `java.util.ArrayList<E>` resizes with a loop"
+thumb_lines = ["DYNAMIC ARRAY", "GENERIC + RECURSIVE"]
+thumb_code = "copy(i + 1, newArr)"
+youtube_title = "Generic Recursive Dynamic Array in Java - References, equals and a Recursive Resize"
+youtube_tags = ["java generics", "dynamic array", "recursion", "arraylist", "call stack", "stack overflow"]
+youtube_description = """Generic Recursive Dynamic Array in Java, explained with a playlist of Song records. We trace a recursive resize that copies references, not songs: copy(0) copies the reference to Blue Sky and calls copy(1), down to the base case copy(4), four frames deep, and the Song at index 0 is still the same object afterwards. We grow to 9 songs with 2 resizes, traverse a list of Integers with the same class, insert at the front with 9 recursive shifts, delete with 4, and find a separately made Song with a recursive equals search at depth 7. We shrink to fit with 8 references copied at depth 8, and finish at the limit: a million appends throw a real StackOverflowError inside a resize."""
+
+[readme]
+intro = """This project combines the two variations of the **dynamic array**. Like `dynamic-array-generic`, it has a **type parameter** `T`, stores **references** on an `Object[]` cast to `T[]`, and finds elements with **`equals`**; `T` may be any type. Like `dynamic-array-recursive`, every linear pass is a **recursion** with a **base case**: traversal, linear search, the shifts of insertion and deletion, and the **copy inside a resize**. The time of every operation is the same as the plain dynamic array. The extra space is the **recursion depth**: one call-stack frame per element visited, shifted or copied, so a large enough resize overflows the call stack."""
+analogy = """Picture a warehouse list of addresses being copied onto a sheet twice as long by a line of helpers. The first helper copies line 0 and asks the next helper to copy the rest, then waits. Each helper copies one address and waits for the others. The furniture never moves; only addresses are copied. When a helper finds no lines left, everyone can go home. A list of a million lines would need a million helpers waiting in the corridor at once."""
+example = """The playlist of `Song` records, each a title and a length in seconds, grows from four places. The demo traces the recursive copy of references when the fifth song arrives, grows to nine songs, uses the same class for a list of play counts, inserts and deletes in the middle, searches for a separately made `Song` with a recursive `equals` search, shrinks to fit, and finally tries a million appends."""
+why = """Every recursive, generic structure later in the course, from linked lists to trees, combines these two ideas: a type parameter for the element, and a method that handles one element and calls itself for the rest. The dynamic array is the simplest place to see them together, and it carries a warning that applies everywhere: a linear recursion hidden inside a routine operation, such as the copy in a resize, becomes a crash as the data grows."""
+when_use = [
+  "Learning how generics and recursion combine, on a structure you already know.",
+  "Small lists, where the recursion depth stays low.",
+]
+when_not = [
+  "Any list that may grow large: a recursive resize overflows the call stack. Use `dynamic-array-generic`, or `ArrayList<E>`.",
+  "Performance-sensitive code: each call costs a frame, a jump and a return.",
+]
+met_before = [
+  "`dynamic-array-generic`: the same class with loops; Java's `ArrayList<E>`.",
+  "`dynamic-array-recursive`: the same recursions, for strings only.",
+  "`StackOverflowError` from a method that called itself too deeply.",
+]
+
+[[word]]
+term = "type parameter T"
+meaning = "The element type, filled in at each use: `GenericRecursiveDynamicArray<Song>`."
+[[word]]
+term = "reference"
+meaning = "What each place holds: the address of an object. A resize copies references, not objects."
+[[word]]
+term = "equals"
+meaning = "How elements are compared: by contents. A record's `equals` compares its fields."
+[[word]]
+term = "base case"
+meaning = "The call that returns without calling again: `i == size`, nothing left."
+[[word]]
+term = "recursion depth"
+meaning = "The most frames on the call stack at once: n for a resize of n references."
+
+[[operation]]
+name = "Traverse"
+does = "Visit arr[i], then traverse from i + 1"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 5 for 5 play counts"
+[[operation]]
+name = "Access `get(i)` / update"
+does = "One address calculation (not recursive)"
+time = "O(1) / O(1) / O(1)"
+recursive_space = "O(1)"
+space = "O(1)"
+counted = "1 step"
+[[operation]]
+name = "Insert at end `append(x)`"
+does = "Write arr[size]; recursive resize first when full"
+time = "O(1) / O(1) amortised / O(n) when it resizes"
+recursive_space = "O(1), or O(n) during a resize"
+space = "O(1), plus the new array"
+counted = "4 references at depth 4; 12 over 9 appends"
+[[operation]]
+name = "Insert `insertAt(pos, x)`"
+does = "shiftRight from the last element down to pos"
+time = "O(1) at the end / O(n) / O(n) at the front"
+recursive_space = "O(n - pos)"
+space = "O(1)"
+counted = "9 shifts at depth 9"
+[[operation]]
+name = "Delete `deleteAt(pos)`"
+does = "shiftLeft from pos, clear the freed place"
+time = "O(1) at the end / O(n) / O(n) at the front"
+recursive_space = "O(n - pos)"
+space = "O(1)"
+counted = "4 shifts at depth 4"
+[[operation]]
+name = "Delete at end `deleteAtEnd()`"
+does = "Clear arr[size-1]; recursive halving when a quarter full"
+time = "O(1) / O(1) amortised / O(n) when it shrinks"
+recursive_space = "O(1), or O(n) during a shrink"
+space = "O(1)"
+counted = "0 shifts"
+[[operation]]
+name = "Linear search"
+does = "arr[i].equals(key)? If not, search from i + 1"
+time = "O(1) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "7 equals calls at depth 7"
+[[operation]]
+name = "Shrink to fit"
+does = "Recursive copy into exactly size places"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1), plus the new array"
+counted = "8 references at depth 8"
+
+listing_intro = """The recursive methods, with generic types. Compare them with `dynamic-array-recursive`: the recursion is identical; the element type is `T`, the array is made from `Object[]`, and search uses `equals`."""
+[[listing]]
+op = "Resize with a recursive copy of references"
+method = "GenericRecursiveDynamicArray#resize,copy"
+note = """`newArray` makes the `T[]` from an `Object[]`. `copy(i, newArr)` copies one reference and calls itself for `i + 1`, until the base case `i == size`. The objects are not copied: after the resize, every element is still the same object."""
+[[listing]]
+op = "Linear search with equals"
+method = "GenericRecursiveDynamicArray#linearSearch"
+note = """Two base cases: no elements left, and a match found with `equals`. A separately made `Song` with the same title and length is found, because a record's `equals` compares fields."""
+[[listing]]
+op = "Deletion at a position"
+method = "GenericRecursiveDynamicArray#deleteAt,shiftLeft"
+note = """`shiftLeft` moves one reference and recurses on `i + 1`. Afterwards the freed place is set to `null`, so the deleted object can be garbage-collected."""
+
+[compare]
+intro = """The four dynamic-array projects side by side (n elements):"""
+columns = ["Property", "Generic, recursive (this)", "Generic, loops", "String, recursive", "String, loops"]
+rows = [
+  ["Element types", "any T", "any T", "String", "String"],
+  ["Append", "O(1) amortised; resize O(n) stack", "O(1) amortised", "O(1) amortised; resize O(n) stack", "O(1) amortised"],
+  ["Insert / delete at front", "O(n), O(n) stack", "O(n), O(1) extra", "O(n), O(n) stack", "O(n), O(1) extra"],
+  ["Linear search", "equals, O(n) stack", "equals, O(1) extra", "equals, O(n) stack", "equals, O(1) extra"],
+  ["A million appends", "StackOverflowError", "fine", "StackOverflowError", "fine"],
+]
+
+pros = [
+  "One class for every element type, with recursive methods that read like their definitions.",
+  "Shows, on a familiar structure, how generics and recursion combine in later structures.",
+  "Access, update and most appends are unaffected by the recursion.",
+]
+cons = [
+  "O(n) stack for every linear pass, including the hidden copy in a resize.",
+  "A large resize throws StackOverflowError.",
+  "References and separate objects cost more memory than a primitive array.",
+]
+
+[[mistake]]
+mistake = "Writing `new T[capacity]`"
+happens = "It does not compile: T is not known when the program runs."
+fix = "`(T[]) new Object[capacity]`, kept inside the class."
+[[mistake]]
+mistake = "Searching with `==`"
+happens = "An equal object made elsewhere is not found."
+fix = "Compare with `equals`."
+[[mistake]]
+mistake = "A recursive copy inside resize"
+happens = "An ordinary append overflows the call stack once the array is large."
+fix = "Keep hidden linear work as a loop; recurse only where the depth is small."
+[[mistake]]
+mistake = "Not clearing freed places"
+happens = "Deleted objects stay referenced and are never freed."
+fix = "Set every place that falls out of use to `null`."
+
+[[exercise]]
+level = "easy"
+question = """Write a recursive `boolean contains(T key, int i)`. What are its two base cases?"""
+answer = """```java
+boolean contains(T key, int i) {
+    if (i == size) return false;                 // base case: nothing left
+    if (arr[i].equals(key)) return true;         // base case: found
+    return contains(key, i + 1);
+}
+```
+Called as `contains(key, 0)`. O(n) time and O(n) stack."""
+[[exercise]]
+level = "medium"
+question = """Write a recursive `int count(T key, int i)` that counts the elements equal to `key`. How deep does it go on the 9-song playlist, whatever the key?"""
+answer = """```java
+int count(T key, int i) {
+    if (i == size) return 0;
+    return (arr[i].equals(key) ? 1 : 0) + count(key, i + 1);
+}
+```
+It always visits every element, so it goes 9 calls deep on 9 songs, found or not: O(n) time and stack."""
+[[exercise]]
+level = "harder"
+question = """Rewrite the recursive `copy` so that its depth is O(log n): copy the middle reference, then the left half and the right half by recursive calls. Why is the time still O(n)?"""
+answer = """```java
+void copyRange(int low, int high, T[] newArr) {
+    if (low > high) return;
+    int mid = low + (high - low) / 2;
+    newArr[mid] = arr[mid];
+    copyRange(low, mid - 1, newArr);
+    copyRange(mid + 1, high, newArr);
+}
+```
+Each call halves the range and only one chain of calls waits at a time, so the depth is about log2(n): 20 for a million. Every reference is still copied once, so the time is O(n)."""
+
+[hero]
+caption = "A recursive resize copies references: copy(0) ... copy(3), then the base case copy(4)"
+picture = { type = "stack", cells = ["copy(0): ref to Blue Sky", "copy(1): ref to Rain Dance", "copy(2): ref to Night Drive", "copy(3): ref to Sunrise", "copy(4): base case"], width = 320, marks = { "4" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "A recursive copy of references"
+summary = "The fifth Song resizes the array: copy(0) to copy(3) each copy one reference, copy(4) is the base case; 4 references at depth 4, and index 0 is still the same Song."
+detail = """With four songs the playlist is full. Appending "Paper Moon" resizes it to eight places, and the copy is recursive: `copy(0)` copies the reference to Blue Sky and calls `copy(1)`, and so on, until `copy(4)` finds nothing left. Four frames at the deepest point. Because references are copied, the Song objects are untouched: index 0 of the new array holds the very same Blue Sky object."""
+speech = """First, a recursive copy of references. [[slnc 400]] The playlist is full with four songs. [[slnc 300]] To append a fifth, it resizes. [[slnc 500]] Copy zero copies the reference to Blue Sky, and calls copy one. [[slnc 400]] And so on, until copy four finds nothing left, the base case. [[slnc 500]] Four frames deep. [[slnc 300]] The songs themselves never move."""
+console = [["GenericRecursiveDynamicArray<Song>: capacity 4, size 4, full", "muted"], ["copy(0): newArr[0] = reference to Blue Sky, then copy(1)", "muted"], ["  ... Rain Dance, Night Drive, Sunrise", "muted"], ["    copy(4): no references left   <- base case", "ok"], ["append(Paper Moon (2:56)): 4 references copied at depth 4; index 0 is still the same Song: true", "amber"]]
+[[act.frame]]
+caption = "Four copy calls waiting, each having copied one reference"
+say = """Here is the call stack. [[slnc 300]] Four copy calls, each holding one reference. [[slnc 400]] On top, the base case."""
+picture = { type = "stack", cells = ["copy(0): ref to Blue Sky", "copy(1): ref to Rain Dance", "copy(2): ref to Night Drive", "copy(3): ref to Sunrise", "copy(4): base case"], width = 320, marks = { "4" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Growing, and any type"
+summary = "Nine songs take 2 resizes and 12 reference copies, the deepest 8 frames; the same class holds Integers, traversed at depth 5."
+detail = """Four more songs fill the array; the ninth resizes it again to 16, copying 8 references 8 frames deep. Twelve references copied since the first resize: the same count as every dynamic array here. The same class also holds play counts as `Integer`: traversing five of them goes five calls deep."""
+speech = """Growing. [[slnc 400]] Nine songs take two resizes, and twelve references copied. [[slnc 300]] The deepest copy is eight frames. [[slnc 500]] And the same class holds play counts, as integers. [[slnc 300]] Traversing five of them goes five calls deep."""
+console = [["9 songs: 2 resizes, capacity 16, 12 references copied since the first resize, deepest copy 8", "ok"], ["GenericRecursiveDynamicArray<Integer>: [10, 20, 30, 40, 50], depth 5", "ok"]]
+[[act.frame]]
+caption = "Nine songs in sixteen places, after two recursive resizes"
+say = """Here is the playlist, nine songs in sixteen places."""
+picture = { type = "array", cells = ["Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Paper Moon", "Wild Honey", "Echoes", "Firefly", "Last Train", "", "", ""], size = 9, note = "capacity 16 (first 12 shown), size 9" }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "The middle, and equals, recursively"
+summary = "insertAt(0, Intro) 9 shifts at depth 9; deleteAt(5) 4 shifts at depth 4; a new Song(\"Echoes\", 201) is found at index 6 with 7 recursive equals calls."
+detail = """Inserting an intro at the front calls `shiftRight` nine times, nine frames deep; deleting "Paper Moon" at index 5 calls `shiftLeft` four times. Then a recursive linear search looks for a separately made `Song("Echoes", 201)`: each call asks `equals` and, if not equal, calls itself on the rest. The seventh call, at index 6, matches: 7 `equals` calls, 7 frames."""
+speech = """Now the middle. [[slnc 400]] Inserting an intro shifts nine songs, nine calls deep. [[slnc 300]] Deleting at index five shifts four, four calls deep. [[slnc 500]] Then a recursive search for a new song called Echoes. [[slnc 400]] Each call asks equals. [[slnc 300]] The seventh call matches, at index six, seven frames deep."""
+console = [["insertAt(0, Intro (0:42)): 9 shifts, depth 9", "amber"], ["deleteAt(5) removed Paper Moon (2:56): 4 shifts, depth 4", "amber"], ["linearSearch(new Song(\"Echoes\", 201)) = index 6: 7 equals calls, depth 7", "ok"]]
+[[act.frame]]
+caption = "Recursive search: calls 1 to 6 say not equal, call 7 finds Echoes"
+say = """Here is the search. [[slnc 300]] Six calls, six songs that are not equal. [[slnc 300]] The seventh call finds Echoes."""
+picture = { type = "array", cells = ["Intro", "Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Wild Honey", "Echoes", "Firefly", "Last Train"], marks = { "0" = "dim", "1" = "dim", "2" = "dim", "3" = "dim", "4" = "dim", "5" = "dim", "6" = "ok" }, pointers = [[0, "call 1"], [6, "call 7"]] }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Shrinking, recursively"
+summary = "deleteAtEnd removes Last Train and nulls its place; shrinkToFit copies 8 references at depth 8 into exactly 8 places."
+detail = """`deleteAtEnd` removes "Last Train" and sets its place to `null`, so no reference to it remains. `shrinkToFit` then resizes to exactly 8 places with the same recursive copy: 8 references, 8 frames."""
+speech = """Shrinking uses the same recursion. [[slnc 400]] Deleting the last song sets its place to null. [[slnc 400]] Then shrink to fit copies eight references, eight calls deep, into exactly eight places."""
+console = [["deleteAtEnd() removed Last Train (3:52) and set its place to null", "amber"], ["shrinkToFit(): capacity 8, 8 references copied at depth 8", "ok"]]
+[[act.frame]]
+caption = "After shrinkToFit: eight songs in exactly eight places"
+say = """Here is the result. [[slnc 300]] Eight songs, eight places, no spare room."""
+picture = { type = "array", cells = ["Intro", "Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Wild Honey", "Echoes", "Firefly"], marks = { "0" = "new", "1" = "new", "2" = "new", "3" = "new", "4" = "new", "5" = "new", "6" = "new", "7" = "new" } }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The limit of recursion"
+summary = "A million appends throw StackOverflowError inside a resize, long before the end."
+detail = """Appending a million Integers works until a resize must copy more references than the call stack has frames for. Then the recursive copy throws `StackOverflowError` from inside an `append`. Generics changed what is stored; recursion changed how much stack a resize needs. The loop version, `dynamic-array-generic`, and Java's `ArrayList` finish."""
+speech = """And the limit. [[slnc 400]] A million appends. [[slnc 300]] Long before the end, a resize must copy more references than the call stack can hold frames for. [[slnc 400]] A stack overflow error, from inside an ordinary append. [[slnc 500]] Generics change what is stored. [[slnc 300]] Recursion changes how much stack is used."""
+console = [["1,000,000 appends: StackOverflowError inside a resize, long before the end", "bad"], ["generics change what is stored; recursion changes how much stack a resize needs", "muted"]]
+[[act.frame]]
+caption = "One frame per reference copied: a large resize runs out of call stack"
+say = """One frame per reference. [[slnc 300]] For a large resize, far too many."""
+picture = { type = "stack", cells = ["append(...)", "resize(...)", "copy(0)", "copy(1)", "...", "StackOverflowError"], width = 260, marks = { "5" = "bad" }, top_label = "overflow" }
+
+[animation]
+subtitle = "A playlist of Songs in a generic dynamic array whose every loop is a recursion: copying references recursively, equals search, recursive shifts, and a stack overflow inside append."
+
+[docs.problem]
+scenario = """A music app's playlist of Song records, written as a generic dynamic array with every loop replaced by a recursion."""
+naive = """Combining generics and recursion without noticing that the copy inside a resize is now a linear recursion: it grows with the list and eventually overflows."""
+deliver = [
+  "A `GenericRecursiveDynamicArray<T>` on an `Object[]` cast to `T[]`, with recursive traverse, copy, shiftRight, shiftLeft and linearSearch (equals).",
+  "Doubling when full and halving when a quarter full; references counted; recursion depth measured.",
+  "A real StackOverflowError inside an append.",
+  "Time and stack space of every operation, compared with the other three dynamic arrays.",
+]
+
+[docs.prerequisites]
+required = ["dynamic-array-generic and dynamic-array-recursive, or generics and recursion basics"]
+not_required = ["Big-O notation (START-HERE.md introduces it by counting steps)"]
+
+[docs.session]
+objectives = [
+  "Write recursive methods in a generic class.",
+  "Explain that a recursive resize copies references, one frame each.",
+  "State the time and stack space of each operation.",
+  "Explain why the append can overflow the call stack.",
+]
+walkthrough = """Recall both earlier projects. Trace the recursive copy of references on the board and show that the objects do not move. Run the demo; in act three, trace the recursive equals search. In act five, show the StackOverflowError and compare with ArrayList."""
+
+[docs.explained]
+sentence = """The generic recursive dynamic array stores references to any type, finds them with equals, and does every linear pass as a recursion, so its time is unchanged and its extra space is one frame per element."""
+verdict = """A learning exercise that joins generics and recursion; for real lists use `ArrayList<E>` or the loop version, because the recursive resize overflows on large data."""
+recognise = [
+  "`class X<T>` with `(T[]) new Object[n]` and private methods that call themselves.",
+  "`copy(i + 1, newArr)` with `if (i == size) return;`.",
+  "`arr[i].equals(key)` inside a recursive search.",
+]
+
+[spec]
+purpose = """Combine generics and recursion on the dynamic array, as preparation for generic recursive structures."""
+requirements = [
+  "Written by hand on an `Object[]` cast to `T[]`: no Java collections or `Arrays` helpers.",
+  "Doubling, halving at a quarter, shrinkToFit, all copying recursively.",
+  "Recursive traverse, shiftRight, shiftLeft and linearSearch (equals); get and update O(1).",
+  "Recursion depth counted; a real StackOverflowError demonstrated.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["Loop versions (dynamic-array, dynamic-array-generic)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Dynamic Array (Generic, Recursive): the pieces"
+caption = "Appending to a full array starts a recursive copy of references into a new T[]."
+nodes = [
+  { id = "demo", label = "Demo", sub = "GenericRecursiveDynamicArrayDemo", col = 0, row = 0, colour = "client" },
+  { id = "arr", label = "GenericRecursiveDynamicArray<T>", sub = "append, insertAt, deleteAt, linearSearch", col = 1, row = 0, colour = "accent" },
+  { id = "copy", label = "copy(i, newArr)", sub = "one reference, then copy(i + 1)", col = 2, row = 0, colour = "red" },
+  { id = "steps", label = "StepCounter", sub = "copies, shifts, maxDepth", col = 1, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "arr", label = "append(song)" }, { from = "arr", to = "copy", label = "resize when full" }, { from = "copy", to = "steps", label = "depth" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Dynamic Array (Generic, Recursive): the classes"
+caption = "Public operations, and the private recursive helpers they start."
+nodes = [
+  { id = "arr", label = "GenericRecursiveDynamicArray<T>", sub = ["- T[] arr", "- int size", "+ traverse / get / update", "+ append / insertAt", "+ deleteAtEnd / deleteAt", "+ linearSearch: equals", "- resize / copy(i)", "- shiftRight / shiftLeft"], col = 0, row = 0, colour = "accent" },
+  { id = "song", label = "Song", sub = ["record: title, seconds"], col = 1, row = 0, colour = "client" },
+  { id = "steps", label = "StepCounter", sub = ["copies, shifts, compares", "+ maxDepth()"], col = 0, row = 1, colour = "amber" },
+]
+edges = [ { from = "arr", to = "song", label = "T = Song" }, { from = "arr", to = "steps", label = "has one" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Dynamic Array (Generic, Recursive): one copy call"
+caption = "Base case first; otherwise copy one reference and call on the rest."
+nodes = [
+  { id = "call", label = "copy(i, newArr)", sub = "i = 0 at first", col = 0, row = 0, colour = "client" },
+  { id = "base", label = "i == size?", sub = "yes: return", col = 1, row = 0, colour = "green" },
+  { id = "work", label = "newArr[i] = arr[i]", sub = "a reference", col = 2, row = 0, colour = "accent" },
+  { id = "rec", label = "copy(i + 1, newArr)", sub = "this frame waits", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "call", to = "base", label = "" }, { from = "base", to = "work", label = "no" }, { from = "work", to = "rec", label = "" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Dynamic Array (Generic, Recursive): appending the fifth song"
+caption = "The append triggers a resize whose recursive copy goes four calls deep."
+participants = ["Demo", "append", "copy(0..3)", "copy(4)"]
+steps = [
+  ["Demo", "append", "append(Paper Moon)"],
+  ["append", "copy(0..3)", "full: resize(8)"],
+  ["copy(0..3)", "copy(4)", "4 references copied"],
+  ["copy(4)", "copy(0..3)", "base case", "reply"],
+  ["copy(0..3)", "append", "done, depth 4", "reply"],
+  ["append", "Demo", "arr[4] = Paper Moon", "reply"],
+]
+
+[poster]
+headline = [["DYNAMIC ARRAY", "text"], ["GENERIC + RECURSIVE", "accent"]]
+before = { code = "for (i...) copy", note = "O(1) extra space", tag = "LOOP" }
+after = { code = "copy(i + 1)", note = "one frame per reference", tag = "RECURSION" }
+taglines = [["Any type, one call per element.", "text"], ["A hidden recursion can overflow.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Dynamic Array (Generic, Recursive)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the generic, recursive dynamic array, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] It is an array that grows by itself, written once for any type, whose loops are all written as recursions. [[slnc 400]] It stores references, compares with equals, and copies one reference per call when it resizes. [[slnc 700]] Our example is a playlist of songs. [[slnc 400]] By the end, you will know how generics and recursion work together, and why an append can overflow the stack."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Helpers copy a list of addresses, one line each, and wait"
+picture = { type = "array", cells = ["addr 0", "addr 1", "addr 2", "addr 3", "done"], marks = { "4" = "ok" }, pointers = [[0, "helper 1"], [4, "base case"]], title = "copying a list of addresses" }
+narration = """Think of a list of warehouse addresses, being copied onto a longer sheet by a line of helpers. [[slnc 400]] The first helper copies line zero, then asks the next helper to copy the rest, and waits. [[slnc 400]] Each helper copies one address, and waits. [[slnc 500]] The furniture never moves, only the addresses. [[slnc 400]] When no lines are left, everyone can go home. [[slnc 300]] A million lines would need a million helpers in the corridor."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["T: the element type", "reference: copied, not the object", "equals: compare contents", "base case: i == size", "", "recursion depth: frames at once"]
+narration = """The words. [[slnc 400]] T is the element type. [[slnc 300]] Each place holds a reference, and a resize copies the reference, not the object. [[slnc 400]] Equals compares contents. [[slnc 400]] The base case is when nothing is left. [[slnc 400]] And the recursion depth is the number of frames at once."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["get, update: O(1), not recursive", "append: O(1) amortised; a resize O(n) time and stack", "insert, delete at front: O(n) time and stack", "linear search: O(n) time and stack", "", "the loop version: the same time, O(1) extra"]
+narration = """Here are the costs. [[slnc 400]] Get and update are order one. [[slnc 400]] Append is order one amortised, but a resize takes order n time and stack. [[slnc 400]] Insertion and deletion at the front take order n time and stack, and so does linear search. [[slnc 500]] The loop version takes the same time, with order one extra space."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "The Four Dynamic Arrays"
+body = ["String, loops: the plain version", "String, recursive: O(n) stack per pass", "generic, loops: any type, like ArrayList", "generic, recursive: any type, O(n) stack", "", "a million appends: only the loops finish"]
+narration = """The four dynamic arrays. [[slnc 400]] The string version with loops. [[slnc 300]] The string version with recursion. [[slnc 300]] The generic version with loops, which is Java's array list. [[slnc 300]] And this one, generic and recursive. [[slnc 500]] On a million appends, only the loop versions finish."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["new T[capacity]", "searching with ==", "a recursive copy inside resize", "not clearing freed places"]
+narration = """Four mistakes to watch for. [[slnc 400]] Writing new T array. [[slnc 400]] Searching with double equals. [[slnc 400]] A recursive copy inside resize, which overflows on large lists. [[slnc 400]] And not clearing freed places."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the generic, recursive dynamic array. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] Generics decide what is stored, and recursion decides how much stack is used, one frame per element. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Rewrite the copy so it halves the range, and watch the depth drop to log n. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

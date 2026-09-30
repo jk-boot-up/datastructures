@@ -1,0 +1,447 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "static-array-generic"
+category = "arrays-and-lists"
+title = "Static Array (Generic)"
+package = "staticarraygeneric"
+main_class = "GenericStaticArrayDemo"
+example = "One week of temperatures held as numbers, as day names, and as readings"
+tagline = "One array class, any element type"
+bold = "A generic static array is written once with a type parameter T and used for any element type: it stores references to objects, compares them with equals and compareTo instead of == and <, and keeps every cost of the static array: O(1) access, O(n) shifting, a fixed capacity."
+analogy_short = "A row of lockers that can hold whatever you are told to store"
+jdk = "`java.util.ArrayList<E>` and the generic methods of `java.util.Arrays`, such as `binarySearch(T[], key)`"
+thumb_lines = ["STATIC ARRAY", "GENERIC <T>"]
+thumb_code = "GenericStaticArray<T>"
+youtube_title = "Generic Static Array in Java - Type Parameters, equals and compareTo"
+youtube_tags = ["java generics", "generic array", "static array", "comparable", "equals vs ==", "binary search"]
+youtube_description = """Generic Static Array in Java, explained with one week of temperatures stored three ways by the same class: as Integer temperatures, as String day names, and as Reading records of our own. We see why Java cannot create new T[10] and what the array really stores, references to objects, so copying the array copies references and not objects. We search with equals, which compares contents, and see == fail on two equal strings; we binary search numbers and day names with compareTo in 3 comparisons each. We insert and delete with the same shifts as the plain array, clearing the freed place so the object can be garbage-collected, and hit the same overflow. We finish with one findMax algorithm giving the hottest reading and the last day name alphabetically, because each type brings its own order. The int-only version is in the Static Array project."""
+
+[readme]
+intro = """A **generic static array** is the static array written once for **any element type**. Instead of `int`, the class has a **type parameter** `T`: `GenericStaticArray<Integer>` holds integers, `GenericStaticArray<String>` holds strings, `GenericStaticArray<Reading>` holds objects of our own, and the compiler refuses anything else. The structure and every cost are the same as the `static-array` project: consecutive places, O(1) access by index, O(n) shifting on insertion and deletion, a fixed capacity and overflow. Three things change, and they are what this project teaches. The array stores **references** to objects, not the values themselves. Equality is tested with **`equals`**, which compares contents, not `==`, which compares references. And order is tested with **`compareTo`**, so `T` must be a type whose elements can be put in order: `T extends Comparable<T>`."""
+analogy = """Picture the same row of numbered lockers, but now every locker holds a **label with an address** on it rather than the thing itself: the thing is kept somewhere else, and the label tells you where. The lockers do not care what the things are, parcels, books, bicycles, so the same row works for anything. When the manager says "this row is for books only", nobody may put a bicycle's label in it. To ask "is this the same book?" you compare the books, not the labels: two labels can point at two copies of the same book."""
+example = """The weather station from the `static-array` project stores its week three ways with the same class: the temperatures as `Integer`, the day names as `String`, and each day as a `Reading(day, celsius)` record that orders readings by temperature. The demo searches each, inserts and deletes readings, and runs the same `findMax` on readings and on day names to show that each type brings its own order."""
+why = """Without generics, the course would need a separate array class for every element type: one for `int`, one for `String`, one for readings, all with identical code. The old alternative, an array of `Object`, accepts anything, so a string can end up in an array of temperatures and the mistake is only found when the program crashes. A type parameter gives one class for every type, and the compiler checks each use: putting `"hot"` into a `GenericStaticArray<Integer>` does not even compile."""
+when_use = [
+  "The same structure is needed for more than one element type.",
+  "You want the compiler to check the element type, instead of casting from `Object`.",
+  "The elements are objects already, such as strings or records.",
+]
+when_not = [
+  "Millions of plain numbers: `int[]` stores 4 bytes per element; an array of `Integer` stores a reference per element and a separate object for each value.",
+  "The number of elements changes: use a dynamic array (`dynamic-array-generic`).",
+]
+met_before = [
+  "`ArrayList<String>`, `HashMap<String, Integer>` and every other Java collection.",
+  "`Comparable<T>`, implemented by `String`, `Integer`, `LocalDate` and many more.",
+  "Templates in C++ and generics in C# and TypeScript.",
+]
+
+[[word]]
+term = "type parameter T"
+meaning = "A placeholder for the element type, written in angle brackets: `GenericStaticArray<T>`. Each use fills it in: `GenericStaticArray<Integer>`."
+[[word]]
+term = "reference"
+meaning = "What an array of objects stores in each place: the address of an object that lives elsewhere in memory."
+[[word]]
+term = "equals"
+meaning = "The method that compares two objects' contents. `==` on objects only asks whether two references point at the same object."
+[[word]]
+term = "compareTo"
+meaning = "The method of `Comparable<T>` that orders two objects: negative if smaller, zero if equal, positive if larger."
+[[word]]
+term = "bounded type"
+meaning = "`T extends Comparable<T>`: T may be any type, as long as its elements can be compared."
+[[word]]
+term = "type erasure"
+meaning = "Java removes type parameters when it compiles, so at run time `T` is unknown and `new T[10]` is not allowed."
+[[word]]
+term = "overflow and underflow"
+meaning = "Inserting into a full array (overflow) or deleting from an empty one (underflow), as in any static array."
+
+[[operation]]
+name = "Traverse"
+does = "Visit arr[0] to arr[n-1] once"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "7 reads for the week"
+[[operation]]
+name = "Access `get(i)`"
+does = "Return the reference in arr[i]"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "1 step"
+[[operation]]
+name = "Update `update(i, x)`"
+does = "Store a new reference in arr[i]"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "1 step"
+[[operation]]
+name = "Insert `insertAt(pos, x)`"
+does = "Shift arr[pos..n-1] right, store x"
+time = "O(1) at the end / O(n) / O(n) at the front"
+space = "O(1)"
+counted = "5 shifts to insert a reading at index 2 of 7"
+[[operation]]
+name = "Delete `deleteAt(pos)`"
+does = "Shift arr[pos+1..n-1] left, set the freed place to null"
+time = "O(1) at the end / O(n) / O(n) at the front"
+space = "O(1)"
+counted = "7 shifts to delete index 0 of 8"
+[[operation]]
+name = "Linear search"
+does = "Compare with each element using equals"
+time = "O(1) / O(n) / O(n)"
+space = "O(1)"
+counted = "5 comparisons to find 24"
+[[operation]]
+name = "Binary search (sorted)"
+does = "compareTo with the middle, discard half, repeat"
+time = "O(1) / O(log n) / O(log n)"
+space = "O(1)"
+counted = "3 comparisons for 24, and 3 for \"Thu\""
+[[operation]]
+name = "Find maximum"
+does = "compareTo each element with the largest so far"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "6 comparisons for 7 readings"
+[[operation]]
+name = "Reverse"
+does = "Swap the references in arr[i] and arr[n-1-i] moving inward"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "3 swaps for 7 elements"
+[[operation]]
+name = "Grow `copyWithCapacity(m)`"
+does = "A new array; the references copied, not the objects"
+time = "O(n) / O(n) / O(n)"
+space = "O(n)"
+counted = "7 references copied"
+
+listing_intro = """The generic version of each operation, exactly as it appears in `GenericStaticArray.java`. Compare them with the `static-array` project: the loops are identical; only the element type, and the way elements are compared, have changed."""
+[[listing]]
+op = "Creating the array"
+method = "GenericStaticArray#GenericStaticArray"
+note = """`new T[capacity]` does not compile, because Java erases `T` when it compiles. Every `T` is a `Comparable`, so an array of `Comparable` can hold them, and the cast to `T[]` is safe because the class only ever stores `T`. This is the standard textbook way to build a generic array in Java."""
+[[listing]]
+op = "Linear search with equals"
+method = "GenericStaticArray#linearSearch"
+note = """`arr[i].equals(key)` compares the contents of two objects. `arr[i] == key` would only be true for the very same object, so a search for `new String("Fri")` would fail although "Fri" is in the array."""
+[[listing]]
+op = "Binary search with compareTo"
+method = "GenericStaticArray#binarySearch"
+note = """`<` and `>` only work on numbers, so the generic version asks the element: `arr[mid].compareTo(key)` is negative, zero or positive. The halving, and the 20 comparisons for a million elements, are unchanged."""
+[[listing]]
+op = "Deletion"
+method = "GenericStaticArray#deleteAt"
+note = """The same shifts as the int version, plus one line: the place that falls out of use is set to `null`. Otherwise the array would keep a reference to the deleted object and Java could never free it."""
+
+[compare]
+intro = """The generic static array against the int-only static array and the generic dynamic array (n elements):"""
+columns = ["Property", "Generic static array", "Static array of int", "Generic dynamic array"]
+rows = [
+  ["Element types", "any T that is Comparable", "int only", "any T"],
+  ["What each place stores", "a reference to an object", "the value itself", "a reference to an object"],
+  ["Access element i", "O(1), then follow the reference", "O(1)", "O(1)"],
+  ["Insert or delete at the front", "O(n) shifts", "O(n) shifts", "O(n) shifts"],
+  ["Equality and order", "equals, compareTo", "==, <", "equals, compareTo"],
+  ["Size", "fixed at creation", "fixed at creation", "grows by copying"],
+  ["Memory per element", "a reference plus the object", "4 bytes", "a reference plus the object, plus spare places"],
+]
+
+pros = [
+  "One class for every element type, with the compiler checking each use.",
+  "The same O(1) access and the same algorithms as the int version.",
+  "Each type brings its own order through compareTo, so findMax and binary search work on numbers, text and records alike.",
+]
+cons = [
+  "Stores references: more memory than `int[]`, and one more step to reach each value.",
+  "`new T[n]` is impossible; the array is created as `Comparable[]` and cast.",
+  "Elements must be compared with equals and compareTo; `==` and `<` are easy mistakes.",
+  "The capacity is still fixed; a full array overflows.",
+]
+
+[[mistake]]
+mistake = "Comparing objects with `==`"
+happens = "`==` asks whether two references point at the same object, so an equal string made elsewhere is not found."
+fix = "Use `equals` for equality and `compareTo` for order."
+[[mistake]]
+mistake = "Writing `new T[capacity]`"
+happens = "It does not compile: Java does not know `T` when the program runs."
+fix = "`(T[]) new Comparable[capacity]` (or `new Object[capacity]` when no bound is needed), with the cast kept inside the class."
+[[mistake]]
+mistake = "Leaving a reference in a freed place"
+happens = "The deleted object stays reachable from the array, so the garbage collector cannot free it."
+fix = "Set the place to `null` when it falls out of use."
+[[mistake]]
+mistake = "Using a raw type: `GenericStaticArray a`"
+happens = "The compiler stops checking the element type, and the wrong type is only caught at run time, if at all."
+fix = "Always give the type argument: `GenericStaticArray<Integer>`."
+
+[[exercise]]
+level = "easy"
+question = """Write `int count(T key)`, which returns how many elements are equal to `key`. Why must it use `equals` and not `==`?"""
+answer = """```java
+int count(T key) {
+    int c = 0;
+    for (int i = 0; i < n; i++) {
+        if (arr[i].equals(key)) c++;
+    }
+    return c;
+}
+```
+`==` compares references: two equal strings or readings created separately are different objects, so `==` would miss them. O(n) time, O(1) space."""
+[[exercise]]
+level = "medium"
+question = """Make `Reading` order by day name instead of temperature. What does `findMax` then return on the week, and did you change `GenericStaticArray`?"""
+answer = """```java
+public int compareTo(Reading other) {
+    return day.compareTo(other.day);
+}
+```
+`findMax` now returns the reading whose day name is last alphabetically, "Wed" (19 C). `GenericStaticArray` is unchanged: the algorithm asks the element for its order, so changing the element's `compareTo` changes the answer."""
+[[exercise]]
+level = "harder"
+question = """Write `boolean isSorted()`, true when the elements are in ascending order by `compareTo`. Then explain why `binarySearch` may give a wrong answer if `isSorted()` is false."""
+answer = """```java
+boolean isSorted() {
+    for (int i = 1; i < n; i++) {
+        if (arr[i - 1].compareTo(arr[i]) > 0) return false;
+    }
+    return true;
+}
+```
+Binary search discards the half that "cannot" hold the key, which is only true when the elements are sorted. On unsorted data it may discard the half that holds the key and return -1. O(n) time, O(1) space."""
+
+[hero]
+caption = "GenericStaticArray<Reading> with n = 7: each place holds a reference to a Reading object"
+picture = { type = "array", cells = ["Mon 21", "Tue 23", "Wed 19", "Thu 25", "Fri 24", "Sat 22", "Sun 20", "", "", ""], size = 7, pointers = [[7, "n = 7"]], title = "GenericStaticArray<Reading>, capacity 10" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "One class, any element type"
+summary = "The same GenericStaticArray holds Integer temperatures, String day names and Reading records; storing a String in the Integer array does not compile."
+detail = """One class is used three times. `GenericStaticArray<Integer>` holds the temperatures, `GenericStaticArray<String>` holds the day names, and `GenericStaticArray<Reading>` holds a record of our own with a day and a temperature. Traversal prints all three with the same loop. The type argument is checked by the compiler: `temps.update(0, "hot")` is refused before the program ever runs, which an array of `Object` could not do."""
+speech = """First, one class for any type. [[slnc 400]] The same generic array holds the temperatures, as integers. [[slnc 300]] It holds the day names, as strings. [[slnc 300]] And it holds readings, a type of our own. [[slnc 500]] The type is written in angle brackets, and the compiler checks it. [[slnc 400]] Putting a word into the array of integers does not even compile."""
+console = [["GenericStaticArray<Integer>: [21, 23, 19, 25, 24, 22, 20]", "ok"], ["GenericStaticArray<String>:  [Mon, Tue, Wed, Thu, Fri, Sat, Sun]", "ok"], ["GenericStaticArray<Reading>: [Mon 21 C, Tue 23 C, Wed 19 C, Thu 25 C, Fri 24 C, Sat 22 C, Sun 20 C]", "ok"], ["one class, three element types; temps.update(0, \"hot\") does not compile", "amber"]]
+[[act.frame]]
+caption = "Three arrays, one class: T is Integer, String, and Reading"
+say = """Here are the three arrays. [[slnc 300]] The same class, the same code. [[slnc 400]] Only the type in angle brackets changes. [[slnc 300]] Integer, string, and reading."""
+picture = { type = "group", items = [ { type = "array", cells = [21, 23, 19, 25, 24, 22, 20], title = "<Integer>" }, { type = "array", cells = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], title = "<String>" } ], gap = 30 }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Inside: an array of references"
+summary = "new T[10] is not allowed, so the array is created as (T[]) new Comparable[10]; copying it copies 7 references, and both arrays share the same objects."
+detail = """Java removes type parameters when it compiles, which is called type erasure, so `new T[10]` cannot be written: the program would not know what T is. The array is created as `new Comparable[10]` and cast to `T[]`, which is safe because only T is ever stored. Each place holds a **reference**, the address of an object stored elsewhere. So when `copyWithCapacity(31)` grows the array, it copies 7 references, not 7 objects: index 0 of the old and the new array point at the very same object."""
+speech = """What does the array really hold? [[slnc 400]] Java cannot create an array of T directly, because T is forgotten when the program runs. [[slnc 400]] So the class creates an array of comparable things, and casts it. [[slnc 500]] Each place holds a reference: the address of an object stored elsewhere. [[slnc 400]] Copying the array copies seven references, not seven objects. [[slnc 300]] Both arrays point at the same objects."""
+console = [["new T[10] is not allowed: T is erased when the program runs", "bad"], ["so arr = (T[]) new Comparable[10]: 10 references, n = 7", "ok"], ["copyWithCapacity(31): 7 references copied; index 0 is the same object: true", "amber"]]
+[[act.frame]]
+caption = "Each place holds a reference; the objects live elsewhere in memory"
+say = """Here is the picture. [[slnc 300]] The array holds references, drawn as arrows. [[slnc 400]] The objects themselves are elsewhere. [[slnc 300]] Following the arrow is one more step than reading an int."""
+picture = { type = "linked", nodes = ["arr[0]", "Mon 21 C"], null_end = false, title = "arr[0] refers to a Reading object" }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Searching with equals and compareTo"
+summary = "Linear search finds 24 with 5 equals comparisons and finds a separately made \"Fri\" that == would miss; binary search finds 24 and \"Thu\" with 3 compareTo comparisons each."
+detail = """With objects, `==` asks only whether two references point at the same object. A new string "Fri", made separately, is a different object from the one in the array, so `==` says false. Linear search therefore uses `equals`, which compares contents: it finds 24 at index 4 after 5 comparisons, and finds the new "Fri" at index 4. Binary search needs order, and `<` works only on numbers, so it uses `compareTo`, negative, zero or positive. On the sorted temperatures it finds 24 in 3 comparisons; on the sorted day names [Fri, Mon, Sat, Sun, Thu, Tue, Wed] it finds "Thu" in 3 comparisons too, because String's compareTo is alphabetical."""
+speech = """Now searching. [[slnc 400]] With objects, double equals only asks: is this the very same object? [[slnc 400]] A new string, Fri, made separately, is a different object, so double equals says false. [[slnc 500]] So linear search uses the equals method, which compares the contents. [[slnc 400]] Binary search needs order, so it uses compare to. [[slnc 400]] It finds twenty four in three comparisons, and Thursday among the sorted day names in three as well."""
+console = [["linearSearch(24) = index 4: 5 comparisons with equals", "amber"], ["linearSearch(new String(\"Fri\")) = index 4: equals compares the text", "ok"], ["days.get(4) == new String(\"Fri\") is false: == compares references", "bad"], ["sorted [19, 20, 21, 23, 24, 25, 26]: binarySearch(24) = index 4, 3 comparisons with compareTo", "ok"], ["sorted [Fri, Mon, Sat, Sun, Thu, Tue, Wed]: binarySearch(\"Thu\") = index 4, 3 comparisons", "ok"]]
+[[act.frame]]
+caption = "Binary search on day names: Sun (go right), Tue (go left), Thu: 3 compareTo calls"
+say = """Binary search on the sorted day names. [[slnc 300]] The middle is Sunday. [[slnc 300]] Thursday comes after it alphabetically, so go right. [[slnc 400]] The middle of the right half is Tuesday. [[slnc 300]] Thursday comes before it, so go left. [[slnc 400]] And there is Thursday. [[slnc 300]] Three comparisons."""
+picture = { type = "array", cells = ["Fri", "Mon", "Sat", "Sun", "Thu", "Tue", "Wed"], marks = { "0" = "dim", "1" = "dim", "2" = "dim", "3" = "hi", "5" = "hi", "4" = "ok", "6" = "dim" }, pointers = [[3, "1st"], [5, "2nd"], [4, "3rd"]] }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Insertion, deletion, overflow"
+summary = "Inserting a reading at index 2 shifts 5; deleting index 0 shifts 7 and sets the freed place to null; at 10 of 10 the next insert is an overflow."
+detail = """Insertion and deletion are the same loops as in the int version, moving references instead of numbers. A corrected reading, "Wed* 18 C", goes in at index 2: five references shift right. Deleting index 0 removes "Mon 21 C": seven references shift left, and then the last place, no longer in use, is set to `null`. That line matters for objects: if the array kept the old reference, the garbage collector could never free the object. Three more readings fill the array to 10 of 10, and the next insertion is an overflow."""
+speech = """Insertion and deletion work exactly as before. [[slnc 400]] Inserting a reading at index two shifts five references right. [[slnc 400]] Deleting index zero shifts seven references left. [[slnc 500]] Then one extra step: the freed place is set to null. [[slnc 300]] Otherwise the array would keep the deleted object alive. [[slnc 500]] And when all ten places are used, the next insertion is an overflow."""
+console = [["insertAt(2, Wed* 18 C): 5 shifts, n = 8", "amber"], ["deleteAt(0) removed Mon 21 C: 7 shifts; the freed place is set to null", "amber"], ["[Tue 23 C, Wed* 18 C, Wed 19 C, Thu 25 C, Fri 24 C, Sat 22 C, Sun 20 C]", "muted"], ["n = 10, insertAt(0, Thu 30 C): overflow: the array is full (10 of 10)", "bad"]]
+[[act.frame]]
+caption = "deleteAt(0): seven references shift left, and the freed place becomes null"
+say = """Here is the array after the deletion. [[slnc 300]] Seven references, in amber, shifted one place to the left. [[slnc 400]] The place after them, which used to hold a copy of the last reference, is now null."""
+picture = { type = "array", cells = ["Tue 23", "Wed* 18", "Wed 19", "Thu 25", "Fri 24", "Sat 22", "Sun 20", "null", "", ""], size = 7, marks = { "0" = "hi", "1" = "hi", "2" = "hi", "3" = "hi", "4" = "hi", "5" = "hi", "6" = "hi", "7" = "dim" } }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "One algorithm, many orders"
+summary = "The same findMax returns Thu 25 C for readings (by temperature) and Wed for day names (alphabetically); reverse swaps 3 pairs; there is no sum, because T need not be a number."
+detail = """`findMax` is written once and asks each element for its order through `compareTo`. For readings, whose `compareTo` compares temperatures, it returns "Thu 25 C" after 6 comparisons. For day names, String's `compareTo` is alphabetical, so the same method returns "Wed". Reverse swaps references: 3 swaps for 7 readings. One operation from the int version is missing: `sum()`, because adding needs numbers and `T` can be any type. Java's own `ArrayList<E>` and `Arrays.binarySearch(T[], key)` are generic in exactly this way."""
+speech = """One algorithm, many orders. [[slnc 400]] Find max is written once. [[slnc 300]] For readings, it compares temperatures, and returns Thursday, twenty five degrees. [[slnc 400]] For day names, it compares alphabetically, and returns Wednesday. [[slnc 500]] Each type brings its own order. [[slnc 400]] And there is no sum here, because adding needs numbers, and T can be any type."""
+console = [["readings, findMax by temperature: Thu 25 C, 6 comparisons", "ok"], ["day names, findMax alphabetically: Wed", "ok"], ["reverse: 3 swaps; [Sun 20 C, Sat 22 C, Fri 24 C, Thu 25 C, Wed 19 C, Tue 23 C, Mon 21 C]", "muted"], ["no sum(): adding needs numbers, and T can be any type", "amber"], ["already in Java: java.util.ArrayList<E> and Arrays.binarySearch(T[], key) are generic the same way", "muted"]]
+[[act.frame]]
+caption = "findMax on readings compares temperatures: Thu 25 C is the largest"
+say = """Here is find max on the readings. [[slnc 300]] Six comparisons, each asking a reading to compare itself with the largest so far. [[slnc 400]] Thursday, at twenty five degrees, wins."""
+picture = { type = "array", cells = ["Mon 21", "Tue 23", "Wed 19", "Thu 25", "Fri 24", "Sat 22", "Sun 20"], marks = { "3" = "ok" }, pointers = [[3, "max"]] }
+
+[animation]
+subtitle = "One week stored as Integer, String and Reading by one generic class: references, equals and compareTo, the same shifts, and one findMax for many orders."
+
+[docs.problem]
+scenario = """A weather station stores the same week as temperatures, as day names, and as readings, and needs the same array operations on each."""
+naive = """Three copies of the array class, one per element type, all with identical code; or one array of `Object` that accepts anything, so a mistake is only found when the program crashes."""
+deliver = [
+  "A `GenericStaticArray<T extends Comparable<T>>` written by hand, with the textbook operations: traverse, get, update, insertAt, deleteAt, linearSearch, binarySearch, findMax, reverse, copyWithCapacity.",
+  "Equality by `equals`, order by `compareTo`, and the freed place cleared on deletion.",
+  "The same class used with `Integer`, `String` and a `Reading` record.",
+  "Time and space complexity of every operation, and a comparison with the int array and the generic dynamic array.",
+]
+
+[docs.prerequisites]
+required = ["The static-array project, or what an array and an index are", "Java basics: classes, methods, `for` loops", "What an object and a reference are"]
+not_required = ["Previous experience of writing generic classes", "Big-O notation (START-HERE.md introduces it by counting steps)"]
+
+[docs.session]
+objectives = [
+  "Write a class with a type parameter and use it with several element types.",
+  "Explain why `new T[n]` is not allowed and how the array is created instead.",
+  "Use `equals` for equality and `compareTo` for order, and say why `==` is wrong for objects.",
+  "State that the costs of every operation are unchanged from the int version.",
+]
+walkthrough = """Start by showing the int static array and asking how to store day names: the answer "copy the class" leads to generics. Run the demo; in act two, draw references as arrows to objects. In act three, show `==` failing on `new String("Fri")`. In act five, change `Reading.compareTo` to order by day and rerun findMax. Finish with the comparison table."""
+
+[docs.explained]
+sentence = """A generic static array is the static array written once with a type parameter T, storing references and comparing them with equals and compareTo, so one class holds any comparable type with the same O(1) access and O(n) shifting."""
+verdict = """Write data structures generically whenever they may hold more than one type; that is how every Java collection is written. Keep a primitive array such as `int[]` for large amounts of plain numbers, where references and separate objects would cost memory and time."""
+recognise = [
+  "A class header with angle brackets: `class GenericStaticArray<T extends Comparable<T>>`.",
+  "`(T[]) new Comparable[capacity]` or `(T[]) new Object[capacity]` in a constructor.",
+  "`equals` and `compareTo` where the int version had `==` and `<`.",
+]
+
+[spec]
+purpose = """Teach Java generics on the static array: one class for any comparable element type, with the textbook operations and their unchanged costs."""
+requirements = [
+  "Written by hand on a `T[]` created as `Comparable[]`: no Java collections or `Arrays` helpers.",
+  "Fixed capacity; n elements in arr[0..n-1]; overflow, underflow and null elements refused.",
+  "traverse, get, update, insertAt, deleteAt, linearSearch (equals), binarySearch and findMax (compareTo), reverse, copyWithCapacity, all iterative.",
+  "Used with Integer, String and a Reading record in the demo.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["The int-only version (the static-array project)", "Recursive versions (the static-array-generic-recursive project)", "Growing automatically (the dynamic-array-generic project)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Static Array (Generic): the pieces"
+caption = "The demo uses one class, `GenericStaticArray<T>`, with three element types; the array holds references to objects elsewhere in memory."
+nodes = [
+  { id = "demo", label = "Demo", sub = "GenericStaticArrayDemo, five acts", col = 0, row = 0, colour = "client" },
+  { id = "arr", label = "GenericStaticArray<T>", sub = "T = Integer, String, Reading", col = 1, row = 0, colour = "accent" },
+  { id = "mem", label = "T[] arr", sub = "references, n in use", col = 2, row = 0, colour = "green" },
+  { id = "obj", label = "objects", sub = "Integer, String, Reading", col = 2, row = 1, colour = "amber" },
+  { id = "steps", label = "StepCounter", sub = "reads, comparisons, shifts", col = 1, row = 1, colour = "amber" },
+]
+edges = [
+  { from = "demo", to = "arr", label = "insertAt(2, reading)" },
+  { from = "arr", to = "mem", label = "arr[i]" },
+  { from = "mem", to = "obj", label = "refers to" },
+  { from = "arr", to = "steps", label = "counts" },
+]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Static Array (Generic): the classes"
+caption = "`GenericStaticArray<T>` requires `T extends Comparable<T>`; `Reading` is one such type, ordered by temperature."
+nodes = [
+  { id = "arr", label = "GenericStaticArray<T>", sub = ["- T[] arr", "- int n", "+ traverse / get / update", "+ insertAt / deleteAt", "+ linearSearch: equals", "+ binarySearch: compareTo", "+ findMax / reverse", "+ copyWithCapacity"], col = 0, row = 0, colour = "accent" },
+  { id = "cmp", label = "Comparable<T>", sub = ["+ compareTo(T) int"], col = 1, row = 0, colour = "green" },
+  { id = "rd", label = "Reading", sub = ["record: day, celsius", "+ compareTo: by celsius"], col = 1, row = 1, colour = "client" },
+  { id = "steps", label = "StepCounter", sub = ["reads, writes, compares", "shifts, swaps, copies"], col = 0, row = 1, colour = "amber" },
+]
+edges = [ { from = "arr", to = "cmp", label = "T extends" }, { from = "rd", to = "cmp", label = "implements" }, { from = "arr", to = "steps", label = "has one" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Static Array (Generic): comparing two elements"
+caption = "Equality asks equals; order asks compareTo; == is never used on elements."
+nodes = [
+  { id = "q", label = "two elements", sub = "arr[i] and key", col = 0, row = 0, colour = "client" },
+  { id = "eq", label = "arr[i].equals(key)", sub = "same contents?", col = 1, row = 0, colour = "green" },
+  { id = "ord", label = "arr[i].compareTo(key)", sub = "negative, zero, positive", col = 1, row = 1, colour = "accent" },
+  { id = "no", label = "arr[i] == key", sub = "same object? not used", col = 2, row = 0, colour = "red" },
+]
+edges = [ { from = "q", to = "eq", label = "linear search" }, { from = "q", to = "ord", label = "binary search, max" }, { from = "q", to = "no", label = "wrong", dashed = true } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Static Array (Generic): binarySearch(\"Thu\")"
+caption = "Three compareTo calls on the sorted day names."
+participants = ["Demo", "GenericStaticArray", "\"Sun\"", "\"Tue\"", "\"Thu\""]
+steps = [
+  ["Demo", "GenericStaticArray", "binarySearch(\"Thu\")"],
+  ["GenericStaticArray", "\"Sun\"", "compareTo(\"Thu\") < 0: go right"],
+  ["GenericStaticArray", "\"Tue\"", "compareTo(\"Thu\") > 0: go left"],
+  ["GenericStaticArray", "\"Thu\"", "compareTo(\"Thu\") == 0"],
+  ["GenericStaticArray", "Demo", "index 4, 3 comparisons", "reply"],
+]
+
+[poster]
+headline = [["STATIC ARRAY", "text"], ["GENERIC <T>", "accent"]]
+before = { code = "int[] only", note = "a new class per type", tag = "ONE TYPE" }
+after = { code = "GenericStaticArray<T>", note = "Integer, String, Reading", tag = "ANY TYPE" }
+taglines = [["One class, any element type.", "text"], ["equals and compareTo, never ==.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Static Array (Generic)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the generic static array, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] A generic array is written once, with a type parameter called T. [[slnc 300]] Each time it is used, T is filled in: integers, strings, or any type of our own. [[slnc 400]] Everything else is the static array you already know. [[slnc 700]] Our example is a weather station's week, stored three different ways by the same class. [[slnc 400]] By the end, you will know how to write a generic array, what it really stores, and why objects are compared with equals and compare to."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Each locker holds a label pointing at the thing, so the row works for anything"
+picture = { type = "array", cells = ["label", "label", "label", "", ""], size = 3, title = "lockers of labels: books only, or bicycles only" }
+narration = """Think of the row of numbered lockers again. [[slnc 400]] But now each locker holds a label, with an address, and the thing itself is kept somewhere else. [[slnc 400]] The lockers do not care what the things are, so the same row works for books, or for bicycles. [[slnc 500]] When the manager says, this row is for books only, nobody may store a bicycle's label there. [[slnc 400]] That is a generic array: one design, any type, and a rule that is checked."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["T: the type parameter, filled in at each use", "reference: what each place really stores", "equals: same contents?", "compareTo: smaller, equal or larger?", "", "T extends Comparable<T>: any type that can be ordered"]
+narration = """The words. [[slnc 400]] T is the type parameter, filled in each time the class is used. [[slnc 400]] Each place stores a reference, the address of an object. [[slnc 400]] Equals asks whether two objects have the same contents. [[slnc 400]] Compare to asks whether one is smaller, equal, or larger. [[slnc 500]] And T extends comparable means: any type whose elements can be put in order."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["access, update: O(1)", "traverse, linear search, max, reverse: O(n)", "binary search (sorted): O(log n)", "insert, delete: O(n) at the front, O(1) at the end", "", "the same as the int array; extra space O(1)"]
+narration = """Here are the costs in time and space. [[slnc 400]] They are exactly the same as the int array. [[slnc 400]] Access and update are order one. [[slnc 400]] Traversal, linear search, maximum and reverse are order n. [[slnc 400]] Binary search is order log n. [[slnc 400]] Insertion and deletion are order n at the front. [[slnc 500]] Generics change the element type, not the algorithm."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Compared With Related Structures"
+body = ["int[]: values; generic: references to objects", "int[]: 4 bytes each; generic: reference + object", "int[]: == and <; generic: equals and compareTo", "", "static generic: fixed; dynamic generic: grows"]
+narration = """How does it compare? [[slnc 400]] An int array stores the values themselves, four bytes each. [[slnc 400]] A generic array stores references, and every value is a separate object, so it uses more memory. [[slnc 400]] An int array compares with double equals and less than. [[slnc 300]] A generic array uses equals and compare to. [[slnc 500]] And like every static array, its capacity is fixed. [[slnc 300]] A generic dynamic array grows."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["comparing objects with ==", "writing new T[capacity]", "leaving a reference in a freed place", "using the raw type without <T>"]
+narration = """Four mistakes to watch for. [[slnc 400]] Comparing objects with double equals, which only checks for the very same object. [[slnc 400]] Writing new T array, which does not compile. [[slnc 400]] Leaving a reference in a freed place, which keeps the object alive. [[slnc 400]] And using the class without a type in angle brackets, which switches the compiler's checks off."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the generic static array. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] Write the structure once with a type parameter, store references, and compare with equals and compare to. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Make readings order by day name, and see what find max returns. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

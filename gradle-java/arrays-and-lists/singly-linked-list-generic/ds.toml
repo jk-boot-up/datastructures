@@ -1,0 +1,424 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "singly-linked-list-generic"
+category = "arrays-and-lists"
+title = "Singly Linked List (Generic)"
+package = "singlylinkedlistgeneric"
+main_class = "GenericSinglyLinkedListDemo"
+example = "A treasure hunt held as place names, distances and Clue records"
+tagline = "Node<T>: one list for every type"
+bold = "A generic singly linked list is the singly linked list written once with a type parameter T: each Node<T> holds a reference to a T and a next pointer, nodes are matched with equals, and every operation keeps its cost: O(1) at the beginning, O(n) to reach a position."
+analogy_short = "A trail of signposts that can point at anything"
+jdk = "`java.util.LinkedList<E>` (generic in the same way, and doubly linked)"
+thumb_lines = ["LINKED LIST", "GENERIC <T>"]
+thumb_code = "Node<T> next"
+youtube_title = "Generic Singly Linked List in Java - Node<T>, equals and References"
+youtube_tags = ["generic linked list", "java generics", "Node<T>", "singly linked list", "equals vs ==", "linked list java"]
+youtube_description = """Generic Singly Linked List in Java, explained with a treasure hunt held three ways by one class: as String place names, as Integer distances in metres, and as Clue records of our own. We see what Node<T> holds: a reference to the data, not a copy, and a next pointer. We search for a separately made Clue and find it because a record's equals compares its fields, while == says it is a different object. We insert at a position and delete by key with the same pointer changes as the plain list, delete at both ends, and see the garbage collector free nodes nothing refers to. We finish by reversing a list of Integers and a list of Strings with the very same code. The String-only version is the Singly Linked List project."""
+
+[readme]
+intro = """A **generic singly linked list** is the `singly-linked-list` project written once for **any element type**. The class is `GenericSinglyLinkedList<T>` and each node is a `Node<T>`: its `data` is a **reference** to an object of type `T`, and its `next` is a pointer to the following `Node<T>`. The same class holds place names (`String`), distances (`Integer`) or clues of our own (`Clue`), and the compiler refuses anything else. Nodes are matched with **`equals`**, which compares contents; `T` needs no ordering, so it may be any type. Every operation and every cost is unchanged: insertion and deletion at the beginning in O(1), reaching a position in O(n)."""
+analogy = """Picture the treasure-hunt trail again, but now each signpost holds a slip that says where the prize for this stop is kept, rather than the prize itself, plus the direction to the next signpost. The trail does not care whether the prizes are coins, books or maps: the signposts work the same for all. To ask whether a stop has "the fountain, 50 metres", you compare what the slip describes, not the slip itself."""
+example = """The treasure hunt from `singly-linked-list`, held three ways by one class: the six place names, the distances between clues in metres, and `Clue(place, metres)` records. The demo counts nodes, searches for a separately made `Clue`, inserts and deletes by key, deletes at both ends, and reverses the distances and the names with the same code."""
+why = """Without generics, a list of place names, a list of distances and a list of clues would need three copies of the same linked-list code, or one list of `Object` that accepts anything and needs a cast on every read. A type parameter gives one class for every type, checked by the compiler. Every later structure in the course that is built from nodes, stacks, queues and trees, is written this way."""
+when_use = [
+  "A linked list of objects of one type, when inserting and deleting at the beginning is common.",
+  "The building block for generic stacks and queues.",
+]
+when_not = [
+  "Reading by position: use an array or `ArrayList<E>`.",
+  "Deleting at the end or walking backwards often: use a doubly linked list.",
+]
+met_before = [
+  "`java.util.LinkedList<E>` and every other generic collection.",
+  "`Node<T>` in almost every textbook's generic list, stack and queue.",
+]
+
+[[word]]
+term = "type parameter T"
+meaning = "The element type, filled in at each use: `GenericSinglyLinkedList<Clue>`."
+[[word]]
+term = "Node<T>"
+meaning = "A node whose `data` is a `T` and whose `next` is another `Node<T>`."
+[[word]]
+term = "reference"
+meaning = "What `data` holds: the address of the object, not a copy of it."
+[[word]]
+term = "equals"
+meaning = "How nodes are matched: by contents. A record's `equals` compares its fields."
+[[word]]
+term = "head, next, null"
+meaning = "As in any singly linked list: the first node, the pointer to the following node, and the end."
+
+[[operation]]
+name = "Display / count"
+does = "Follow next pointers from head to null"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "6 steps for 6 clues"
+[[operation]]
+name = "Insert at beginning"
+does = "newNode.next = head; head = newNode"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "2 pointer changes"
+[[operation]]
+name = "Insert at end"
+does = "Walk to the last node, link after it"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "n - 1 steps"
+[[operation]]
+name = "Insert at position"
+does = "Walk to prev; newNode.next = prev.next; prev.next = newNode"
+time = "O(1) at 0 / O(n) / O(n)"
+space = "O(1)"
+counted = "2 pointer changes"
+[[operation]]
+name = "Delete at beginning"
+does = "head = head.next"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "1 pointer change"
+[[operation]]
+name = "Delete at end"
+does = "Walk to the second-to-last node, set its next to null"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "3 steps on 5 nodes"
+[[operation]]
+name = "Delete by key / at position"
+does = "Walk with prev and current (equals), then prev.next = current.next"
+time = "O(1) at the head / O(n) / O(n)"
+space = "O(1)"
+counted = "4 comparisons, 1 pointer change"
+[[operation]]
+name = "Search / get"
+does = "Compare each node's data with equals / follow pos pointers"
+time = "O(1) / O(n) / O(n)"
+space = "O(1)"
+counted = "5 comparisons to find position 4"
+[[operation]]
+name = "Reverse"
+does = "prev, current, next: turn each next pointer around"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "7 pointer changes on 6 nodes"
+
+listing_intro = """The generic parts of the list, exactly as they appear in the source. Compare them with `singly-linked-list`: the pointer work is identical; only the type of `data` and the comparison have changed."""
+[[listing]]
+op = "Insertion at the beginning"
+method = "GenericSinglyLinkedList#insertAtBeginning"
+note = """`Node<T>` holds `T data` and `Node<T> next`. Unlike an array, a linked list needs no `new T[n]`, so generics fit it with no casts at all: each node is created with `new Node<>(data, null)`, and the two pointer changes are exactly those of the String-only list."""
+[[listing]]
+op = "Search with equals"
+method = "GenericSinglyLinkedList#search"
+note = """`current.data.equals(key)` compares contents, so a separately made `Clue("the fountain", 50)` is found. `current.data == key` would compare references and miss it."""
+[[listing]]
+op = "Deletion by key"
+method = "GenericSinglyLinkedList#deleteByKey"
+note = """The same `prev` and `current` walk as the plain list, matching with `equals`. Once `prev.next` points past the node, nothing refers to it, and the garbage collector frees both the node and, if nothing else refers to it, its data."""
+
+[compare]
+intro = """The generic singly linked list against its neighbours (n nodes):"""
+columns = ["Property", "Generic singly list", "Singly list of String", "Generic dynamic array"]
+rows = [
+  ["Element types", "any T", "String only", "any T"],
+  ["Access position i", "O(n)", "O(n)", "O(1)"],
+  ["Insert / delete at the beginning", "O(1)", "O(1)", "O(n) shifts"],
+  ["Insert at the end", "O(n) (O(1) with a tail)", "O(n) (O(1) with a tail)", "O(1) amortised"],
+  ["Matches elements with", "equals", "equals", "equals"],
+  ["Needs a cast inside", "no: nodes are created as Node<T>", "no", "yes: (T[]) new Object[n]"],
+  ["Java's own", "LinkedList<E> (doubly linked)", "", "ArrayList<E>"],
+]
+
+pros = [
+  "One class for every element type, checked by the compiler, with no casts: nodes are created as `Node<T>`.",
+  "O(1) insertion and deletion at the beginning, whatever the type.",
+  "The pattern every generic node-based structure uses.",
+]
+cons = [
+  "No random access: position i is i steps away.",
+  "Each element costs a node (header, data reference, next pointer) plus the object itself.",
+  "Matching needs a correct `equals` on T.",
+]
+
+[[mistake]]
+mistake = "Matching with `==`"
+happens = "A separately made but equal object is not found."
+fix = "Use `equals`; for your own types, a record or a correct `equals` method."
+[[mistake]]
+mistake = "A raw `Node` or raw list"
+happens = "The compiler stops checking the element type."
+fix = "Always write `Node<T>` and `GenericSinglyLinkedList<Clue>`."
+[[mistake]]
+mistake = "Setting the two insertion pointers in the wrong order"
+happens = "As in any singly list, the rest of the list is lost."
+fix = "`newNode.next = prev.next` first, then `prev.next = newNode`."
+[[mistake]]
+mistake = "Changing an object after inserting it"
+happens = "The list holds a reference, so the change is seen through the list too; and a search for the old values fails."
+fix = "Store immutable objects, such as records, or remember that the list shares them."
+
+[[exercise]]
+level = "easy"
+question = """Write `boolean contains(T key)` using `search`. What does `contains(new Clue("the bridge", 35))` return on the demo's clues, and why?"""
+answer = """```java
+boolean contains(T key) {
+    return search(key) >= 0;
+}
+```
+True: `search` uses `equals`, and a record's `equals` compares place and metres. O(n) time, O(1) space."""
+[[exercise]]
+level = "medium"
+question = """Write `int totalMetres(GenericSinglyLinkedList<Clue> clues)`, outside the list class, using only `count()` and `get(i)`. What is its time complexity, and how would a method inside the class do better?"""
+answer = """```java
+int totalMetres(GenericSinglyLinkedList<Clue> clues) {
+    int total = 0;
+    for (int i = 0; i < clues.count(); i++) {
+        total += clues.get(i).metres();
+    }
+    return total;
+}
+```
+`count()` is O(n) and `get(i)` is O(i), and both run inside the loop: O(n²) in all. A method inside the class walks once with `current`, adding as it goes: O(n). This is why a linked list is walked, never indexed."""
+[[exercise]]
+level = "harder"
+question = """Write a generic static method `<T> GenericSinglyLinkedList<T> copyOf(GenericSinglyLinkedList<T> list)` that makes a new list with the same elements in the same order in O(n). Are the elements copied?"""
+answer = """Walk the original once, keeping a `tail` pointer in the new list so each append is O(1) (inside the class, so the fields are reachable):
+```java
+static <T> GenericSinglyLinkedList<T> copyOf(GenericSinglyLinkedList<T> list) {
+    GenericSinglyLinkedList<T> copy = new GenericSinglyLinkedList<>();
+    Node<T> tail = null;
+    for (Node<T> current = list.head; current != null; current = current.next) {
+        Node<T> node = new Node<>(current.data, null);
+        if (tail == null) copy.head = node; else tail.next = node;
+        tail = node;
+    }
+    return copy;
+}
+```
+The nodes are new, but the elements are not: both lists refer to the same objects. That is a shallow copy."""
+
+[hero]
+caption = "GenericSinglyLinkedList<Clue>: each Node<Clue> refers to a Clue and to the next node"
+picture = { type = "linked", nodes = ["oak tree 40", "old well 25", "red gate 60", "bridge 35"], pointers = [[0, "head"]], title = "Node<Clue> ... next ... null" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "One class, any element type"
+summary = "One class holds the hunt as String place names, Integer distances and Clue records; adding a String to the Integer list does not compile."
+detail = """`GenericSinglyLinkedList<String>` holds the six place names, `GenericSinglyLinkedList<Integer>` the distances between clues in metres, and `GenericSinglyLinkedList<Clue>` records of our own, each a place and a distance. All three are built with `insertAtBeginning`, and displayed by the same loop. The type argument is checked by the compiler: `metres.insertAtEnd("far")` is refused before the program runs."""
+speech = """First, one class for any type. [[slnc 400]] The same linked list holds the place names, as strings. [[slnc 300]] It holds the distances, as integers. [[slnc 300]] And it holds clues, a type of our own. [[slnc 500]] The compiler checks each one. [[slnc 300]] Putting a word into the list of distances does not compile."""
+console = [["<String>:  head -> the oak tree -> ... -> the chest -> null", "ok"], ["<Integer>: head -> 40 -> 25 -> 60 -> 35 -> 50 -> 20 -> null", "ok"], ["<Clue>:    head -> the oak tree (40 m) -> ... -> the chest (20 m) -> null", "ok"], ["one class, three element types; metres.insertAtEnd(\"far\") does not compile", "amber"]]
+[[act.frame]]
+caption = "Two of the three lists: Integer distances and String places, from the same class"
+say = """Here are two of the lists. [[slnc 300]] Distances, and place names. [[slnc 300]] The same nodes, the same next pointers, different data."""
+picture = { type = "group", items = [ { type = "linked", nodes = [40, 25, 60, 35], title = "<Integer>" }, { type = "linked", nodes = ["oak tree", "old well", "red gate", "bridge"], title = "<String>" } ], vertical = true }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Node<T>: data is a reference"
+summary = "count() takes 6 steps; each Node<Clue> holds a reference to a Clue and a next pointer, not a copy of the Clue."
+detail = """Each `Node<Clue>` holds two references: `data`, to a `Clue` object stored elsewhere, and `next`, to the following node. Counting still means following next pointers from the head: 6 steps for 6 clues. The head's `data` is the very `Clue` object that was inserted; the node refers to it and holds no copy. Unlike a generic array, a linked list needs no cast: every node is created as `new Node<>(data, null)`."""
+speech = """What does a node hold? [[slnc 400]] Two references. [[slnc 300]] One to the clue, which lives elsewhere in memory. [[slnc 300]] And one to the next node. [[slnc 500]] The node does not contain a copy of the clue. [[slnc 300]] It points at it. [[slnc 400]] Counting is still six steps along the next pointers."""
+console = [["count() = 6: 6 steps; each Node<Clue> holds a reference to a Clue and a next pointer", "ok"], ["head.data is the Clue object the oak tree (40 m); the node points at it, it does not contain a copy", "muted"]]
+[[act.frame]]
+caption = "A Node<Clue>: data refers to a Clue object; next refers to the following node"
+say = """Here is one node. [[slnc 300]] Its data arrow goes to the clue. [[slnc 300]] Its next arrow goes to the next node."""
+picture = { type = "linked", nodes = ["node: data", "Clue: oak tree, 40 m"], null_end = false, title = "data is a reference" }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Search and deletion with equals"
+summary = "A separately made Clue(\"the fountain\", 50) is found at position 4 with 5 equals comparisons, though it is a different object; insertAtPosition changes 2 pointers; deleteByKey finds the red gate in 4 comparisons."
+detail = """A new `Clue("the fountain", 50)` is made and searched for. Search compares each node's data with `equals`, and a record's `equals` compares its fields, so it is found at position 4 after 5 comparisons, although `==` says it is a different object. Insertion and deletion are the plain list's pointer work: `insertAtPosition(1, the mill)` changes 2 pointers, and `deleteByKey(new Clue("the red gate", 60))` walks with `prev` and `current`, matching with `equals`, and changes 1 pointer."""
+speech = """Now search. [[slnc 400]] We make a new clue: the fountain, fifty metres. [[slnc 400]] Search compares with equals, and a record's equals compares its fields. [[slnc 300]] So it is found, at position four. [[slnc 400]] But it is a different object: double equals would have missed it. [[slnc 500]] Insertion and deletion change pointers exactly as before."""
+console = [["search(new Clue(\"the fountain\", 50)) = position 4: 5 comparisons; a record's equals compares place and metres", "ok"], ["the same object? false: equals, not ==, is what matches", "amber"], ["insertAtPosition(1, the mill (30 m)): 2 pointers changed", "ok"], ["deleteByKey(new Clue(\"the red gate\", 60)) = true: 4 comparisons, 1 pointer changed", "ok"]]
+[[act.frame]]
+caption = "search with equals: positions 0 to 3 differ, position 4 equals the new Clue"
+say = """Here is the search. [[slnc 300]] Four clues that are not equal. [[slnc 300]] The fifth, the fountain at fifty metres, is equal. [[slnc 300]] Five comparisons."""
+picture = { type = "linked", nodes = ["oak tree", "old well", "red gate", "bridge", "fountain"], marks = { "0" = "dim", "1" = "dim", "2" = "dim", "3" = "dim", "4" = "ok" }, pointers = [[4, "equals"]] }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Deleting at both ends"
+summary = "deleteAtBeginning changes 1 pointer; deleteAtEnd walks 3 steps; the removed nodes and Clues can be garbage-collected; an empty list is an underflow."
+detail = """`deleteAtBeginning` moves `head` on one node: the oak tree is gone, 1 pointer changed. `deleteAtEnd` walks to the second-to-last node, 3 steps on 5 nodes, and sets its next to null: the chest is gone. Nothing refers to the removed nodes any more, so the garbage collector can free them, and the `Clue` objects too if nothing else refers to them. Deleting from an empty list is refused as an underflow."""
+speech = """Deleting at both ends. [[slnc 400]] Deleting at the beginning moves the head: one pointer. [[slnc 400]] Deleting at the end walks to the node before the last: three steps. [[slnc 500]] Nothing refers to the removed nodes now, so Java can free them. [[slnc 400]] And deleting from an empty list is an underflow."""
+console = [["deleteAtBeginning() = the oak tree (40 m): 1 pointer changed", "ok"], ["deleteAtEnd() = the chest (20 m): 3 steps to the second-to-last node", "amber"], ["no node refers to them now, so the garbage collector can free both nodes and both Clues", "muted"], ["an empty list, deleteAtEnd(): underflow: the list is empty", "bad"]]
+[[act.frame]]
+caption = "After both deletions: the mill is the head, the fountain the last node"
+say = """Here is the list now. [[slnc 300]] The mill is at the head, and the fountain's next is null."""
+picture = { type = "linked", nodes = ["mill 30", "old well 25", "bridge 35", "fountain 50"], pointers = [[0, "head"]] }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The same algorithm for every type"
+summary = "reverse() makes 7 pointer changes on six Integers and on six Strings, with the very same code."
+detail = """`reverse` is the three-pointer loop of the plain list. On the six distances it turns six next pointers around and moves `head`: 7 pointer changes, giving 20, 50, 35, 60, 25, 40. On the six place names it does exactly the same, 7 changes. Every cost of the generic list equals the String-only list: generics change the element type, not the algorithm. Java's `java.util.LinkedList<E>` is generic in the same way, though it links both ways."""
+speech = """One algorithm for every type. [[slnc 400]] Reverse turns every next pointer around. [[slnc 400]] On the distances, seven pointer changes. [[slnc 300]] On the place names, the very same seven. [[slnc 500]] Generics change the type of the data. [[slnc 300]] They do not change the algorithm, or its cost."""
+console = [["<Integer> reverse(): 7 pointer changes; head -> 20 -> 50 -> 35 -> 60 -> 25 -> 40 -> null", "ok"], ["<String>  reverse(): 7 pointer changes, the very same code", "ok"], ["every cost equals the String-only list: generics change the type, not the algorithm", "muted"], ["already in Java: java.util.LinkedList<E>, generic the same way (and linked both ways)", "muted"]]
+[[act.frame]]
+caption = "The reversed distances: 20 -> 50 -> 35 -> 60 -> 25 -> 40 -> null"
+say = """Here are the reversed distances. [[slnc 300]] The last became the first, and no number moved."""
+picture = { type = "linked", nodes = [20, 50, 35, 60, 25, 40], pointers = [[0, "head"]] }
+
+[animation]
+subtitle = "A treasure hunt as a generic singly linked list: Node<T> holding references, equals for search and delete, and one reverse for every type."
+
+[docs.problem]
+scenario = """The treasure-hunt organisers keep the trail as place names, as distances and as clue records, and want one linked-list class for all three."""
+naive = """Three copies of the linked-list code, one per type; or one list of `Object` with a cast on every read and no compiler check."""
+deliver = [
+  "A `GenericSinglyLinkedList<T>` of `Node<T>`s, written by hand, with the textbook operations: insertAtBeginning, insertAtEnd, insertAtPosition, deleteAtBeginning, deleteAtEnd, deleteAtPosition, deleteByKey, search, get, display, count, reverse.",
+  "Matching with equals; the same class used with String, Integer and a Clue record.",
+  "Time and space complexity of every operation, and a comparison with the String-only list and the generic dynamic array.",
+]
+
+[docs.prerequisites]
+required = ["The singly-linked-list project", "What an object and a reference are"]
+not_required = ["Previous experience of writing generic classes"]
+
+[docs.session]
+objectives = [
+  "Write `Node<T>` and a generic list class.",
+  "Explain that a node refers to its data rather than copying it.",
+  "Match elements with equals and explain why == is wrong.",
+  "State that every cost is unchanged from the String-only list.",
+]
+walkthrough = """Show the String-only list and ask how to hold distances. Replace String with T; note that no cast is needed, unlike a generic array. Run the demo; in act two, draw a node with two arrows. In act three, show equals finding a separately made Clue. Finish with the comparison table."""
+
+[docs.explained]
+sentence = """A generic singly linked list is the singly linked list with a type parameter: each Node<T> refers to a T and to the next node, elements are matched with equals, and every operation keeps its cost."""
+verdict = """This is how every node-based structure is written in Java; learn it here, then reuse it for stacks, queues and trees. For a ready-made list, `LinkedList<E>` or, usually better, `ArrayList<E>`."""
+recognise = [
+  "`class Node<T> { T data; Node<T> next; }`.",
+  "`new Node<>(data, null)` with no cast.",
+  "`current.data.equals(key)` in a walk.",
+]
+
+[spec]
+purpose = """Teach Java generics on the singly linked list: Node<T>, references and equals, with unchanged costs."""
+requirements = [
+  "Written by hand: `Node<T>` with `data` and `next`; the list holds only `head`; no Java collections.",
+  "The textbook operations, matching with equals; underflow reported.",
+  "Used with String, Integer and a Clue record in the demo.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["The String-only version (singly-linked-list)", "Recursive versions (singly-linked-list-generic-recursive)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Singly Linked List (Generic): the pieces"
+caption = "One generic class; each Node<T> refers to its data object and to the next node."
+nodes = [
+  { id = "demo", label = "Demo", sub = "GenericSinglyLinkedListDemo", col = 0, row = 0, colour = "client" },
+  { id = "list", label = "GenericSinglyLinkedList<T>", sub = "head only", col = 1, row = 0, colour = "accent" },
+  { id = "node", label = "Node<T>", sub = "data, next", col = 2, row = 0, colour = "green" },
+  { id = "obj", label = "T objects", sub = "String, Integer, Clue", col = 2, row = 1, colour = "amber" },
+  { id = "steps", label = "StepCounter", sub = "steps, comparisons, pointer changes", col = 1, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "list", label = "search(clue)" }, { from = "list", to = "node", label = "head" }, { from = "node", to = "obj", label = "data" }, { from = "list", to = "steps", label = "counts" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Singly Linked List (Generic): the classes"
+caption = "`GenericSinglyLinkedList<T>` holds `head`; each `Node<T>` holds `data` and `next`; `Clue` is one T."
+nodes = [
+  { id = "list", label = "GenericSinglyLinkedList<T>", sub = ["- Node<T> head", "+ insertAtBeginning / AtEnd", "+ insertAtPosition", "+ deleteAtBeginning / AtEnd", "+ deleteByKey: equals", "+ search: equals / get", "+ display / count / reverse"], col = 0, row = 0, colour = "accent" },
+  { id = "node", label = "Node<T>", sub = ["data: T", "next: Node<T>"], col = 1, row = 0, colour = "green" },
+  { id = "clue", label = "Clue", sub = ["record: place, metres"], col = 1, row = 1, colour = "client" },
+]
+edges = [ { from = "list", to = "node", label = "head" }, { from = "node", to = "clue", label = "T = Clue" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Singly Linked List (Generic): search(key)"
+caption = "Walk from head, matching with equals."
+nodes = [
+  { id = "in", label = "search(key)", sub = "a T", col = 0, row = 0, colour = "client" },
+  { id = "null", label = "current == null?", sub = "yes: -1", col = 1, row = 0, colour = "red" },
+  { id = "eq", label = "current.data.equals(key)?", sub = "yes: position", col = 2, row = 0, colour = "green" },
+  { id = "next", label = "current = current.next", sub = "position + 1", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "in", to = "null", label = "" }, { from = "null", to = "eq", label = "no" }, { from = "eq", to = "next", label = "no" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Singly Linked List (Generic): search(new Clue(\"the fountain\", 50))"
+caption = "Five equals calls; the fifth node's Clue is equal, though not the same object."
+participants = ["Demo", "GenericSinglyLinkedList", "nodes 0..3", "node 4"]
+steps = [
+  ["Demo", "GenericSinglyLinkedList", "search(new Clue(fountain, 50))"],
+  ["GenericSinglyLinkedList", "nodes 0..3", "equals? no, 4 times"],
+  ["GenericSinglyLinkedList", "node 4", "equals? yes"],
+  ["GenericSinglyLinkedList", "Demo", "position 4, 5 comparisons", "reply"],
+]
+
+[poster]
+headline = [["LINKED LIST", "text"], ["GENERIC <T>", "accent"]]
+before = { code = "SinglyLinkedList", note = "String only", tag = "ONE TYPE" }
+after = { code = "Node<T> next", note = "String, Integer, Clue", tag = "ANY TYPE" }
+taglines = [["One list for every type.", "text"], ["Match with equals, never ==.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Singly Linked List (Generic)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the generic singly linked list, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] It is a chain of nodes, written once for any type of data. [[slnc 300]] Each node holds a reference to its data, and a pointer to the next node. [[slnc 700]] Our example is a treasure hunt, held as place names, as distances, and as clues. [[slnc 400]] By the end, you will know how to write a generic node and list, what a node really holds, and why elements are matched with equals."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Each signpost says where this stop's prize is kept, and where the next signpost is"
+picture = { type = "linked", nodes = ["sign 1", "sign 2", "sign 3", "sign 4"], pointers = [[0, "start"]] }
+narration = """Think of the treasure trail again. [[slnc 400]] Each signpost holds a slip saying where this stop's prize is kept, and points to the next signpost. [[slnc 500]] The trail does not care whether the prizes are coins, books, or maps. [[slnc 400]] The signposts work the same for all of them. [[slnc 500]] That is a generic linked list."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["T: the element type", "Node<T>: data of type T, and next", "reference: the node points at its data", "equals: compare contents, not references"]
+narration = """The words. [[slnc 400]] T is the element type, filled in at each use. [[slnc 400]] A node of T holds data of type T, and a next pointer. [[slnc 400]] The data is a reference: the node points at the object. [[slnc 400]] And equals compares contents, not references."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["insert, delete at beginning: O(1)", "insert, delete at end: O(n)", "at a position: O(n) to reach, O(1) to link", "search, get, count, display, reverse: O(n)", "", "the same as the String-only list"]
+narration = """Here are the costs. [[slnc 400]] Insertion and deletion at the beginning are order one. [[slnc 400]] At the end, order n. [[slnc 400]] At a position, order n to reach it, and order one to link. [[slnc 400]] Search, get, count, display and reverse are order n. [[slnc 500]] Exactly the same as the string-only list."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Compared With Related Structures"
+body = ["String-only list: the same costs, one type", "generic dynamic array: O(1) access, a cast inside", "generic list: no cast, nodes are Node<T>", "", "Java's own: LinkedList<E>, linked both ways"]
+narration = """How does it compare? [[slnc 400]] The string-only list has the same costs, for one type. [[slnc 400]] The generic dynamic array reaches any position in one step, but needs a cast inside. [[slnc 400]] The generic list needs no cast at all. [[slnc 400]] And Java's own linked list is generic in the same way, linked in both directions."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["matching with ==", "raw Node or raw list types", "insertion pointers in the wrong order", "changing an object after inserting it"]
+narration = """Four mistakes to watch for. [[slnc 400]] Matching with double equals. [[slnc 400]] Using the raw types without angle brackets. [[slnc 400]] Setting the insertion pointers in the wrong order. [[slnc 400]] And changing an object after inserting it, forgetting that the list shares it."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the generic singly linked list. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] A node of T refers to its data and to the next node, and elements are matched with equals. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Total the distances of the clues, and see why a linked list is walked, never indexed. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

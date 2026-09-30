@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercises — Singly Linked List (Generic)</title>
+<style>
+:root{color-scheme:light dark;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+@media (prefers-color-scheme:dark){:root{--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;
+--line:#334155;--accent:#a78bfa;--code:#020617;--link:#93c5fd}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+<h1 id="exercises-singly-linked-list-generic">Exercises — Singly Linked List (Generic)</h1>
+<p>Try each one before opening its answer. They start easy and get harder.</p>
+<h2 id="1-easy">1. Easy</h2>
+<p>Write <code>boolean contains(T key)</code> using <code>search</code>. What does <code>contains(new Clue(&quot;the bridge&quot;, 35))</code> return on the demo's clues, and why?</p>
+<h2 id="2-medium">2. Medium</h2>
+<p>Write <code>int totalMetres(GenericSinglyLinkedList&lt;Clue&gt; clues)</code>, outside the list class, using only <code>count()</code> and <code>get(i)</code>. What is its time complexity, and how would a method inside the class do better?</p>
+<h2 id="3-harder">3. Harder</h2>
+<p>Write a generic static method <code>&lt;T&gt; GenericSinglyLinkedList&lt;T&gt; copyOf(GenericSinglyLinkedList&lt;T&gt; list)</code> that makes a new list with the same elements in the same order in O(n). Are the elements copied?</p>
+<hr>
+<h2 id="answers">Answers</h2>
+<details>
+<summary>Answer 1</summary>
+<pre><code>boolean contains(T key) {
+    return search(key) &gt;= 0;
+}</code></pre>
+<p>True: <code>search</code> uses <code>equals</code>, and a record's <code>equals</code> compares place and metres. O(n) time, O(1) space.</p>
+</details>
+<details>
+<summary>Answer 2</summary>
+<pre><code>int totalMetres(GenericSinglyLinkedList&lt;Clue&gt; clues) {
+    int total = 0;
+    for (int i = 0; i &lt; clues.count(); i++) {
+        total += clues.get(i).metres();
+    }
+    return total;
+}</code></pre>
+<p><code>count()</code> is O(n) and <code>get(i)</code> is O(i), and both run inside the loop: O(n²) in all. A method inside the class walks once with <code>current</code>, adding as it goes: O(n). This is why a linked list is walked, never indexed.</p>
+</details>
+<details>
+<summary>Answer 3</summary>
+<p>Walk the original once, keeping a <code>tail</code> pointer in the new list so each append is O(1) (inside the class, so the fields are reachable):</p>
+<pre><code>static &lt;T&gt; GenericSinglyLinkedList&lt;T&gt; copyOf(GenericSinglyLinkedList&lt;T&gt; list) {
+    GenericSinglyLinkedList&lt;T&gt; copy = new GenericSinglyLinkedList&lt;&gt;();
+    Node&lt;T&gt; tail = null;
+    for (Node&lt;T&gt; current = list.head; current != null; current = current.next) {
+        Node&lt;T&gt; node = new Node&lt;&gt;(current.data, null);
+        if (tail == null) copy.head = node; else tail.next = node;
+        tail = node;
+    }
+    return copy;
+}</code></pre>
+<p>The nodes are new, but the elements are not: both lists refer to the same objects. That is a shallow copy.</p>
+</details>
+</main>
+<footer>Generated from <code>exercises.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

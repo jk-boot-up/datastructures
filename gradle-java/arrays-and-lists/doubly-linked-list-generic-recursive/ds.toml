@@ -1,0 +1,386 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "doubly-linked-list-generic-recursive"
+category = "arrays-and-lists"
+title = "Doubly Linked List (Generic, Recursive)"
+package = "doublylinkedlistgenericrecursive"
+main_class = "GenericRecursiveDoublyLinkedListDemo"
+example = "A photo viewer of Photo records, walked recursively both ways"
+tagline = "Any type, either direction, one call per node"
+bold = "The generic recursive doubly linked list holds any type T in Node<T>s with prev and next, matches with equals, walks by recursion along next or prev, finds recursively and links in O(1), and works at both ends without recursion; each walk costs a frame per node."
+analogy_short = "Guards on a train of any cargo, passing questions along either way"
+jdk = "Nothing: `java.util.LinkedList<E>` uses loops"
+thumb_lines = ["DOUBLY LIST", "GENERIC + RECURSIVE"]
+thumb_code = "find(node.next, key)"
+youtube_title = "Generic Recursive Doubly Linked List in Java - equals, prev, next and the Call Stack"
+youtube_tags = ["generic doubly linked list", "recursion", "java generics", "Node<T>", "call stack", "stack overflow"]
+youtube_description = """Generic Recursive Doubly Linked List in Java, explained with a photo viewer of Photo records. We trace a recursive search along prev pointers from the tail, comparing with equals until a separately made Photo("dog", 610) matches. We count Integers and display Strings with the same recursion, insert at both ends with no recursion at all, and find nodes recursively before linking them in O(1): insertAtPosition two calls deep with four pointers, deleteByKey three calls deep with two. We reverse the album recursively, seven calls deep, and finish at the limit: counting a million nodes throws a real StackOverflowError."""
+
+[readme]
+intro = """This project combines the two variations of the **doubly linked list**. Like `doubly-linked-list-generic`, each `Node<T>` has `prev`, a **reference** to a `T`, and `next`, and elements are matched with **`equals`**. Like `doubly-linked-list-recursive`, every walk is a **recursion** along `next` from the head or along `prev` from the tail; nodes are **found recursively** and **linked in O(1)**, and the ends need no recursion. The time of every operation equals the loop version's; each recursive walk uses one call-stack **frame** per node."""
+analogy = """Picture guards on a train carrying any kind of cargo. Asked whether a carriage holds a certain crate, a guard checks their own carriage and, if not, asks the next guard along, forwards or backwards, and waits. Each guard only needs to know how to compare two crates."""
+example = """The photo viewer's album of `Photo(name, kilobytes)` records, beside the same class holding sizes and names. The demo traces a recursive search along prev, counts and displays other types, works at the ends, inserts and deletes in the middle, reverses recursively, and counts a million nodes."""
+why = """Generic recursive code over nodes with more than one pointer is exactly the shape of tree code later in the course. The doubly linked list is the gentlest version of it: two pointers, but only one followed at a time."""
+when_use = [
+  "Learning generic recursion over nodes with two pointers.",
+  "Short lists.",
+]
+when_not = [
+  "Long lists: a million nodes overflow the call stack.",
+]
+met_before = [
+  "`doubly-linked-list-generic` and `doubly-linked-list-recursive`.",
+]
+
+[[word]]
+term = "Node<T>"
+meaning = "A node with `prev`, `T data` and `next`."
+[[word]]
+term = "equals"
+meaning = "How nodes are matched: by contents."
+[[word]]
+term = "find, then link"
+meaning = "Finding a node is recursive; changing its links is O(1)."
+[[word]]
+term = "recursion depth"
+meaning = "One frame per node walked."
+
+[[operation]]
+name = "Display forward / backward, count"
+does = "Recurse along next from head, or prev from tail"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 5 for 5 nodes"
+[[operation]]
+name = "Insert / delete at both ends"
+does = "Through head or tail; no recursion"
+time = "O(1) / O(1) / O(1)"
+recursive_space = "O(1)"
+space = "O(1)"
+counted = "depth 0"
+[[operation]]
+name = "Insert at position"
+does = "Find the node before recursively, then 4 pointers"
+time = "O(1) at 0 / O(n) / O(n)"
+recursive_space = "O(pos)"
+space = "O(1)"
+counted = "depth 2, 4 pointers"
+[[operation]]
+name = "Delete by key / search"
+does = "Recurse comparing with equals, then unlink in O(1)"
+time = "O(1) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 3, 2 pointers; search depth 4"
+[[operation]]
+name = "Reverse"
+does = "Swap prev and next, recurse on the old next"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 7, 16 pointer changes"
+
+listing_intro = """The recursive walks over `Node<T>`. Compare them with `doubly-linked-list-recursive`: only the types and `equals` have changed."""
+[[listing]]
+op = "Delete by key: find recursively, unlink in O(1)"
+method = "GenericRecursiveDoublyLinkedList#deleteByKey,find"
+note = """`find` compares with `equals` and recurses on `node.next`; `deleteNode` then points the neighbours at each other."""
+[[listing]]
+op = "Display backward"
+method = "GenericRecursiveDoublyLinkedList#displayBackward"
+note = """The same recursion as display forward, started at the tail and following `prev`."""
+[[listing]]
+op = "Reversal"
+method = "GenericRecursiveDoublyLinkedList#reverse"
+note = """Swap `prev` and `next`, recurse on the saved old next; then swap head and tail."""
+
+[compare]
+intro = """The four doubly-linked-list projects side by side (n nodes):"""
+columns = ["Property", "Generic, recursive (this)", "Generic, loops", "String, recursive", "String, loops"]
+rows = [
+  ["Element types", "any T", "any T", "String", "String"],
+  ["Both ends", "O(1), no recursion", "O(1)", "O(1), no recursion", "O(1)"],
+  ["Walks", "O(n) time and stack", "O(n) time, O(1) space", "O(n) time and stack", "O(n) time, O(1) space"],
+  ["A million nodes", "StackOverflowError", "fine", "StackOverflowError", "fine"],
+]
+
+pros = [
+  "One class for every type, with recursions that follow either pointer.",
+  "The shape of generic tree code.",
+  "Work at both ends is O(1) with no recursion.",
+]
+cons = [
+  "O(n) stack per walk; long lists overflow.",
+  "Two pointers per node, plus the object.",
+]
+
+[[mistake]]
+mistake = "Matching with `==`"
+happens = "Equal objects made elsewhere are not found."
+fix = "Use `equals`."
+[[mistake]]
+mistake = "Recursing on node.next after the swap in reverse"
+happens = "The recursion walks backwards and stops."
+fix = "Save the old next first."
+[[mistake]]
+mistake = "Recursing to reach an end"
+happens = "O(n) where the head or tail pointer gives O(1)."
+fix = "Use head and tail."
+[[mistake]]
+mistake = "Recursing over long lists"
+happens = "StackOverflowError."
+fix = "Use loops."
+
+[[exercise]]
+level = "easy"
+question = """Write a recursive `int countBackward(Node<T> node)` using `prev`. What does it return from the tail of the five photos?"""
+answer = """```java
+int countBackward(Node<T> node) {
+    if (node == null) return 0;
+    return 1 + countBackward(node.prev);
+}
+```
+5, at depth 5. If it ever differs from `count()`, a prev pointer is wrong."""
+[[exercise]]
+level = "medium"
+question = """Write a recursive `Node<T> findLast(Node<T> node, T key)` that finds the last node equal to `key` by recursing along `prev` from the tail. Why is this simpler than from the head?"""
+answer = """```java
+Node<T> findLast(Node<T> node, T key) {
+    if (node == null) return null;
+    if (node.data.equals(key)) return node;
+    return findLast(node.prev, key);
+}
+```
+Called as `findLast(tail, key)`. Walking backwards, the first match is the last one; from the head, the whole list would have to be walked remembering the latest match."""
+[[exercise]]
+level = "harder"
+question = """Write a generic recursive `static <T> boolean sameForwardAndBack(Node<T> front, Node<T> back)` that checks whether a list reads the same from both ends. What is its depth on n nodes?"""
+answer = """```java
+static <T> boolean sameForwardAndBack(Node<T> front, Node<T> back) {
+    if (front == back || front.prev() == back) return true;
+    if (!front.data().equals(back.data())) return false;
+    return sameForwardAndBack(front.next(), back.prev());
+}
+```
+Called with the head and the tail of a non-empty list. The two pointers move inward one node each per call, so the depth is about n / 2."""
+
+[hero]
+caption = "A recursive search along prev from the tail: mountain, forest, then dog equals"
+picture = { type = "stack", cells = ["search(mountain): no", "search(forest): no", "search(dog): equals"], width = 280, marks = { "2" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "Recursion along prev, with equals"
+summary = "Searching backwards from the tail for a new Photo(\"dog\", 610): mountain, forest, then dog equals; display backward goes 5 deep."
+detail = """Starting at the tail, each call compares its photo with the key using `equals` and, if not equal, recurses on `prev`. Mountain and forest do not match; dog does, because a record's `equals` compares name and size: a base case. Display backward follows the same prev pointers to `null`, five calls deep."""
+speech = """First, recursion along the previous pointers. [[slnc 400]] From the tail, each call compares its photo with the key, using equals. [[slnc 400]] Mountain, no. [[slnc 300]] Forest, no. [[slnc 300]] Dog, equal. [[slnc 400]] Display backward follows the same pointers, five calls deep."""
+console = [["mountain 1200KB: not equal, recurse on prev", "muted"], ["  forest 930KB: not equal, recurse on prev", "muted"], ["    dog 610KB: equals   <- base case: found", "ok"], ["tail -> mountain 1200KB <-> ... <-> beach 820KB <- head, depth 5", "ok"]]
+[[act.frame]]
+caption = "Three calls along prev; the third finds an equal Photo"
+say = """Here are the three calls, from the tail backwards."""
+picture = { type = "stack", cells = ["search(mountain): no", "search(forest): no", "search(dog): equals"], width = 280, marks = { "2" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "The same recursion, any type"
+summary = "count() on five Integers and display on five Strings: depth 5 each."
+detail = """The same recursive methods work on `Integer` sizes and `String` names: five calls deep each, whatever `T` is."""
+speech = """The same recursion works for any type. [[slnc 400]] Counting five sizes, and displaying five names: five calls deep each."""
+console = [["<Integer> count() = 5, depth 5", "ok"], ["<String>  head -> beach <-> cake <-> dog <-> forest <-> mountain <- tail, depth 5", "ok"]]
+[[act.frame]]
+caption = "Five names, linked both ways"
+say = """Here are the names."""
+picture = { type = "linked", nodes = ["beach", "cake", "dog", "forest", "mountain"], double = true, pointers = [[0, "head"], [4, "tail"]] }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Both ends without recursion; the middle found recursively"
+summary = "Both ends: depth 0, 6 pointers; search: 4 equals calls, depth 4; insertAtPosition found at depth 2, 4 pointers; deleteByKey found at depth 3, 2 pointers."
+detail = """Inserting at the beginning and the end uses head and tail: depth 0. In the middle, the node is found recursively and then linked in O(1): `search` finds the dog at depth 4; `insertAtPosition(3, garden)` finds the node before at depth 2 and sets 4 pointers; `deleteByKey(cake)` finds it at depth 3 and changes 2."""
+speech = """Both ends need no recursion. [[slnc 400]] In the middle, first find recursively, then link. [[slnc 400]] Insert at position three finds its place two calls deep, then sets four pointers. [[slnc 400]] Delete the cake finds it three calls deep, then changes two."""
+console = [["insertAtBeginning and insertAtEnd: depth 0, 6 pointer changes", "ok"], ["search(new Photo(\"dog\", 610)) = position 3: 4 equals calls, depth 4", "amber"], ["insertAtPosition(3, garden 760KB): found at depth 2, 4 pointers set", "ok"], ["deleteByKey(new Photo(\"cake\", 540)): found at depth 3, 2 pointers changed", "ok"]]
+[[act.frame]]
+caption = "After the changes: airport ... river, garden in, cake out"
+say = """Here is the album now."""
+picture = { type = "linked", nodes = ["airport", "beach", "garden", "dog", "forest", "mountain", "river"], double = true, marks = { "0" = "new", "2" = "new", "6" = "new" } }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Reversal, recursively"
+summary = "reverse on seven photos: depth 7, 16 pointer changes including head and tail."
+detail = """Each call swaps its node's prev and next and recurses on the saved old next: seven calls deep for seven photos, 14 pointer changes, then head and tail swap: 16."""
+speech = """Reversal. [[slnc 400]] Seven calls deep for seven photos. [[slnc 300]] Each swaps its pointers and recurses on the old next. [[slnc 400]] Then head and tail are swapped."""
+console = [["reverse(): depth 7, 16 pointer changes", "ok"], ["head -> river 880KB <-> mountain 1200KB <-> ... <-> airport 700KB <- tail", "muted"]]
+[[act.frame]]
+caption = "The reversed album"
+say = """Here is the reversed album."""
+picture = { type = "linked", nodes = ["river", "mountain", "forest", "dog", "garden", "beach", "airport"], double = true, pointers = [[0, "head"], [6, "tail"]] }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The limit of recursion"
+summary = "Counting a million nodes recursively throws StackOverflowError."
+detail = """A million `insertAtEnd` calls need no recursion; counting the million recursively needs a frame per node and throws `StackOverflowError`. Generics change what each node refers to; recursion changes how much stack each walk needs."""
+speech = """And the limit. [[slnc 400]] Counting a million nodes recursively overflows the stack. [[slnc 500]] Generics change what a node refers to. [[slnc 300]] Recursion changes how much stack a walk needs."""
+console = [["count() of 1,000,000 nodes: StackOverflowError, one frame per node", "bad"], ["generics change what each node refers to; recursion changes how much stack each walk needs", "muted"]]
+[[act.frame]]
+caption = "One frame per node: a million overflow"
+say = """One call per node. [[slnc 300]] Far too many."""
+picture = { type = "stack", cells = ["count(node 0)", "count(node 1)", "...", "StackOverflowError"], width = 240, marks = { "3" = "bad" }, top_label = "overflow" }
+
+[animation]
+subtitle = "A photo viewer as a generic recursive doubly linked list: recursion along prev and next with equals, O(1) ends, find then link, recursive reversal, and a stack overflow."
+
+[docs.problem]
+scenario = """The photo viewer's album as one generic doubly linked list whose walks are recursive."""
+naive = """Separate recursive classes per type; matching with ==; recursion for the ends; recursion over long lists."""
+deliver = [
+  "A `GenericRecursiveDoublyLinkedList<T>` with recursive walks along next and prev, matching with equals, O(1) ends, and find-then-link in the middle.",
+  "Recursion depth counted; a real StackOverflowError.",
+  "Time and stack space of every operation, compared with the other three doubly lists.",
+]
+
+[docs.prerequisites]
+required = ["doubly-linked-list-generic and doubly-linked-list-recursive"]
+not_required = ["Tree recursion (coming later)"]
+
+[docs.session]
+objectives = [
+  "Write generic recursive walks along next and prev.",
+  "Separate recursive finding from O(1) linking.",
+  "State the time and stack space of each operation.",
+]
+walkthrough = """Trace the backward search for the dog photo. Run the demo; in act three, split each middle operation into finding and linking. Finish with the four-column table."""
+
+[docs.explained]
+sentence = """The generic recursive doubly linked list matches Node<T> data with equals, walks by recursion along next or prev, links in O(1), and uses a frame per node walked."""
+verdict = """A study piece bridging lists and trees; use loops or `LinkedList<E>` in real code."""
+recognise = [
+  "`find(node.next, key)` or `find(node.prev, key)` with `node.data.equals(key)`.",
+]
+
+[spec]
+purpose = """Combine generics and recursion on the doubly linked list."""
+requirements = [
+  "Written by hand: `Node<T>`; head and tail; no Java collections.",
+  "Recursive walks with equals; O(1) ends; recursion depth counted; a real StackOverflowError.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["Loop versions (doubly-linked-list, doubly-linked-list-generic)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Doubly Linked List (Generic, Recursive): the pieces"
+caption = "Recursive finding along next or prev; O(1) linking."
+nodes = [
+  { id = "demo", label = "Demo", sub = "GenericRecursiveDoublyLinkedListDemo", col = 0, row = 0, colour = "client" },
+  { id = "list", label = "GenericRecursiveDoublyLinkedList<T>", sub = "head, tail", col = 1, row = 0, colour = "accent" },
+  { id = "find", label = "find(node, key)", sub = "equals, then node.next", col = 2, row = 0, colour = "green" },
+  { id = "link", label = "deleteNode(node)", sub = "O(1)", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "list", label = "deleteByKey(photo)" }, { from = "list", to = "find", label = "find(head, key)" }, { from = "list", to = "link", label = "then" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Doubly Linked List (Generic, Recursive): the classes"
+caption = "Public operations; recursive walks over Node<T>; Photo is one T."
+nodes = [
+  { id = "list", label = "GenericRecursiveDoublyLinkedList<T>", sub = ["- Node<T> head, tail", "+ displayForward / Backward", "+ count / search / get", "+ insertAtBeginning / AtEnd / AtPosition", "+ deleteAtBeginning / AtEnd / ByKey", "+ reverse"], col = 0, row = 0, colour = "accent" },
+  { id = "node", label = "Node<T>", sub = ["prev, data: T, next"], col = 1, row = 0, colour = "green" },
+  { id = "photo", label = "Photo", sub = ["record: name, kilobytes"], col = 1, row = 1, colour = "client" },
+]
+edges = [ { from = "list", to = "node", label = "head, tail" }, { from = "node", to = "photo", label = "T = Photo" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Doubly Linked List (Generic, Recursive): find(node, key)"
+caption = "Two base cases, then a call on the rest."
+nodes = [
+  { id = "in", label = "find(node, key)", sub = "", col = 0, row = 0, colour = "client" },
+  { id = "null", label = "node == null?", sub = "yes: not found", col = 1, row = 0, colour = "red" },
+  { id = "eq", label = "node.data.equals(key)?", sub = "yes: node", col = 2, row = 0, colour = "green" },
+  { id = "rec", label = "find(node.next, key)", sub = "this frame waits", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "in", to = "null", label = "" }, { from = "null", to = "eq", label = "no" }, { from = "eq", to = "rec", label = "no" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Doubly Linked List (Generic, Recursive): deleteByKey(cake)"
+caption = "Three find calls, then two pointer changes."
+participants = ["Demo", "list", "find(airport)", "find(beach)", "find(cake)"]
+steps = [
+  ["Demo", "list", "deleteByKey(cake 540KB)"],
+  ["list", "find(airport)", "find(head, key)"],
+  ["find(airport)", "find(beach)", "not equal"],
+  ["find(beach)", "find(cake)", "not equal"],
+  ["find(cake)", "list", "equals: found", "reply"],
+  ["list", "Demo", "2 pointer changes", "reply"],
+]
+
+[poster]
+headline = [["DOUBLY LIST", "text"], ["GENERIC + RECURSIVE", "accent"]]
+before = { code = "search(node.next)", note = "forwards", tag = "NEXT" }
+after = { code = "search(node.prev)", note = "backwards, any T", tag = "PREV" }
+taglines = [["Any type, either direction.", "text"], ["Find recursively, link in O(1).", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Doubly Linked List (Generic, Recursive)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the generic, recursive doubly linked list, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] It is a doubly linked list for any type of data, whose walks are recursive, along either pointer. [[slnc 400]] Elements are matched with equals, and finding is recursive while linking is one step. [[slnc 700]] Our example is a photo viewer. [[slnc 400]] By the end, you will see generics and recursion working together on nodes with two pointers."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Guards pass the question along, forwards or backwards"
+picture = { type = "linked", nodes = ["guard", "guard", "guard", "found"], double = true, marks = { "3" = "ok" } }
+narration = """Think of guards on a train carrying any cargo. [[slnc 400]] Each guard checks their own carriage, and if the crate is not there, asks the next guard along, forwards or backwards, and waits. [[slnc 500]] Each guard only needs to know how to compare two crates."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["Node<T>: prev, data of type T, next", "equals: compare contents", "find recursively, link in O(1)", "", "depth: one frame per node walked"]
+narration = """The words. [[slnc 400]] A node of T has previous, data, and next. [[slnc 400]] Equals compares contents. [[slnc 400]] Finding is recursive, linking is one step. [[slnc 400]] And the depth is one frame per node walked."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["both ends: O(1), no recursion", "walks: O(n) time and stack", "middle: O(n) to find, O(1) to link", "", "the loop version: the same time, O(1) space"]
+narration = """Here are the costs. [[slnc 400]] Both ends are order one, with no recursion. [[slnc 400]] Walks take order n time and stack. [[slnc 400]] In the middle, finding is order n and linking order one. [[slnc 500]] The loop version takes the same time, with order one space."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "The Four Doubly Linked Lists"
+body = ["String, loops", "String, recursive", "generic, loops: LinkedList<E>", "generic, recursive: this one", "", "a million nodes: only the loops finish"]
+narration = """The four doubly linked lists. [[slnc 400]] Strings with loops, strings with recursion, any type with loops, and any type with recursion. [[slnc 500]] On a million nodes, only the loops finish."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["matching with ==", "recursing on next after the swap", "recursing to reach an end", "recursing over long lists"]
+narration = """Four mistakes. [[slnc 400]] Matching with double equals. [[slnc 400]] Recursing on next after the swap in reverse. [[slnc 400]] Recursing to reach an end. [[slnc 400]] And recursing over long lists."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the generic, recursive doubly linked list. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] Recurse along either pointer, match with equals, and link in one step. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Find the last matching photo by recursing backwards from the tail. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

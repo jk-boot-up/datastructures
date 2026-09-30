@@ -1,0 +1,444 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "singly-linked-list-recursive"
+category = "arrays-and-lists"
+title = "Singly Linked List (Recursive)"
+package = "singlylinkedlistrecursive"
+main_class = "RecursiveSinglyLinkedListDemo"
+example = "A treasure hunt of clues, every operation written recursively"
+tagline = "A list is a node, then a smaller list"
+bold = "Seen recursively, a list is either empty or a node followed by a smaller list, so every operation handles one node and calls itself on node.next until the empty list or its target; changing operations return the new first node, as in node.next = deleteByKey(node.next, key); the time is the same as with loops, the extra space is one frame per node visited."
+analogy_short = "Each clue-finder asks the next finder to handle the rest of the trail"
+jdk = "Nothing: `java.util.LinkedList` uses loops"
+thumb_lines = ["LINKED LIST", "RECURSIVE"]
+thumb_code = "1 + count(node.next)"
+youtube_title = "Singly Linked List in Java, Recursively - Count, Reverse, Delete by Key"
+youtube_tags = ["recursive linked list", "linked list recursion", "reverse linked list recursively", "singly linked list", "call stack", "stack overflow"]
+youtube_description = """Singly Linked List in Java, written recursively, explained with a treasure hunt of clues. We start from the recursive definition, a list is empty or a node followed by a smaller list, and trace count(the oak tree) = 1 + count(rest) down to count(null) = 0, six calls deep. We display the hunt forwards and, by printing after the recursive call instead of before it, backwards. We search, get, insert at the end and at a position recursively, delete by key by returning node.next in place of the matching node, delete at the end, and reverse the list by reversing the rest and hanging each node on its end. We finish at the limit: counting a million nodes recursively throws a real StackOverflowError, where the loop version needs O(1) extra space."""
+
+[readme]
+intro = """A **singly linked list** is a chain of **nodes**, each holding its **data** and a **next pointer**, reached from a **head** pointer. This project writes every operation **recursively**, from the recursive view of a list: a list is either **empty** (`null`) or a **node followed by a smaller list** (`node.next`). Every operation therefore has a **base case**, the empty list or the node it is looking for, and a **recursive case** that handles one node and calls itself on `node.next`. Operations that change the list follow the textbook pattern: the private method returns the new first node of the list it was given, and the caller stores it, as in `node.next = deleteByKey(node.next, key)`. The time of every operation is the same as in the loop version, `singly-linked-list`; the extra space is one call-stack **frame** per node visited."""
+analogy = """Picture the treasure hunt run by a team of finders, one per clue. You ask the first finder how many clues are left. They do not walk the trail; they say "one, plus however many the next finder counts", and wait. The next finder says the same, and waits. The finder after the last clue finds nothing and says "zero": that is the base case. Then the answers come back up the line, each finder adding one. While the question travels down, every finder asked is standing there waiting: that is the call stack."""
+example = """The treasure hunt from `singly-linked-list`: six clues from the oak tree to the chest. The demo traces a recursive count, displays the hunt forwards and backwards, searches, gets, inserts at the end and at a position, deletes by key and at the end, reverses the list, and finally counts a million nodes recursively."""
+why = """Linked lists are defined recursively in most textbooks, and many list algorithms are simplest written that way: counting, printing in reverse, deleting by key without a separate `prev` pointer, and reversing. Recursion on lists is also the step between recursion on arrays and recursion on trees, where a node has two smaller structures instead of one. The cost, one frame per node, is exactly what makes long lists dangerous to recurse over."""
+when_use = [
+  "Printing a list in reverse, or any operation whose work happens on the way back.",
+  "Short lists, where the depth is small.",
+  "Learning: the same patterns are used on trees, where the depth is only the height.",
+]
+when_not = [
+  "Long lists: a million nodes overflow Java's call stack. Use the loops of `singly-linked-list`.",
+  "When O(1) extra space matters.",
+]
+met_before = [
+  "Lisp and Haskell lists: `(cons head rest)` and `x : xs`, defined exactly this way.",
+  "The recursive reverse, a classic interview question.",
+  "Tree traversals, which recurse on two children instead of one next pointer.",
+]
+
+[[word]]
+term = "recursive view of a list"
+meaning = "A list is either empty (`null`) or a node followed by a smaller list, `node.next`."
+[[word]]
+term = "base case"
+meaning = "The input answered without another call: the empty list, or the node being looked for."
+[[word]]
+term = "recursive case"
+meaning = "Handle this node, and call the method again on `node.next`."
+[[word]]
+term = "returning the new first node"
+meaning = "A changing operation returns the first node of the list it was given, after the change; the caller stores it: `node.next = insertAtEnd(node.next, data)`."
+[[word]]
+term = "call stack and frame"
+meaning = "One frame per call not yet returned. A recursion over n nodes needs n frames."
+[[word]]
+term = "recursion depth"
+meaning = "The most frames at once: the extra space of the operation."
+
+[[operation]]
+name = "Display / display in reverse"
+does = "This node, then the rest (or the rest, then this node)"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1); in reverse, O(n) for a stack"
+counted = "depth 6 for 6 clues"
+[[operation]]
+name = "Count"
+does = "0 for null, otherwise 1 + count(node.next)"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "6, depth 6"
+[[operation]]
+name = "Insert at beginning / delete at beginning"
+does = "Change head: no recursion needed"
+time = "O(1) / O(1) / O(1)"
+recursive_space = "O(1)"
+space = "O(1)"
+counted = "2 and 1 pointer changes"
+[[operation]]
+name = "Insert at end"
+does = "null becomes the new node; otherwise node.next = insertAtEnd(node.next)"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 6"
+[[operation]]
+name = "Insert at position"
+does = "pos 0: new node in front; otherwise insert at pos - 1 of the rest"
+time = "O(1) at 0 / O(n) / O(n)"
+recursive_space = "O(pos)"
+space = "O(1)"
+counted = "depth 1 for position 1"
+[[operation]]
+name = "Delete at end"
+does = "The last node is replaced by null"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 6 on 7 nodes"
+[[operation]]
+name = "Delete by key"
+does = "If this node matches, return node.next; otherwise delete from the rest"
+time = "O(1) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "4 comparisons, depth 4"
+[[operation]]
+name = "Search / get"
+does = "Match here, or search the rest with pos + 1"
+time = "O(1) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "5 comparisons, depth 5; get(3) depth 3"
+[[operation]]
+name = "Reverse"
+does = "Reverse the rest, then node.next.next = node; node.next = null"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 5 on 6 nodes"
+
+listing_intro = """Each operation is a public method and a private recursive one that takes a node. In each, find the base case first, then the one call on `node.next`. `steps.enter()` and `steps.exit()` only measure the depth."""
+[[listing]]
+op = "Count"
+method = "RecursiveSinglyLinkedList#count"
+note = """The recursive definition, word for word: the empty list has 0 nodes; any other list has 1 plus the count of the rest. The addition waits for the call, so every node's frame is on the stack at the deepest point."""
+[[listing]]
+op = "Display in reverse"
+method = "RecursiveSinglyLinkedList#displayReverse"
+note = """The only change from `display` is the order of two lines: the recursive call comes first, and the node's data is appended afterwards, on the way back. A loop would need its own stack to do this; the call stack is that stack."""
+[[listing]]
+op = "Insertion at the end"
+method = "RecursiveSinglyLinkedList#insertAtEnd"
+note = """The textbook pattern for a changing operation: the method returns the first node of the list it was given. At the end, the empty list is replaced by the new node (the base case); every other call stores the result in `node.next` and returns `node` unchanged."""
+[[listing]]
+op = "Deletion by key"
+method = "RecursiveSinglyLinkedList#deleteByKey"
+note = """No `prev` pointer is needed. The call that finds the key returns `node.next` instead of `node`, and its caller stores that in its own `next`: the node is skipped. The earlier calls just return themselves."""
+[[listing]]
+op = "Reversal"
+method = "RecursiveSinglyLinkedList#reverse"
+note = """Reverse the rest first; its last node is `node.next`, still reachable from `node`. Then `node.next.next = node` hangs this node after it, and `node.next = null` makes it the end. The old last node, the base case, is returned all the way up as the new head."""
+
+[compare]
+intro = """The recursive singly linked list against the loop version and its neighbours (n nodes):"""
+columns = ["Operation", "Recursive singly list", "Singly list (loops)", "Recursive static array"]
+rows = [
+  ["Insert / delete at the beginning", "O(1), no recursion", "O(1)", "O(n) shifts, O(n) stack"],
+  ["Insert / delete at the end", "O(n) time and stack", "O(n) time, O(1) space", "O(1) at the end"],
+  ["Search, count, display", "O(n) time and stack", "O(n) time, O(1) space", "O(n) time and stack"],
+  ["Display in reverse", "O(n) time and stack, natural", "O(n) and an explicit stack", "O(n) time and stack"],
+  ["Delete by key", "no prev pointer needed", "needs prev", "shifts"],
+  ["A million elements", "StackOverflowError", "fine", "StackOverflowError"],
+]
+
+pros = [
+  "The code follows the recursive definition of a list, with a visible base case.",
+  "Some operations are simpler: display in reverse, delete by key without prev, reverse.",
+  "The same patterns carry straight over to trees.",
+]
+cons = [
+  "O(n) stack for every operation that walks the list, where loops need O(1).",
+  "A long list throws StackOverflowError.",
+  "The return-the-first-node pattern rewrites every next pointer on the path, even unchanged ones.",
+]
+
+[[mistake]]
+mistake = "Forgetting to store the returned node"
+happens = "Writing `insertAtEnd(node.next, data);` without `node.next =` drops the new node: it is never linked in."
+fix = "Always `node.next = insertAtEnd(node.next, data);` and `head = insertAtEnd(head, data);`."
+[[mistake]]
+mistake = "No base case for the empty list"
+happens = "`node.next` on `null` throws NullPointerException."
+fix = "Check `node == null` first in every recursive method."
+[[mistake]]
+mistake = "In reverse, forgetting `node.next = null`"
+happens = "The old first node still points to the second, which now points back to it: a two-node cycle."
+fix = "After `node.next.next = node`, set `node.next = null`."
+[[mistake]]
+mistake = "Recursing over long lists"
+happens = "One frame per node: a million nodes overflow the call stack."
+fix = "Use loops for long lists; recursion where the depth is small."
+
+[[exercise]]
+level = "easy"
+question = """Write a recursive `int countOccurrences(Node node, String key)`. What is its base case, and its extra space?"""
+answer = """```java
+int countOccurrences(Node node, String key) {
+    if (node == null) return 0;                               // base case
+    return (node.data.equals(key) ? 1 : 0) + countOccurrences(node.next, key);
+}
+```
+Base case: the empty list. O(n) time and O(n) stack."""
+[[exercise]]
+level = "medium"
+question = """Write a recursive `String getLast(Node node)` that returns the data of the last node. How deep does it go on the six clues?"""
+answer = """```java
+String getLast(Node node) {
+    if (node == null) return null;                             // an empty list has no last node
+    if (node.next == null) return node.data;                   // base case: this is the last node
+    return getLast(node.next);
+}
+```
+It makes one call per node before the last: 5 waiting calls on six clues, returning "the chest". O(n) time and stack."""
+[[exercise]]
+level = "harder"
+question = """Write a recursive `Node insertSorted(Node node, String data)` that inserts into a list kept in alphabetical order, returning the new first node. Use it to build the six clues in alphabetical order."""
+answer = """```java
+Node insertSorted(Node node, String data) {
+    if (node == null || data.compareTo(node.data) <= 0) {
+        return new Node(data, node);                           // base case: it goes in front of this list
+    }
+    node.next = insertSorted(node.next, data);
+    return node;
+}
+```
+Called as `head = insertSorted(head, clue)` for each clue. The list becomes: the bridge, the chest, the fountain, the oak tree, the old well, the red gate. Each insertion is O(n) time and stack in the worst case."""
+
+[hero]
+caption = "count(oak tree) waits for count(old well) ... down to count(null) = 0"
+picture = { type = "stack", cells = ["count(oak tree)", "count(old well)", "count(red gate)", "count(bridge)", "count(fountain)", "count(chest)", "count(null) = 0"], width = 260, marks = { "6" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "A list is a node followed by a smaller list"
+summary = "count(the oak tree) = 1 + count(rest), down to count(null) = 0: count() = 6, with 6 calls waiting at once."
+detail = """The recursive view of a list: either it is empty, `null`, or it is a node followed by a smaller list, `node.next`. Counting follows directly: the empty list has 0 nodes, and any other list has 1 plus the count of the rest. The demo traces it: `count(the oak tree) = 1 + count(rest)`, `count(the old well) = 1 + count(rest)`, and so on to `count(null) = 0`, the base case. Then the additions happen on the way back up, and the answer is 6. At the deepest point six calls were waiting on the call stack."""
+speech = """First, the recursive view of a list. [[slnc 400]] A list is either empty, or a node followed by a smaller list. [[slnc 500]] So the count of a list is one, plus the count of the rest. [[slnc 400]] And the count of the empty list is zero. [[slnc 300]] That is the base case. [[slnc 500]] The oak tree asks the old well, which asks the red gate, and so on, until the empty list answers zero. [[slnc 400]] Six calls wait at once."""
+console = [["count(the oak tree) = 1 + count(rest)", "muted"], ["  count(the old well) = 1 + count(rest) ... count(the chest)", "muted"], ["    count(null) = 0   <- base case: the empty list", "ok"], ["count() = 6, with 6 calls waiting at once", "amber"]]
+[[act.frame]]
+caption = "Six count calls waiting on the stack, and the base case count(null) on top"
+say = """Here is the call stack. [[slnc 300]] One frame per clue, each waiting for the count of the rest. [[slnc 400]] On top, the empty list answers zero, and the answers flow back down."""
+picture = { type = "stack", cells = ["count(oak tree)", "count(old well)", "count(red gate)", "count(bridge)", "count(fountain)", "count(chest)", "count(null) = 0"], width = 260, marks = { "6" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Forwards and backwards"
+summary = "display prints before the recursive call, displayReverse after it: the same six calls, depth 6, in opposite orders."
+detail = """`display` appends this node's data and then displays the rest, so the clues come out from the oak tree to the chest. `displayReverse` does the same two things in the other order: it displays the rest first, and appends this node's data when that call returns, so the chest is printed first and the oak tree last. Both go six calls deep. With a loop, printing a singly linked list backwards needs a stack of your own; here the call stack does it."""
+speech = """Now display, forwards and backwards. [[slnc 400]] Display prints this clue, then the rest. [[slnc 400]] Display reverse prints the rest first, and this clue afterwards, on the way back. [[slnc 500]] So the chest comes out first, and the oak tree last. [[slnc 400]] Just two lines swapped, and the call stack does the reversing."""
+console = [["display():        head -> the oak tree -> ... -> the chest -> null   depth 6", "ok"], ["displayReverse(): the chest <- the fountain <- the bridge <- the red gate <- the old well <- the oak tree <- (head)   depth 6", "ok"], ["printing after the recursive call instead of before it reverses the order", "amber"]]
+[[act.frame]]
+caption = "displayReverse: the deepest call, the chest, prints first; each call prints as it returns"
+say = """Here is the order of printing. [[slnc 300]] The calls go down from the oak tree to the chest. [[slnc 400]] The printing happens on the way back, so the chest is first."""
+picture = { type = "linked", nodes = ["oak tree", "old well", "red gate", "bridge", "fountain", "chest"], marks = { "5" = "ok" }, pointers = [[0, "printed 6th"], [5, "printed 1st"]] }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Search and insertion, recursively"
+summary = "search finds the fountain with 5 comparisons at depth 5; get(3) is 3 deep; insertAtEnd goes 6 deep and the empty list at the end becomes the new node; insertAtPosition(1) is 1 deep."
+detail = """`search` compares this node with the key and, if it does not match, searches the rest with position + 1: the fountain is found at position 4 after 5 comparisons, 5 calls deep. `get(3)` calls itself three times. `insertAtEnd` uses the textbook pattern for changing a list: each call stores the result of the recursive call in `node.next` and returns itself, and the base case, the empty list after the chest, returns the new node, "the island". `insertAtPosition(1, "the mill")` recurses once, and at position 0 of the rest returns a new node pointing to the old well: 2 pointer changes."""
+speech = """Search and insertion, recursively. [[slnc 400]] Search asks: is it this clue? [[slnc 300]] If not, search the rest. [[slnc 400]] The fountain is found at depth five. [[slnc 500]] Insert at end goes all the way down, to the empty list after the chest. [[slnc 400]] That empty list is replaced by the new node, and each call on the way back stores the result in its next pointer."""
+console = [["search(\"the fountain\") = position 4: 5 comparisons, depth 5", "amber"], ["get(3) = \"the bridge\": depth 3", "muted"], ["insertAtEnd(\"the island\"): depth 6; the base case, the empty list at the end, becomes the new node", "ok"], ["insertAtPosition(1, \"the mill\"): depth 1, 2 pointers changed", "ok"], ["head -> the oak tree -> the mill -> the old well -> ... -> the chest -> the island -> null", "muted"]]
+[[act.frame]]
+caption = "insertAtEnd: the empty list after the chest is replaced by the new node"
+say = """Here is the insertion at the end. [[slnc 300]] The recursion reached the empty list after the chest. [[slnc 400]] The base case returned the new node, the island, and the chest stored it as its next."""
+picture = { type = "linked", nodes = ["bridge", "fountain", "chest", "the island"], marks = { "3" = "new" } }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Deletion and reversal, recursively"
+summary = "deleteByKey finds the red gate at depth 4 and returns node.next in its place; deleteAtEnd is 6 deep; reverse is 5 deep on 6 nodes."
+detail = """`deleteByKey` needs no `prev` pointer. Each call compares its node with the key; the call holding "the red gate" returns `node.next`, the bridge, instead of itself, and the call before it, the old well, stores that as its next: the red gate is skipped. 4 comparisons, depth 4. `deleteAtEnd` recurses to the last node, "the island", whose call returns `null`, so the chest's next becomes null: depth 6. `reverse` reverses the rest first, then hangs this node on its end with `node.next.next = node; node.next = null`; on 6 nodes it goes 5 deep, and the old last node, the chest, comes back as the new head."""
+speech = """Deletion and reversal. [[slnc 400]] Delete by key needs no previous pointer. [[slnc 300]] The call holding the red gate returns the node after it, instead of itself. [[slnc 400]] The call before stores that, and the red gate is skipped. [[slnc 500]] Reverse reverses the rest of the list first. [[slnc 300]] Then it hangs this node on the end. [[slnc 400]] The chest comes back up as the new head."""
+console = [["deleteByKey(\"the red gate\"): 4 comparisons, depth 4; that call returns node.next instead of itself", "ok"], ["deleteAtEnd() removed \"the island\": depth 6", "amber"], ["reverse(): depth 5; reverse the rest, then hang this node on its end", "ok"], ["head -> the chest -> the fountain -> the bridge -> the old well -> the mill -> the oak tree -> null", "muted"]]
+[[act.frame]]
+caption = "reverse: the rest is already reversed; now bridge.next.next = bridge and bridge.next = null"
+say = """Here is one step of reverse. [[slnc 300]] The rest of the list, from the fountain on, is already reversed. [[slnc 400]] The fountain is pointed back at the bridge, and the bridge's next becomes null."""
+picture = { type = "linked", nodes = ["old well", "bridge", "fountain", "chest"], marks = { "2" = "ok", "3" = "ok" }, back = [1, 2], null_end = false, pointers = [[1, "node"], [3, "new head"]] }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The limit of recursion"
+summary = "A million nodes built with insertAtBeginning (no recursion); a recursive count() throws StackOverflowError."
+detail = """Building a million-node list with `insertAtBeginning` is fine: each insertion is two pointer changes with no recursion. Counting it recursively is not: one frame per node, and the call stack runs out long before a million, so Java throws `StackOverflowError`. The loop in `singly-linked-list` counts the same list with O(1) extra space. On lists, recursion depth equals the length; on balanced trees, later in the course, it is only the height, which is why recursion is the natural tool there."""
+speech = """And the limit. [[slnc 400]] We build a million nodes, inserting at the beginning, with no recursion at all. [[slnc 400]] Then we count them recursively. [[slnc 300]] One frame per node. [[slnc 300]] The call stack runs out, and Java throws a stack overflow error. [[slnc 500]] The loop version counts them with order one extra space."""
+console = [["1,000,000 nodes, built with insertAtBeginning: no recursion, O(1) each", "muted"], ["count(): StackOverflowError, one frame per node", "bad"], ["the loop in the singly-linked-list project counts them in O(1) extra space", "muted"]]
+[[act.frame]]
+caption = "One frame per node: a million-node recursion overflows the stack"
+say = """One count call per node, all waiting. [[slnc 300]] A million is far too many."""
+picture = { type = "stack", cells = ["count(node 0)", "count(node 1)", "...", "StackOverflowError"], width = 240, marks = { "3" = "bad" }, top_label = "overflow" }
+
+[animation]
+subtitle = "A treasure hunt as a recursive linked list: count, display forwards and backwards, recursive search and insertion, delete by key without prev, recursive reverse, and a stack overflow."
+
+[docs.problem]
+scenario = """The treasure-hunt trail of clues, with every list operation written recursively from the definition of a list."""
+naive = """Recursion written without a base case for the empty list crashes on `null`; recursion that forgets to store the returned node loses insertions; and recursion over a long list overflows the call stack."""
+deliver = [
+  "A `RecursiveSinglyLinkedList` with recursive display, displayReverse, count, insertAtEnd, insertAtPosition, deleteAtEnd, deleteByKey, search, get and reverse.",
+  "insertAtBeginning and deleteAtBeginning in O(1), without recursion.",
+  "Steps, comparisons, pointer changes and recursion depth counted; a real StackOverflowError.",
+  "Time and stack space of every operation, compared with the loop version.",
+]
+
+[docs.prerequisites]
+required = ["The singly-linked-list project", "The static-array-recursive project, or recursion basics"]
+not_required = ["Functional programming"]
+
+[docs.session]
+objectives = [
+  "State the recursive definition of a list, and use it to write count and display.",
+  "Write changing operations that return the new first node.",
+  "Explain how displayReverse and reverse use the way back up the recursion.",
+  "State the time and stack space of each operation.",
+]
+walkthrough = """Start with the team-of-finders analogy. Write count on the board from the definition. Run the demo; in act two, swap the two lines of display to get displayReverse. In act three, trace insertAtEnd and point out every `node.next =`. In act four, trace reverse on three nodes with arrows. In act five, show the StackOverflowError."""
+
+[docs.explained]
+sentence = """A recursive singly linked list treats a list as empty or a node followed by a smaller list, so each operation handles one node and calls itself on node.next, returning the new first node when it changes the list; the time is unchanged and the stack grows by one frame per node."""
+verdict = """Learn list recursion here, especially display in reverse and reverse, because the same patterns run trees. For long lists in real code, use loops."""
+recognise = [
+  "`if (node == null) return ...;` at the top of a method taking a `Node`.",
+  "`node.next = operation(node.next, ...); return node;`.",
+  "`node.next.next = node; node.next = null;` in a reverse.",
+]
+
+[spec]
+purpose = """Teach recursion on the singly linked list, from the recursive definition of a list."""
+requirements = [
+  "Written by hand: `Node` with `data` and `next`; the list holds only `head`; no Java collections.",
+  "Recursive display, displayReverse, count, insertAtEnd, insertAtPosition, deleteAtEnd, deleteByKey, search, get and reverse; insertAtBeginning and deleteAtBeginning O(1).",
+  "Recursion depth counted; underflow reported; a real StackOverflowError demonstrated.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["The loop version (singly-linked-list)", "Generic element types (singly-linked-list-generic-recursive)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Singly Linked List (Recursive): the pieces"
+caption = "Each public operation passes head to a private recursive method, which returns the new first node."
+nodes = [
+  { id = "demo", label = "Demo", sub = "RecursiveSinglyLinkedListDemo", col = 0, row = 0, colour = "client" },
+  { id = "list", label = "RecursiveSinglyLinkedList", sub = "head = insertAtEnd(head, x)", col = 1, row = 0, colour = "accent" },
+  { id = "rec", label = "insertAtEnd(node, x)", sub = "node.next = insertAtEnd(node.next, x)", col = 2, row = 0, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = "steps, pointer changes, maxDepth", col = 1, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "list", label = "insertAtEnd(x)" }, { from = "list", to = "rec", label = "head" }, { from = "rec", to = "steps", label = "depth" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Singly Linked List (Recursive): the classes"
+caption = "Public operations take data; the private recursive versions take a node."
+nodes = [
+  { id = "list", label = "RecursiveSinglyLinkedList", sub = ["- Node head", "+ display / displayReverse", "+ count / search / get", "+ insertAtBeginning / AtEnd", "+ insertAtPosition", "+ deleteAtBeginning / AtEnd", "+ deleteByKey / reverse", "- the same, taking Node node"], col = 0, row = 0, colour = "accent" },
+  { id = "node", label = "Node", sub = ["data: String", "next: the rest of the list"], col = 1, row = 0, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = ["steps, compares", "pointerChanges, maxDepth"], col = 0, row = 1, colour = "amber" },
+]
+edges = [ { from = "list", to = "node", label = "head" }, { from = "list", to = "steps", label = "has one" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Singly Linked List (Recursive): deleteByKey(node, key)"
+caption = "Return the rest in place of the match; otherwise store the result in node.next."
+nodes = [
+  { id = "call", label = "deleteByKey(node, key)", sub = "", col = 0, row = 0, colour = "client" },
+  { id = "null", label = "node == null?", sub = "yes: return null", col = 1, row = 0, colour = "green" },
+  { id = "match", label = "node.data equals key?", sub = "yes: return node.next", col = 2, row = 0, colour = "red" },
+  { id = "rec", label = "node.next = deleteByKey(node.next)", sub = "then return node", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "call", to = "null", label = "" }, { from = "null", to = "match", label = "no" }, { from = "match", to = "rec", label = "no" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Singly Linked List (Recursive): count() on three nodes"
+caption = "Each call waits for the count of the rest; the base case answers 0."
+participants = ["Demo", "count(oak tree)", "count(old well)", "count(red gate)", "count(null)"]
+steps = [
+  ["Demo", "count(oak tree)", "count()"],
+  ["count(oak tree)", "count(old well)", "1 + count(rest)"],
+  ["count(old well)", "count(red gate)", "1 + count(rest)"],
+  ["count(red gate)", "count(null)", "1 + count(rest)"],
+  ["count(null)", "count(red gate)", "0", "reply"],
+  ["count(red gate)", "count(old well)", "1", "reply"],
+  ["count(old well)", "count(oak tree)", "2", "reply"],
+  ["count(oak tree)", "Demo", "3", "reply"],
+]
+
+[poster]
+headline = [["LINKED LIST", "text"], ["RECURSIVE", "accent"]]
+before = { code = "while (current != null)", note = "O(1) extra space", tag = "LOOP" }
+after = { code = "1 + count(node.next)", note = "one frame per node", tag = "RECURSION" }
+taglines = [["A node, then a smaller list.", "text"], ["Every waiting call costs a frame.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Singly Linked List (Recursive)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the singly linked list, written recursively, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] Seen recursively, a list is either empty, or a node followed by a smaller list. [[slnc 400]] So every operation handles one node, and calls itself on the rest, until it reaches the empty list. [[slnc 700]] Our example is a treasure hunt of clues. [[slnc 400]] By the end, you will know how to count, print backwards, delete and reverse a list recursively, and what the call stack costs."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Each finder says: one, plus whatever the next finder counts"
+picture = { type = "linked", nodes = ["finder 1", "finder 2", "finder 3", "nobody"], marks = { "3" = "ok" }, pointers = [[0, "you ask"], [3, "says 0"]] }
+narration = """Think of a treasure hunt run by a team of finders, one for each clue. [[slnc 400]] You ask the first finder how many clues are left. [[slnc 400]] They say: one, plus however many the next finder counts. [[slnc 300]] And they wait. [[slnc 400]] The next finder says the same, and waits. [[slnc 500]] After the last clue there is nobody, and the answer is zero. [[slnc 300]] That is the base case. [[slnc 400]] Then the answers come back, each finder adding one."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["a list: empty (null), or a node + a smaller list", "base case: the empty list, or the target", "recursive case: this node, then node.next", "changing a list: return the new first node", "", "recursion depth: one frame per node visited"]
+narration = """The words. [[slnc 400]] A list is either empty, or a node followed by a smaller list. [[slnc 400]] The base case is the empty list, or the node you are looking for. [[slnc 400]] The recursive case handles this node, and calls itself on the next. [[slnc 400]] A method that changes the list returns the new first node. [[slnc 400]] And the depth is one frame per node visited."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["insert, delete at beginning: O(1), not recursive", "count, display, search: O(n) time and stack", "insert, delete at end: O(n) time and stack", "reverse: O(n) time and stack", "", "the loop version: the same time, O(1) space"]
+narration = """Here are the costs. [[slnc 400]] Insertion and deletion at the beginning are order one, and not recursive. [[slnc 400]] Count, display and search are order n time, and order n stack. [[slnc 400]] So are insertion and deletion at the end, and reverse. [[slnc 500]] The loop version takes the same time, with order one extra space."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Recursive or Loop?"
+body = ["the same time for every operation", "recursion: one frame per node", "simpler: display in reverse, delete by key, reverse", "", "a million nodes: only the loop finishes"]
+narration = """Recursive or loop? [[slnc 400]] Every operation takes the same time either way. [[slnc 400]] Recursion adds one frame per node. [[slnc 400]] Some operations are simpler recursively: display in reverse, delete by key, and reverse. [[slnc 500]] But on a million nodes, only the loop finishes."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["not storing the returned node", "no base case for the empty list", "in reverse, forgetting node.next = null", "recursing over long lists"]
+narration = """Four mistakes to watch for. [[slnc 400]] Calling the recursive method without storing the node it returns. [[slnc 400]] Forgetting the base case for the empty list. [[slnc 400]] In reverse, forgetting to set the next pointer to null, which makes a cycle. [[slnc 400]] And recursing over a long list."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the singly linked list, written recursively. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] A list is empty, or a node followed by a smaller list, and every recursive operation follows that shape. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Write a recursive insert that keeps the list in alphabetical order. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

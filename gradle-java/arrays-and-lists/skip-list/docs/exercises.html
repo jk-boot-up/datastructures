@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercises — Skip List</title>
+<style>
+:root{color-scheme:light dark;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+@media (prefers-color-scheme:dark){:root{--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;
+--line:#334155;--accent:#a78bfa;--code:#020617;--link:#93c5fd}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+<h1 id="exercises-skip-list">Exercises — Skip List</h1>
+<p>Try each one before opening its answer. They start easy and get harder.</p>
+<h2 id="1-easy">1. Easy</h2>
+<p>With the regular line of act two, which stations does a search for Kelby (km 48) visit, and how many hops does it take?</p>
+<h2 id="2-medium">2. Medium</h2>
+<p>Add <code>String firstAtOrAfter(int km)</code>, which returns the name of the first station at or beyond <code>km</code> (or null). Why does it need hardly any new code?</p>
+<h2 id="3-harder">3. Harder</h2>
+<p>Each station is on level 2 with probability 1/2, level 3 with 1/4, and so on. Show that the expected total number of arrows is about 2n, and explain why a search visits about 2 stations per level.</p>
+<hr>
+<h2 id="answers">Answers</h2>
+<details>
+<summary>Answer 1</summary>
+<p>From the head on level 4 it rides to Hailey (1 hop); Pinner is beyond 48, so it drops to level 3 and stays (Lydd, km 53, is beyond); drops to level 2 and rides to Jarrow (2 hops); drops to level 1 and rides one more station to Kelby (3 hops). About the same as Marden, where the stopping line would need 11.</p>
+</details>
+<details>
+<summary>Answer 2</summary>
+<pre><code>public String firstAtOrAfter(int km) {
+    Node x = head;
+    for (int level = levels - 1; level &gt;= 0; level--) {
+        while (x.next[level] != null &amp;&amp; x.next[level].km &lt; km) x = x.next[level];
+    }
+    x = x.next[0];
+    return x == null ? null : x.station;
+}</code></pre>
+<p>It is <code>find</code> without the final equality check: the search already stops just before the first station that is not less than <code>km</code>, which is exactly the one wanted. Range questions like this are why skip lists, like trees, keep their values in order.</p>
+</details>
+<details>
+<summary>Answer 3</summary>
+<p>A station has 1 arrow, plus 1 more with probability 1/2, plus another with 1/4, and so on: 1 + 1/2 + 1/4 + ... = 2 arrows on average, so 2n in total (the demo counts 2,031 for 1,000 stations). Looking backwards along a search path, each step either goes up a level (if the station is taller, probability 1/2) or left along the same level (probability 1/2), so on average about 2 steps per level, over about log2(n) levels: roughly 2 log2(n) hops, which for 1,000 is under 20, and the measured average is 9.7.</p>
+</details>
+</main>
+<footer>Generated from <code>exercises.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

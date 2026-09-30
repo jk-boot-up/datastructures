@@ -1,0 +1,407 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "doubly-linked-list-generic"
+category = "arrays-and-lists"
+title = "Doubly Linked List (Generic)"
+package = "doublylinkedlistgeneric"
+main_class = "GenericDoublyLinkedListDemo"
+example = "A photo viewer of Photo records, beside names and sizes"
+tagline = "LinkedList<E>, built by hand"
+bold = "A generic doubly linked list is the doubly linked list written once with a type parameter T: each Node<T> has prev, a reference to its data, and next; the list keeps head and tail, matches with equals, and keeps every cost: O(1) at both ends, O(n) to reach a position. It is the shape of java.util.LinkedList<E>."
+analogy_short = "A train of carriages carrying any cargo, coupled both ways"
+jdk = "`java.util.LinkedList<E>`, a generic doubly linked list with head and tail"
+thumb_lines = ["DOUBLY LIST", "GENERIC <T>"]
+thumb_code = "Node<T> prev, next"
+youtube_title = "Generic Doubly Linked List in Java - Build Your Own LinkedList<E>"
+youtube_tags = ["generic doubly linked list", "java generics", "LinkedList<E>", "doubly linked list", "Node<T>", "equals"]
+youtube_description = """Generic Doubly Linked List in Java, explained with a photo viewer of Photo records, beside the same class holding names and sizes. We look inside Node<T>: a prev pointer, a reference to the data, and a next pointer, with null at both ends. We insert at both ends through head and tail with no walking, search for a separately made Photo that equals finds because a record compares its fields, insert at a position with four pointers, delete by key with two, and delete at both ends in O(1). We finish by reversing a list of Integers and a list of Strings with the very same code: the shape of java.util.LinkedList."""
+
+[readme]
+intro = """A **generic doubly linked list** is the `doubly-linked-list` project written once for **any element type**. Each `Node<T>` has a **prev** pointer, a **reference** to its `T` data, and a **next** pointer; the list keeps **head** and **tail**. The same class holds photo names (`String`), sizes (`Integer`) or `Photo` records, and the compiler checks each use. Nodes are matched with **`equals`**; `T` needs no ordering. Every operation and cost is unchanged: O(1) insertion and deletion at both ends and at a node already reached, O(n) to reach a position. This is, in outline, how `java.util.LinkedList<E>` is built."""
+analogy = """Picture a train whose carriages are coupled front and back, and can carry any cargo: passengers, coal, cars. The couplings work the same whatever is inside. A guard can walk either way, carriages can be added or removed at either end, and to ask whether a carriage carries "a dog photo of 610 kilobytes" you look at the cargo's description, not at the carriage."""
+example = """The photo viewer from `doubly-linked-list`, now holding `Photo(name, kilobytes)` records, beside the same class holding the names and the sizes. The demo inspects a node, works at both ends, searches for and deletes a separately made `Photo`, inserts at a position, and reverses the sizes and the names with the same code."""
+why = """A list of photos, a list of names and a list of sizes should not need three copies of the same doubly-linked-list code. A type parameter gives one class for all of them, checked by the compiler, with no casts: nodes are created as `new Node<>(data)`. Java's own `LinkedList<E>` is exactly this."""
+when_use = [
+  "Any list of objects of one type that is walked both ways or changed at both ends.",
+  "A deque or an LRU cache of any element type.",
+]
+when_not = [
+  "Reading by position: use `ArrayList<E>`.",
+  "Memory is tight: each element costs a node with two pointers plus the object.",
+]
+met_before = [
+  "`java.util.LinkedList<E>` and `Deque<E>`.",
+  "Browser history and music playlists holding page or track objects.",
+]
+
+[[word]]
+term = "Node<T>"
+meaning = "A node with `prev`, `T data` and `next`."
+[[word]]
+term = "reference"
+meaning = "What `data` holds: the address of the object, not a copy."
+[[word]]
+term = "head and tail"
+meaning = "The first and last node; both ends are one step away."
+[[word]]
+term = "equals"
+meaning = "How nodes are matched: by contents. A record's `equals` compares its fields."
+
+[[operation]]
+name = "Display forward / backward"
+does = "Follow next from head, or prev from tail"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "5 steps each way for 5 photos"
+[[operation]]
+name = "Insert / delete at beginning or end"
+does = "Through head or tail: 3 pointers to insert, 2 to delete"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "0 steps"
+[[operation]]
+name = "Insert at position"
+does = "Walk to the node before, then set 4 pointers"
+time = "O(1) at the ends / O(n) / O(n)"
+space = "O(1)"
+counted = "4 pointer changes"
+[[operation]]
+name = "Delete a node already reached"
+does = "node.prev.next = node.next; node.next.prev = node.prev"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "2 pointer changes"
+[[operation]]
+name = "Delete by key / search"
+does = "Walk comparing with equals, then unlink"
+time = "O(1) / O(n) / O(n)"
+space = "O(1)"
+counted = "3 comparisons, 2 pointer changes"
+[[operation]]
+name = "Count / get"
+does = "Walk from head"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "one step per node"
+[[operation]]
+name = "Reverse"
+does = "Swap prev and next in every node, then head and tail"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "12 pointer changes for 5 nodes"
+
+listing_intro = """The generic parts, exactly as they appear in the source. Compare them with `doubly-linked-list`: the pointer work is identical."""
+[[listing]]
+op = "Insertion at the end"
+method = "GenericDoublyLinkedList#insertAtEnd"
+note = """`new Node<>(data)` needs no cast, unlike a generic array. Then the tail's three pointers, exactly as in the String-only list."""
+[[listing]]
+op = "Deletion by key with equals"
+method = "GenericDoublyLinkedList#deleteByKey"
+note = """`current.data.equals(key)` compares contents, so a separately made `Photo("cake", 540)` is found; `deleteNode` then unlinks it with two pointer changes."""
+[[listing]]
+op = "Deletion of a node"
+method = "GenericDoublyLinkedList#deleteNode"
+note = """The O(1) unlink every deletion ends in: neighbours pointed at each other, `head` or `tail` moved at the ends."""
+
+[compare]
+intro = """The generic doubly linked list against its neighbours (n nodes):"""
+columns = ["Property", "Generic doubly list", "Doubly list of String", "Generic singly list"]
+rows = [
+  ["Element types", "any T", "String only", "any T"],
+  ["Insert / delete at the end", "O(1)", "O(1)", "O(n)"],
+  ["Delete a node already reached", "O(1)", "O(1)", "O(n)"],
+  ["Walk backwards", "yes", "yes", "no"],
+  ["Pointers per node", "2", "2", "1"],
+  ["Java's own", "LinkedList<E>", "LinkedList<String>", ""],
+]
+
+pros = [
+  "One class for every element type, with no casts inside.",
+  "O(1) at both ends and at any node already reached.",
+  "Walks both ways.",
+]
+cons = [
+  "Two pointers and a node object per element, plus the element itself.",
+  "No random access.",
+  "Matching depends on a correct `equals` for T.",
+]
+
+[[mistake]]
+mistake = "Matching with `==`"
+happens = "An equal object made elsewhere is not found."
+fix = "Use `equals`."
+[[mistake]]
+mistake = "Forgetting one of the four insertion pointers"
+happens = "Forwards and backwards walks disagree."
+fix = "Set all four, as in the String-only list."
+[[mistake]]
+mistake = "Raw types"
+happens = "`Node` or `GenericDoublyLinkedList` without angle brackets switches off the compiler's checks."
+fix = "Always write the type argument."
+[[mistake]]
+mistake = "Not updating head or tail at the ends"
+happens = "A deleted node stays reachable from head or tail."
+fix = "Move `head` or `tail` when the deleted node has no prev or no next."
+
+[[exercise]]
+level = "easy"
+question = """Write `int totalKilobytes(GenericDoublyLinkedList<Photo> album)` walking from the head with `head()`, `next()` and `data()`. What does it return for the five photos?"""
+answer = """```java
+int totalKilobytes(GenericDoublyLinkedList<Photo> album) {
+    int total = 0;
+    for (Node<Photo> n = album.head(); n != null; n = n.next()) {
+        total += n.data().kilobytes();
+    }
+    return total;
+}
+```
+820 + 540 + 610 + 930 + 1200 = 4,100. O(n) time, O(1) space."""
+[[exercise]]
+level = "medium"
+question = """Write `void moveToFront(Node<T> node)` for the generic list. Why is it O(1), and which structure uses it?"""
+answer = """```java
+void moveToFront(Node<T> node) {
+    if (node == head) return;
+    deleteNode(node);
+    node.prev = null;
+    node.next = head;
+    head.prev = node;
+    head = node;
+}
+```
+Unlinking and relinking are pointer changes only, with no search, because the node knows both neighbours. An LRU cache does this on every access."""
+[[exercise]]
+level = "harder"
+question = """Write `T removeFirstLargerThan(T limit)`, which deletes and returns the first element greater than `limit`. What must change in the class header for `compareTo` to be available, and what does that cost the class?"""
+answer = """The header must become `GenericDoublyLinkedList<T extends Comparable<T>>`, so that `compareTo` is available:
+```java
+T removeFirstLargerThan(T limit) {
+    for (Node<T> n = head; n != null; n = n.next) {
+        if (n.data.compareTo(limit) > 0) {
+            deleteNode(n);
+            return n.data;
+        }
+    }
+    return null;
+}
+```
+The cost is that the list can then only hold comparable types; a better design puts such a method outside the class, or takes the comparison as a parameter."""
+
+[hero]
+caption = "GenericDoublyLinkedList<Photo>: each Node<Photo> has prev, data and next; head and tail at the ends"
+picture = { type = "linked", nodes = ["beach 820", "cake 540", "dog 610", "forest 930", "mountain 1200"], double = true, pointers = [[0, "head"], [4, "tail"]] }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "One class, any element type"
+summary = "One class holds String names, Integer sizes (displayed backward) and Photo records."
+detail = """`GenericDoublyLinkedList<String>` holds the five names, `GenericDoublyLinkedList<Integer>` the sizes in kilobytes, displayed here backward from the tail, and `GenericDoublyLinkedList<Photo>` records of our own. All three are built with `insertAtEnd` through the tail, and walked by the same code in either direction."""
+speech = """First, one class for any type. [[slnc 400]] The same doubly linked list holds the photo names, the sizes, and photos of our own. [[slnc 400]] The sizes are displayed backward, from the tail. [[slnc 400]] The same code, in either direction, for every type."""
+console = [["<String>:  head -> beach <-> cake <-> dog <-> forest <-> mountain <- tail", "ok"], ["<Integer>: tail -> 1200 <-> 930 <-> 610 <-> 540 <-> 820 <- head", "ok"], ["<Photo>:   head -> beach 820KB <-> ... <-> mountain 1200KB <- tail", "ok"]]
+[[act.frame]]
+caption = "Sizes as Integers, linked both ways"
+say = """Here are the sizes. [[slnc 300]] Integers, linked both ways, with head and tail."""
+picture = { type = "linked", nodes = [820, 540, 610, 930, 1200], double = true, pointers = [[0, "head"], [4, "tail"]] }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Node<T>: prev, a reference to the data, next"
+summary = "The head's prev is null and its next holds cake; the tail's next is null and its prev holds forest."
+detail = """Each `Node<Photo>` holds three references: `prev`, `data` and `next`. The head's `prev` is `null`, and its `next` leads to the node holding the cake photo. The tail's `next` is `null`, and its `prev` leads to the forest. `data` refers to the `Photo` object itself; the node holds no copy."""
+speech = """What does a node hold? [[slnc 400]] Three references: previous, the data, and next. [[slnc 400]] The head's previous is null. [[slnc 300]] The tail's next is null. [[slnc 400]] And the data is a reference to the photo, not a copy."""
+console = [["head.data = beach 820KB, head.prev = null, head.next.data = cake 540KB", "ok"], ["tail.data = mountain 1200KB, tail.prev.data = forest 930KB, tail.next = null", "ok"]]
+[[act.frame]]
+caption = "The ends: null before the head, null after the tail"
+say = """Here are the two ends. [[slnc 300]] Nothing before the head, nothing after the tail."""
+picture = { type = "linked", nodes = ["beach", "cake", "forest", "mountain"], double = true, pointers = [[0, "head"], [3, "tail"]] }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Both ends, and equals in the middle"
+summary = "Insert at both ends: 0 steps, 6 pointers; search finds a new Photo(\"dog\", 610) at position 3 with 4 equals comparisons; insertAtPosition sets 4 pointers; deleteByKey finds cake in 3 comparisons and changes 2."
+detail = """Inserting "airport" at the beginning and "river" at the end walks nowhere: 6 pointer changes through `head` and `tail`. A separately made `Photo("dog", 610)` is found at position 3 after 4 comparisons, because a record's `equals` compares name and size. `insertAtPosition(3, garden)` sets 4 pointers, and `deleteByKey(new Photo("cake", 540))` compares 3 nodes and unlinks cake with 2 pointer changes."""
+speech = """Now both ends, and the middle. [[slnc 400]] Inserting at the beginning and the end walks nowhere. [[slnc 400]] A new photo, the dog, is found by equals at position three. [[slnc 400]] Inserting the garden sets four pointers. [[slnc 300]] Deleting the cake changes two."""
+console = [["insertAtBeginning and insertAtEnd: 0 steps, 6 pointer changes", "ok"], ["search(new Photo(\"dog\", 610)) = position 3: 4 comparisons; equals compares name and size", "ok"], ["insertAtPosition(3, garden 760KB): 4 pointer changes", "ok"], ["deleteByKey(new Photo(\"cake\", 540)) = true: 3 comparisons, 2 pointer changes", "ok"]]
+[[act.frame]]
+caption = "After the changes: airport ... river, with garden in and cake out"
+say = """Here is the album now."""
+picture = { type = "linked", nodes = ["airport", "beach", "garden", "dog", "forest", "mountain", "river"], double = true, marks = { "0" = "new", "2" = "new", "6" = "new" } }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Deleting at the ends through head and tail"
+summary = "deleteAtBeginning and deleteAtEnd: 0 steps, 4 pointer changes together; an empty list is an underflow."
+detail = """Deleting "airport" at the beginning and "river" at the end uses `head` and `tail` directly: no walking, 2 pointer changes each. Deleting from an empty list is refused as an underflow."""
+speech = """Deleting at both ends. [[slnc 400]] The airport and the river go, with no walking: two pointer changes each. [[slnc 400]] And deleting from an empty list is an underflow."""
+console = [["deleteAtBeginning() = airport 700KB, deleteAtEnd() = river 880KB: 0 steps, 4 pointer changes", "ok"], ["an empty list, deleteAtBeginning(): underflow: the list is empty", "bad"]]
+[[act.frame]]
+caption = "Both ends removed in O(1)"
+say = """Here is the album without its two ends."""
+picture = { type = "linked", nodes = ["beach", "garden", "dog", "forest", "mountain"], double = true, pointers = [[0, "head"], [4, "tail"]] }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The same algorithm for every type"
+summary = "reverse() makes 12 pointer changes on five Integers and on five Strings, with the same code."
+detail = """`reverse` swaps each node's prev and next and then swaps head and tail: 12 pointer changes for five sizes, and the same 12 for five names. Generics change the element type, not the algorithm or its cost. Java's `LinkedList<E>` is a generic doubly linked list of exactly this kind."""
+speech = """One algorithm for every type. [[slnc 400]] Reverse swaps the pointers of every node, then head and tail. [[slnc 400]] Twelve pointer changes for the sizes, and the same twelve for the names. [[slnc 500]] Generics change the type, not the algorithm."""
+console = [["<Integer> reverse(): 12 pointer changes; head -> 1200 <-> 930 <-> 610 <-> 540 <-> 820 <- tail", "ok"], ["<String>  reverse(): 12 pointer changes, the very same code", "ok"], ["already in Java: java.util.LinkedList<E>, a generic doubly linked list with head and tail", "muted"]]
+[[act.frame]]
+caption = "The reversed sizes"
+say = """Here are the reversed sizes."""
+picture = { type = "linked", nodes = [1200, 930, 610, 540, 820], double = true, pointers = [[0, "head"], [4, "tail"]] }
+
+[animation]
+subtitle = "A photo viewer as a generic doubly linked list: Node<T> with prev and next, O(1) at both ends, equals for search and delete, and one reverse for every type."
+
+[docs.problem]
+scenario = """The photo viewer keeps photos, names and sizes, each as a doubly linked list, and wants one class for all."""
+naive = """Three copies of the doubly-linked-list code, or a list of `Object` with casts everywhere."""
+deliver = [
+  "A `GenericDoublyLinkedList<T>` of `Node<T>`s with head and tail and the textbook operations, matching with equals.",
+  "Used with String, Integer and a Photo record.",
+  "Time and space complexity of every operation, compared with its neighbours.",
+]
+
+[docs.prerequisites]
+required = ["The doubly-linked-list project", "The singly-linked-list-generic project, or generics basics"]
+not_required = ["The source of java.util.LinkedList"]
+
+[docs.session]
+objectives = [
+  "Write `Node<T>` with prev and next and a generic doubly linked list.",
+  "Match elements with equals.",
+  "State that every cost is unchanged from the String-only list.",
+]
+walkthrough = """Replace String with T in the doubly list and run the demo. In act two, draw a node with three arrows. In act three, show equals finding a new Photo. Finish by comparing with java.util.LinkedList."""
+
+[docs.explained]
+sentence = """A generic doubly linked list is the doubly linked list with a type parameter: Node<T> with prev, data and next, head and tail, equals for matching, and the same O(1) work at both ends."""
+verdict = """This is `java.util.LinkedList<E>`, built by hand; use the library one in real code, and choose it over `ArrayList<E>` only for heavy work at both ends or at nodes already reached."""
+recognise = [
+  "`class Node<T> { Node<T> prev; T data; Node<T> next; }`.",
+  "`head` and `tail` fields in a generic list class.",
+]
+
+[spec]
+purpose = """Teach Java generics on the doubly linked list."""
+requirements = [
+  "Written by hand: `Node<T>` with `prev`, `data`, `next`; `head` and `tail`; no Java collections.",
+  "The textbook operations, matching with equals; underflow reported.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["The String-only version (doubly-linked-list)", "Recursive versions (doubly-linked-list-generic-recursive)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Doubly Linked List (Generic): the pieces"
+caption = "One generic class; each Node<T> refers to its neighbours and its data object."
+nodes = [
+  { id = "demo", label = "Demo", sub = "GenericDoublyLinkedListDemo", col = 0, row = 0, colour = "client" },
+  { id = "list", label = "GenericDoublyLinkedList<T>", sub = "head, tail", col = 1, row = 0, colour = "accent" },
+  { id = "node", label = "Node<T>", sub = "prev, data, next", col = 2, row = 0, colour = "green" },
+  { id = "obj", label = "T objects", sub = "String, Integer, Photo", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "list", label = "insertAtEnd(photo)" }, { from = "list", to = "node", label = "head, tail" }, { from = "node", to = "obj", label = "data" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Doubly Linked List (Generic): the classes"
+caption = "`GenericDoublyLinkedList<T>` holds head and tail; `Photo` is one T."
+nodes = [
+  { id = "list", label = "GenericDoublyLinkedList<T>", sub = ["- Node<T> head, tail", "+ insertAtBeginning / AtEnd", "+ insertAtPosition / insertAfter", "+ deleteAtBeginning / AtEnd", "+ deleteByKey / deleteNode", "+ search / get / count", "+ displayForward / Backward", "+ reverse"], col = 0, row = 0, colour = "accent" },
+  { id = "node", label = "Node<T>", sub = ["prev: Node<T>", "data: T", "next: Node<T>"], col = 1, row = 0, colour = "green" },
+  { id = "photo", label = "Photo", sub = ["record: name, kilobytes"], col = 1, row = 1, colour = "client" },
+]
+edges = [ { from = "list", to = "node", label = "head, tail" }, { from = "node", to = "photo", label = "T = Photo" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Doubly Linked List (Generic): deleteByKey(key)"
+caption = "Walk matching with equals, then unlink in O(1)."
+nodes = [
+  { id = "in", label = "deleteByKey(key)", sub = "a T", col = 0, row = 0, colour = "client" },
+  { id = "walk", label = "current.data.equals(key)?", sub = "no: current = current.next", col = 1, row = 0, colour = "amber" },
+  { id = "unlink", label = "deleteNode(current)", sub = "2 pointer changes", col = 2, row = 0, colour = "green" },
+]
+edges = [ { from = "in", to = "walk", label = "" }, { from = "walk", to = "unlink", label = "yes" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Doubly Linked List (Generic): deleteByKey(new Photo(\"cake\", 540))"
+caption = "Three equals comparisons, then two pointer changes."
+participants = ["Demo", "GenericDoublyLinkedList", "airport, beach", "cake"]
+steps = [
+  ["Demo", "GenericDoublyLinkedList", "deleteByKey(cake 540KB)"],
+  ["GenericDoublyLinkedList", "airport, beach", "equals? no, twice"],
+  ["GenericDoublyLinkedList", "cake", "equals? yes"],
+  ["GenericDoublyLinkedList", "Demo", "true: beach <-> garden", "reply"],
+]
+
+[poster]
+headline = [["DOUBLY LIST", "text"], ["GENERIC <T>", "accent"]]
+before = { code = "DoublyLinkedList", note = "String only", tag = "ONE TYPE" }
+after = { code = "Node<T> prev, next", note = "String, Integer, Photo", tag = "ANY TYPE" }
+taglines = [["LinkedList<E>, built by hand.", "text"], ["O(1) at both ends, any type.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Doubly Linked List (Generic)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the generic doubly linked list, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] It is a doubly linked list written once for any type of data. [[slnc 300]] Each node has a previous pointer, a reference to its data, and a next pointer. [[slnc 700]] Our example is a photo viewer. [[slnc 400]] By the end, you will know how Java's linked list is built, and why its costs do not depend on the type."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "A train coupled both ways, carrying any cargo"
+picture = { type = "linked", nodes = ["cargo", "cargo", "cargo", "cargo"], double = true }
+narration = """Think of a train, coupled front and back. [[slnc 400]] Its carriages can carry anything: passengers, coal, cars. [[slnc 400]] The couplings work the same whatever is inside. [[slnc 500]] That is a generic doubly linked list."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["Node<T>: prev, data of type T, next", "head and tail: both ends", "reference: the node points at its data", "equals: compare contents"]
+narration = """The words. [[slnc 400]] A node of T has a previous pointer, data of type T, and a next pointer. [[slnc 400]] The list keeps head and tail. [[slnc 400]] The data is a reference. [[slnc 400]] And equals compares contents."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["insert, delete at both ends: O(1)", "delete a node already reached: O(1)", "at a position: O(n) to reach", "search, count, display, reverse: O(n)", "", "the same as the String-only list"]
+narration = """Here are the costs. [[slnc 400]] Insertion and deletion at both ends are order one. [[slnc 400]] Deleting a node already reached is order one. [[slnc 400]] Reaching a position is order n. [[slnc 400]] Search, count, display and reverse are order n. [[slnc 500]] Exactly as in the string-only list."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Compared With Related Structures"
+body = ["String-only doubly list: the same costs, one type", "generic singly list: delete at end O(n)", "generic dynamic array: O(1) access", "", "Java's own: LinkedList<E>"]
+narration = """How does it compare? [[slnc 400]] The string-only list has the same costs, for one type. [[slnc 400]] A generic singly list deletes at the end in order n. [[slnc 400]] A generic dynamic array reaches any position in one step. [[slnc 400]] And Java's own linked list is this structure."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["matching with ==", "forgetting an insertion pointer", "raw types", "not updating head or tail"]
+narration = """Four mistakes. [[slnc 400]] Matching with double equals. [[slnc 400]] Forgetting one of the four insertion pointers. [[slnc 400]] Using raw types. [[slnc 400]] And not updating the head or tail at the ends."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the generic doubly linked list. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] A node of T links both ways and refers to its data, and nothing about the algorithm depends on T. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Move a node to the front in order one. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

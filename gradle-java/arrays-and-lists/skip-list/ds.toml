@@ -1,0 +1,361 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "skip-list"
+category = "arrays-and-lists"
+title = "Skip List"
+package = "skiplist"
+main_class = "SkipListDemo"
+example = "A train line with stopping and express services"
+tagline = "Express lanes for a list"
+bold = "A skip list adds express levels on top of a sorted linked list, chosen by tossing coins, so a search rides the express as far as it can and then changes down: about log2(n) steps instead of n, on average."
+analogy_short = "A train line with stopping trains and express trains"
+jdk = "`java.util.concurrent.ConcurrentSkipListMap` and `ConcurrentSkipListSet`"
+thumb_lines = ["SKIP", "LIST"]
+thumb_code = "x = x.next[level]"
+youtube_title = "Skip List in Java - Express Lanes for a Linked List"
+youtube_tags = ["skip list", "skip list java", "probabilistic data structure", "sorted list search", "ConcurrentSkipListMap"]
+youtube_description = """Skip List in Java, explained with a train line that has a stopping service and express services. We start with sixteen stations on a stopping line and count thirteen steps to reach Marden, because a sorted linked list has no middle to jump to. Then we build express levels by hand, as in C: every station keeps one forward pointer per level it stands on, and a coin toss decides how tall each station is. We ride the express and change down, finding Marden in three steps, add and remove stations level by level, and meet an unlucky coin that turns the whole line back into a stopping service. We finish with the bill at a thousand stations: 9.7 steps on average instead of 500.5, for about two pointers per station."""
+
+[readme]
+intro = """A **skip list** is a sorted linked list with express lanes. Every value sits on the bottom level, in order, exactly as in a sorted linked list. Some values also stand on level 2, which skips over the ones in between; fewer stand on level 3, and so on. A search starts on the highest level, goes as far as it can without passing the value it wants, then drops down a level and carries on. Which values get the higher levels is decided by tossing a coin, so on average each level has half the values of the one below, and a search takes about log2(n) steps instead of n. It is built by hand here, as in C: each node is a key, a value, and an array of forward pointers, one per level."""
+analogy = """Think of a railway line with two kinds of train. The stopping train calls at every station; the express calls only at a few big ones. To get to a small station near the end of the line, you ride the express as far as it goes without overshooting, then change to the stopping train for the last few stops. A skip list has several express services, each skipping more stations than the one below, and a search changes down, level by level, until it arrives."""
+example = """A railway line has sixteen stations, from Ashford at kilometre 3 to Pinner at kilometre 71, kept in order of distance. Passengers ask for stations by kilometre marker. The demo first runs a stopping service only, then adds express levels, finds Marden at kilometre 57, adds a new station, Quarry, and removes Hailey, then shows what an unlucky coin does, and measures a line of a thousand stations."""
+why = """A sorted array can be searched quickly by halving, but inserting into it moves everything after the new value. A sorted linked list inserts cheaply, but cannot be halved: there is no middle to jump to, so finding a value means walking from the start, thirteen steps to reach the thirteenth station and five hundred on average in a list of a thousand. A skip list keeps the linked list's cheap inserts and adds extra forward pointers that make searching about as fast as halving: under ten steps on average for a thousand."""
+when_use = [
+  "You need values kept in order, with fast search, insert and delete, and simple code.",
+  "You want ordered data that many threads can change at once (the JDK's concurrent skip lists).",
+  "You want the speed of a balanced tree without writing rotations.",
+]
+when_not = [
+  "You need a guaranteed worst case: a skip list is fast on average, and bad luck makes it slow.",
+  "Memory is tight: the extra forward pointers cost about one extra pointer per value.",
+  "The data never changes: a sorted array searched by halving is smaller and just as fast.",
+]
+met_before = [
+  "Stopping and express trains; lifts that serve only some floors; skimming a book by chapter, then page, then line.",
+  "`java.util.concurrent.ConcurrentSkipListMap` and `ConcurrentSkipListSet`.",
+  "Redis sorted sets use a skip list inside.",
+]
+
+[[word]]
+term = "level"
+meaning = "One lane of pointers. Level 1 links every station; each higher level links only some, skipping the rest."
+[[word]]
+term = "height"
+meaning = "How many levels a station stands on: how many forward pointers its node has."
+[[word]]
+term = "head"
+meaning = "A dummy station at the start that stands on every level, so every search has somewhere to begin."
+[[word]]
+term = "coin toss"
+meaning = "How a new station's height is chosen: one level, plus one more for every head in a row."
+[[word]]
+term = "step"
+meaning = "Following one pointer, on any level. The demo counts them."
+[[word]]
+term = "expected (on average)"
+meaning = "What happens averaged over the coin tosses. A skip list is fast on average, not in every case."
+
+[[operation]]
+name = "Search"
+does = "Ride each level as far as possible without passing, then drop a level"
+counted = "3 steps for Marden (13 on the stopping line); 9.7 on average at 1,000 stations"
+big_o = "O(log n) expected"
+[[operation]]
+name = "Insert"
+does = "Search for the spot, toss coins for the height, link in on each level"
+counted = "The search, plus 2 pointers per level"
+big_o = "O(log n) expected"
+[[operation]]
+name = "Remove"
+does = "Search for it, then unlink it from every level it stands on"
+counted = "The search, plus 1 pointer per level: 4 for Hailey"
+big_o = "O(log n) expected"
+[[operation]]
+name = "Walk in order"
+does = "Follow the level 1 pointers from the head"
+counted = "One step per station"
+big_o = "O(n), linear"
+[[operation]]
+name = "Worst case (unlucky coins)"
+does = "Every station stays on level 1: a plain sorted list"
+counted = "13 steps for Marden again"
+big_o = "O(n)"
+
+[[mistake]]
+mistake = "Forgetting to record the last station before the target on every level"
+happens = "Insert links the new station in on level 1 but not on the express levels, or links it in the wrong place."
+fix = "Keep a `before` array: while searching, store the last station visited on each level, then link in on each."
+[[mistake]]
+mistake = "Linking the pointers in the wrong order"
+happens = "As in any linked list, pointing the station before at the new one first loses the rest of that level."
+fix = "On each level, first `box.next[l] = before[l].next[l]`, then `before[l].next[l] = box`."
+[[mistake]]
+mistake = "Using the same random generator without a seed in tests"
+happens = "The heights change every run, so step counts change and tests fail at random."
+fix = "Seed the coin in tests and demos, as `Coin.seeded(2026)` does."
+[[mistake]]
+mistake = "Letting the height grow without limit"
+happens = "A long run of heads makes a very tall station and a head with thousands of levels."
+fix = "Cap the height (`MAX_LEVEL`), about log2 of the largest size you expect."
+
+[[exercise]]
+level = "easy"
+question = """With the regular line of act two, which stations does a search for Kelby (km 48) visit, and how many steps does it take?"""
+answer = """From the head on level 4 it rides to Hailey (1 step); Pinner is beyond 48, so it drops to level 3 and stays (Lydd, km 53, is beyond); drops to level 2 and rides to Jarrow (2 steps); drops to level 1 and rides one more station to Kelby (3 steps). About the same as Marden, where the stopping line would need 11."""
+[[exercise]]
+level = "medium"
+question = """Add `String firstAtOrAfter(int km)`, which returns the name of the first station at or beyond `km` (or null). Why does it need hardly any new code?"""
+answer = """```java
+public String firstAtOrAfter(int km) {
+    Node x = head;
+    for (int level = levels - 1; level >= 0; level--) {
+        while (x.next[level] != null && x.next[level].km < km) x = x.next[level];
+    }
+    x = x.next[0];
+    return x == null ? null : x.station;
+}
+```
+It is `find` without the final equality check: the search already stops just before the first station that is not less than `km`, which is exactly the one wanted. Range questions like this are why skip lists, like trees, keep their values in order."""
+[[exercise]]
+level = "harder"
+question = """Each station is on level 2 with probability 1/2, level 3 with 1/4, and so on. Show that the expected total number of pointers is about 2n, and explain why a search visits about 2 stations per level."""
+answer = """A station has 1 pointer, plus 1 more with probability 1/2, plus another with 1/4, and so on: 1 + 1/2 + 1/4 + ... = 2 pointers on average, so 2n in total (the demo counts 2,031 for 1,000 stations). Looking backwards along a search path, each step either goes up a level (if the station is taller, probability 1/2) or left along the same level (probability 1/2), so on average about 2 steps per level, over about log2(n) levels: roughly 2 log2(n) steps, which for 1,000 is under 20, and the measured average is 9.7."""
+
+[hero]
+caption = "level 1 calls at every station; each level above skips more of them"
+picture = { type = "skiplist", stations = ["Ashford", "Bexley", "Carlton", "Denby", "Elstow", "Farley", "Garston", "Hailey"], heights = [1, 2, 1, 3, 1, 2, 1, 4], title = "a skip list: the first eight stations" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "A stopping service only"
+summary = "Sixteen stations in order, every train calls at every one: finding Marden takes 13 steps, one station at a time."
+detail = """First the line has a stopping service only: the sixteen stations form an ordinary sorted linked list, Ashford to Pinner. To find Marden, at kilometre 57, the search starts at the head and follows one pointer at a time, checking each station: twelve stations before Marden and one step onto it, thirteen steps. A sorted array could be halved, looking in the middle and throwing half away, but a linked list has no middle to jump to; the only way to reach a station is through every station before it."""
+speech = """First, a line with a stopping service only. [[slnc 400]] Sixteen stations, in order, and every train calls at every one. [[slnc 400]] To find Marden, at kilometre fifty seven, we start at the beginning, and follow one pointer at a time. [[slnc 400]] Thirteen steps. [[slnc 500]] A linked list has no middle to jump to."""
+console = [["16 stations in order, every train calls at every one", "muted"], ["find Marden (km 57): 13 steps, one station at a time", "bad"], ["a sorted linked list cannot jump to the middle: there are no positions to jump to", "bad"]]
+[[act.frame]]
+caption = "The stopping service: 12 stations passed, then Marden, 13 steps"
+say = """Here is the stopping line. [[slnc 300]] One level, every station. [[slnc 400]] The amber pointers are the search for Marden. [[slnc 300]] It passes every station before it, one step at a time. [[slnc 400]] Thirteen steps."""
+picture = { type = "skiplist", stations = ["Ashford", "Bexley", "Carlton", "Denby", "Elstow", "Farley", "Garston", "Hailey", "Ickford", "Jarrow", "Kelby", "Lydd", "Marden", "Norley", "Oakley", "Pinner"], heights = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], marks = { "Marden" = "ok" }, path = [[1, "head", "Ashford"], [1, "Ashford", "Bexley"], [1, "Bexley", "Carlton"], [1, "Carlton", "Denby"], [1, "Denby", "Elstow"], [1, "Elstow", "Farley"], [1, "Farley", "Garston"], [1, "Garston", "Hailey"], [1, "Hailey", "Ickford"], [1, "Ickford", "Jarrow"], [1, "Jarrow", "Kelby"], [1, "Kelby", "Lydd"], [1, "Lydd", "Marden"]], note = "13 steps to reach Marden" }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Express lanes"
+summary = "Every 2nd station on level 2, every 4th on level 3, every 8th on level 4: 30 forward pointers for 16 stations."
+detail = """Now some stations get express stops. In this perfectly regular line, every second station also stands on level 2, every fourth on level 3, and every eighth on level 4. Each station's node holds one forward pointer per level it stands on: Ashford has one, Bexley two, Denby three, and Hailey and Pinner four. A head node at the start stands on every level, so every search can begin at the top. Level 4 links only Hailey and Pinner; level 1 still links every station in order. The whole line uses 30 forward pointers for 16 stations."""
+speech = """Now we add express lanes. [[slnc 400]] Every second station also stands on level two. [[slnc 300]] Every fourth, on level three. [[slnc 300]] And every eighth, on level four. [[slnc 500]] Each station keeps one forward pointer for every level it stands on. [[slnc 400]] And a head, at the start, stands on every level, so every search can begin at the top."""
+console = [["level 4: Hailey Pinner", "ok"], ["level 3: Denby Hailey Lydd Pinner", "ok"], ["level 2: Bexley Denby Farley Hailey Jarrow Lydd Norley Pinner", "ok"], ["level 1: Ashford Bexley Carlton Denby Elstow Farley Garston Hailey Ickford Jarrow Kelby Lydd Marden Norley Oakley Pinner", "muted"], ["30 forward pointers for 16 stations", "amber"]]
+[[act.frame]]
+caption = "Four levels: level 4 calls only at Hailey and Pinner; level 1 calls everywhere"
+say = """Here are the four levels. [[slnc 300]] The bottom row is the stopping service, every station. [[slnc 400]] Each row above skips more. [[slnc 300]] The top row, level four, calls only at Hailey and Pinner. [[slnc 400]] The column of H boxes on the left is the head, standing on every level."""
+picture = { type = "skiplist", stations = ["Ashford", "Bexley", "Carlton", "Denby", "Elstow", "Farley", "Garston", "Hailey", "Ickford", "Jarrow", "Kelby", "Lydd", "Marden", "Norley", "Oakley", "Pinner"], heights = [1, 2, 1, 3, 1, 2, 1, 4, 1, 2, 1, 3, 1, 2, 1, 4] }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Ride the express, then change"
+summary = "Marden in 3 steps; km 60 is not there after 4; Quarry is added with height 1 and 2 pointers; Hailey is removed from all 4 levels."
+detail = """To find Marden, the search starts at the head on level 4 and rides to Hailey (kilometre 35), because Hailey is still before 57. The next stop on level 4 is Pinner at 71, which would overshoot, so it drops to level 3 and rides to Lydd (53); the next, Pinner again, overshoots. It drops to level 2, where the next stop, Norley (62), overshoots; drops to level 1, where the next station is Marden: step on. Three steps, against thirteen. Looking for kilometre 60 follows the same kind of path and finds no station there, after four steps. Adding Quarry at kilometre 50 tosses the coin, which gives height 1, so Quarry is linked in on level 1 only: two pointers. Removing Hailey unlinks it on each of its four levels: four pointers changed."""
+speech = """Now we search for Marden again. [[slnc 400]] Start at the top, on level four, and ride to Hailey. [[slnc 400]] The next stop, Pinner, would go too far, so we drop to level three, and ride to Lydd. [[slnc 400]] Then down, and down again, until the next station is Marden. [[slnc 400]] Three steps, instead of thirteen."""
+console = [["find Marden (km 57): 3 steps: express to Hailey, then Lydd, then step on", "ok"], ["find km 60: no station, 4 steps to be sure", "muted"], ["add Quarry (km 50): the coin gives height 1, 2 pointers set", "ok"], ["remove Hailey (height 4): 4 pointers changed, one per level", "ok"]]
+[[act.frame]]
+caption = "Level 4 to Hailey, level 3 to Lydd, level 1 onto Marden: 3 steps"
+say = """Here is the search, in amber. [[slnc 300]] Level four, from the head to Hailey. [[slnc 400]] Level three, from Hailey to Lydd. [[slnc 400]] Then down to level one, and one step onto Marden. [[slnc 400]] Three steps. [[slnc 300]] Ride the express as far as it goes, then change down."""
+picture = { type = "skiplist", stations = ["Ashford", "Bexley", "Carlton", "Denby", "Elstow", "Farley", "Garston", "Hailey", "Ickford", "Jarrow", "Kelby", "Lydd", "Marden", "Norley", "Oakley", "Pinner"], heights = [1, 2, 1, 3, 1, 2, 1, 4, 1, 2, 1, 3, 1, 2, 1, 4], marks = { "Marden" = "ok" }, path = [[4, "head", "Hailey"], [3, "Hailey", "Lydd"], [1, "Lydd", "Marden"]], note = "find Marden: 3 steps" }
+[[act.frame]]
+caption = "Remove Hailey: on each of its 4 levels, the station before it now points past it"
+say = """Now remove Hailey. [[slnc 300]] Hailey stood on four levels, so it is unlinked four times. [[slnc 400]] On each level, the station before Hailey now points straight past it. [[slnc 400]] Four pointers changed, and the express lanes are still in order."""
+picture = { type = "skiplist", stations = ["Ashford", "Bexley", "Carlton", "Denby", "Elstow", "Farley", "Garston", "Ickford", "Jarrow", "Kelby", "Lydd", "Marden", "Norley", "Oakley", "Pinner"], heights = [1, 2, 1, 3, 1, 2, 1, 1, 2, 1, 3, 1, 2, 1, 4], marks = { "Garston" = "hi", "Farley" = "hi", "Denby" = "hi" }, note = "Hailey removed: the pointers that led to it now skip past" }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "An unlucky coin"
+summary = "With a coin that always lands tails, every station stays on level 1: finding Marden takes 13 steps again."
+detail = """The express levels only exist because the coin sometimes lands heads. Build the same sixteen stations with a coin that always lands tails and every station gets height 1: there is one level, no express at all, and the line is an ordinary sorted linked list again. Finding Marden takes thirteen steps, exactly as in act one. A real coin is never that unlucky for long, but it shows the truth about skip lists: their speed is an average over the coin tosses, not a guarantee. Balanced trees, later in the course, pay for a guarantee with more complicated code."""
+speech = """Now an unlucky coin. [[slnc 400]] We build the same sixteen stations, with a coin that always lands tails. [[slnc 400]] Every station gets height one. [[slnc 300]] There is no express at all. [[slnc 400]] Finding Marden takes thirteen steps again. [[slnc 500]] A skip list is fast on average, not in every case."""
+console = [["every toss is tails: 1 level, no express at all", "bad"], ["find Marden: 13 steps, the same as the stopping service", "bad"], ["a skip list is only fast on average: bad luck makes it a plain list", "amber"]]
+[[act.frame]]
+caption = "Always tails: one level, no express, and Marden is 13 steps away again"
+say = """Here is the unlucky line. [[slnc 300]] Only the bottom row exists. [[slnc 400]] Every search walks, one station at a time, just like the stopping service. [[slnc 400]] The express lanes are a gift of the coin, not a promise."""
+picture = { type = "skiplist", stations = ["Ashford", "Bexley", "Carlton", "Denby", "Elstow", "Farley", "Garston", "Hailey", "Ickford", "Jarrow", "Kelby", "Lydd", "Marden", "Norley", "Oakley", "Pinner"], heights = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], marks = { "Marden" = "bad" }, note = "always tails: no express levels at all" }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The bill, at a thousand stations"
+summary = "1,000 stations with a fair coin: 11 levels, 9.7 steps per search on average (the stopping service: 500.5), for 2,031 pointers."
+detail = """With a fair coin and a thousand stations, the line grows eleven levels. Finding every station once and averaging, a search takes 9.7 steps, where the stopping service would average 500.5. The express lanes cost memory: 2,031 pointers for 1,000 stations, about two per station instead of one, because half the stations have a second pointer, a quarter a third, and so on. And the speed is an average, as act four showed. In Java, `java.util.concurrent.ConcurrentSkipListMap` is a skip list, chosen over a tree because many threads can change it at once without locking the whole structure."""
+speech = """And the bill, at a thousand stations. [[slnc 400]] The fair coin builds eleven levels. [[slnc 400]] A search takes nine point seven steps on average. [[slnc 300]] The stopping service would take five hundred. [[slnc 500]] The price is memory: about two pointers per station, instead of one. [[slnc 400]] And the speed is an average, not a promise."""
+console = [["1,000 stations: 11 levels, finding a station takes 9.7 steps on average (the stopping service: 500.5)", "ok"], ["2,031 forward pointers: about 2 per station instead of 1", "amber"], ["already in Java: java.util.concurrent.ConcurrentSkipListMap", "muted"]]
+[[act.frame]]
+caption = "Each level has about half the stations of the one below: about 2 pointers per station"
+say = """Here is where the pointers go. [[slnc 300]] Every station has one. [[slnc 300]] About half have a second. [[slnc 300]] A quarter have a third. [[slnc 400]] Add them up and you get about two pointers per station. [[slnc 400]] That is the price of searching in ten steps instead of five hundred."""
+picture = { type = "grid", rows = [[1000, 500, 250, 125, 63, 31, 16, 8, 4, 2, 1]], col_labels = ["L1", "L2", "L3", "L4", "L5", "L6", "L7", "L8", "L9", "L10", "L11"], cell_w = 64, cell_h = 48, note = "stations per level, about half each time: 2,031 pointers in all (measured)" }
+
+[animation]
+subtitle = "A train line with express lanes: the stopping service, riding the express and changing down, adding and removing level by level, and the coin that decides it all."
+
+[docs.problem]
+scenario = """A railway line keeps sixteen stations in order of distance and answers "which station is at kilometre k?", while stations are added and removed."""
+naive = """A sorted linked list inserts cheaply but can only be searched by walking: thirteen steps to reach Marden, and 500 on average for a line of a thousand. A sorted array can be halved but moves everything on every insert."""
+deliver = [
+  "A `SkipList` built by hand: nodes with a key, a value and an array of forward pointers, and a head on every level.",
+  "Search that rides each level and drops down, counting steps: 3 for Marden against 13.",
+  "Insert and remove on every level a station stands on, counting pointers.",
+  "A hand-written, seeded `Coin` (no `java.util.Random`) so heights and counts are the same on every run.",
+  "The unlucky always-tails coin, and a 1,000-station line averaging 9.7 steps.",
+]
+
+[docs.prerequisites]
+required = ["The singly linked list project", "Java arrays of objects, and `for` loops counting down"]
+not_required = ["Probability beyond tossing a coin", "Logarithms (the README explains log2 as 'how many times you can halve')"]
+
+[docs.session]
+objectives = [
+  "Draw a skip list with its levels and head.",
+  "Search it by riding each level and dropping down, and count the steps.",
+  "Insert and remove on every level a node stands on.",
+  "Explain why the coin makes it fast on average, and what an unlucky coin does.",
+]
+walkthrough = """Start with the railway analogy and a drawn line of stations with an express above it. Run the demo; in act one, count the thirteen steps. In act two, draw the four levels. In act three, trace the search for Marden with a finger and say out loud 'too far, change down' at each drop. In act four, toss a real coin for a few stations to show how heights come about, then imagine it always landing tails. Close with act five's numbers and the harder exercise's argument for two pointers per station."""
+
+[docs.explained]
+sentence = """A skip list is a sorted linked list with extra express levels, chosen by coin tosses, so a search rides the highest level as far as it can, then drops down, taking about log2(n) steps on average."""
+verdict = """Use a skip list when you need ordered data with fast search, insert and delete and would rather not write a balanced tree, or when many threads must change it at once, which is where the JDK uses it. When you need a guaranteed worst case, use a balanced tree; when the data never changes, a sorted array searched by halving is smaller and just as fast."""
+recognise = [
+  "A node with an array of next pointers, often `Node[] next` or `forward`.",
+  "A `randomLevel()` method that loops while a random bit is set.",
+  "A search loop over levels counting down, with an inner `while` riding each level.",
+]
+
+[spec]
+purpose = """Teach the skip list to a complete beginner: express levels over a sorted linked list, searching by riding and dropping, coin-toss heights, and average versus worst case."""
+requirements = [
+  "Built by hand: nodes with a kilometre key, a station name and a `Node[] next`; a head on every level; no Java collections.",
+  "A hand-written seeded `Coin` for heights, and an always-tails coin for the worst case.",
+  "`find`, `insert` and `remove` count steps and pointers; a duplicate kilometre is refused.",
+  "The regular line finds Marden in 3 steps; the stopping line in 13.",
+  "1,000 stations with seed 2026 average 9.7 steps per search, with 2,031 pointers.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["Thread safety (the JDK's concurrent skip list adds that)", "Generic keys: whole-number kilometres keep the pictures simple"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Skip List: the pieces"
+caption = "The skip list keeps a head on every level; each station node has one forward pointer per level it stands on; a coin decides heights."
+nodes = [
+  { id = "demo", label = "SkipListDemo", sub = "the five acts", col = 0, row = 0, colour = "client" },
+  { id = "list", label = "SkipList", sub = "head, levels, find, insert, remove", col = 1, row = 0, colour = "accent" },
+  { id = "coin", label = "Coin", sub = "seeded xorshift: heads or tails", col = 1, row = 1, colour = "amber" },
+  { id = "node", label = "Node", sub = "km, station, Node[] next", col = 2, row = 0, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = "steps, pointers", col = 0, row = 1, colour = "amber" },
+]
+edges = [
+  { from = "demo", to = "list", label = "find(57)" },
+  { from = "list", to = "node", label = "head.next[level]" },
+  { from = "list", to = "coin", label = "randomLevel()" },
+  { from = "list", to = "steps", label = "counts", dashed = true },
+]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Skip List: the classes"
+caption = "`SkipList` and its nested `Node`; `Coin` for heights; `StepCounter` for steps and pointers; `Lines` for the demo's output."
+nodes = [
+  { id = "list", label = "SkipList", sub = ["- Node head", "- int levels, size", "- Coin coin", "+ find(km) String", "+ insert(km, station) int", "+ insertWithLevel(km, s, h) int", "+ remove(km) boolean", "+ describe() String"], col = 0, row = 0, colour = "accent" },
+  { id = "node", label = "Node", sub = ["- int km", "- String station", "- Node[] next"], col = 1, row = 0, colour = "green" },
+  { id = "coin", label = "Coin", sub = ["- int state", "+ seeded(seed)", "+ alwaysTails()", "+ heads() boolean"], col = 2, row = 0, colour = "amber" },
+]
+edges = [ { from = "list", to = "node", label = "head" }, { from = "list", to = "coin", label = "tosses" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Skip List: one search"
+caption = "Ride the current level while the next station is before the target; when it would overshoot, drop a level."
+nodes = [
+  { id = "top", label = "start at the head", sub = "on the top level", col = 0, row = 0, colour = "client" },
+  { id = "ride", label = "next.km < target?", sub = "yes: step along", col = 1, row = 0, colour = "green" },
+  { id = "drop", label = "drop a level", sub = "no: it would overshoot", col = 1, row = 1, colour = "amber" },
+  { id = "done", label = "level 1 done", sub = "the next station is it, or nothing", col = 2, row = 1, colour = "accent" },
+]
+edges = [ { from = "top", to = "ride", label = "" }, { from = "ride", to = "drop", label = "no" }, { from = "drop", to = "ride", label = "next level" }, { from = "drop", to = "done", label = "below level 1" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Skip List: find(57)"
+caption = "Three steps on the regular line: level 4, level 3, then level 1."
+participants = ["Demo", "SkipList", "head", "Hailey", "Lydd", "Marden"]
+steps = [
+  ["Demo", "SkipList", "find(57)"],
+  ["head", "Hailey", "level 4: 35 < 57, step"],
+  ["Hailey", "Lydd", "level 3: 53 < 57, step"],
+  ["note", "Lydd", "levels 2 and 1: the next would overshoot"],
+  ["Lydd", "Marden", "step on: 57"],
+  ["SkipList", "Demo", "\"Marden\", 3 steps", "reply"],
+]
+
+[poster]
+headline = [["SKIP LIST", "text"], ["IN JAVA", "accent"]]
+before = { code = "x = x.next", note = "13 steps to Marden", tag = "STOPPING" }
+after = { code = "x = x.next[level]", note = "3 steps to Marden", tag = "EXPRESS" }
+taglines = [["Express lanes for a linked list.", "text"], ["Chosen by tossing coins.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Skip List"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the skip list, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] A skip list is a sorted linked list with express lanes. [[slnc 300]] Some values also stand on higher levels, which skip over the ones in between. [[slnc 400]] A search rides the express as far as it can, then changes down. [[slnc 400]] And a coin toss decides which values get the express stops. [[slnc 700]] Our example is a train line, with a stopping service and express services. [[slnc 400]] By the end, you will know how to search, add and remove, why coins make it fast, and why fast only on average."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Ride the express as far as it goes, then change to the stopping train"
+picture = { type = "skiplist", stations = ["Ashford", "Bexley", "Carlton", "Denby", "Elstow", "Farley"], heights = [1, 1, 1, 2, 1, 1], marks = { "Elstow" = "ok" }, path = [[2, "head", "Denby"], [1, "Denby", "Elstow"]] }
+narration = """Think of a railway line with two kinds of train. [[slnc 400]] The stopping train calls at every station. [[slnc 300]] The express calls only at a few. [[slnc 500]] To reach a small station near the end, you ride the express as far as it goes without overshooting. [[slnc 400]] Then you change to the stopping train, for the last few stops. [[slnc 500]] That is a skip list."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "Words First"
+body = ["level: one lane of pointers", "height: how many levels a station stands on", "head: a dummy start on every level", "coin toss: how tall each new station is", "", "fast on average, not in every case"]
+narration = """A few words, before we start. [[slnc 400]] A level is one lane of pointers. [[slnc 300]] Level one calls everywhere; higher levels skip. [[slnc 400]] A station's height is how many levels it stands on. [[slnc 400]] The head is a dummy start, on every level. [[slnc 400]] And a coin toss decides how tall each new station is."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "What Each Operation Costs"
+body = ["search: about log2(n) steps on average", "insert: the search, plus 2 pointers per level", "remove: the search, plus 1 pointer per level", "memory: about 2 pointers per value", "", "O(log n) expected   O(n) with bad luck"]
+narration = """Let's put the costs side by side. [[slnc 400]] A search takes about log two of n steps, on average. [[slnc 300]] Log two of n just means how many times you can halve n: about ten for a thousand. [[slnc 400]] Inserting is a search, plus two pointers per level. [[slnc 400]] Removing is a search, plus one pointer per level. [[slnc 400]] And the memory is about two pointers per value. [[slnc 600]] Order log n, expected. [[slnc 300]] Order n, with bad luck."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["not recording the station before, on every level", "pointers in the wrong order", "an unseeded coin in tests", "no cap on the height"]
+narration = """Four mistakes to watch for. [[slnc 400]] Not recording the last station before the target on every level, so the insert links in the wrong place. [[slnc 400]] Setting the pointers in the wrong order, which loses the rest of a level. [[slnc 400]] Using an unseeded coin in tests, so the counts change every run. [[slnc 400]] And letting the height grow without a cap."""
+
+[[scene]]
+key = "verdict"
+kind = "bullets"
+title = "When To Use It"
+body = ["use it: ordered data, fast search and change, simple code", "use it: many threads changing it at once", "", "avoid it: you need a guaranteed worst case", "avoid it: the data never changes", "", "already in Java: ConcurrentSkipListMap"]
+narration = """So, when should you use a skip list? [[slnc 400]] When you need ordered data, with fast search and change, and simple code. [[slnc 400]] And when many threads change it at once, which is why Java's concurrent skip list map exists. [[slnc 500]] Avoid it when you need a guaranteed worst case, or when the data never changes."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the skip list. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] Ride the express as far as it goes, then change down, and let coins decide where the express stops. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Trace the search for Kelby on the regular line, and count the steps. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

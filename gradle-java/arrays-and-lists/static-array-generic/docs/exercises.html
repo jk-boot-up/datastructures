@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exercises — Static Array (Generic)</title>
+<style>
+:root{color-scheme:light dark;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+@media (prefers-color-scheme:dark){:root{--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;
+--line:#334155;--accent:#a78bfa;--code:#020617;--link:#93c5fd}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+<h1 id="exercises-static-array-generic">Exercises — Static Array (Generic)</h1>
+<p>Try each one before opening its answer. They start easy and get harder.</p>
+<h2 id="1-easy">1. Easy</h2>
+<p>Write <code>int count(T key)</code>, which returns how many elements are equal to <code>key</code>. Why must it use <code>equals</code> and not <code>==</code>?</p>
+<h2 id="2-medium">2. Medium</h2>
+<p>Make <code>Reading</code> order by day name instead of temperature. What does <code>findMax</code> then return on the week, and did you change <code>GenericStaticArray</code>?</p>
+<h2 id="3-harder">3. Harder</h2>
+<p>Write <code>boolean isSorted()</code>, true when the elements are in ascending order by <code>compareTo</code>. Then explain why <code>binarySearch</code> may give a wrong answer if <code>isSorted()</code> is false.</p>
+<hr>
+<h2 id="answers">Answers</h2>
+<details>
+<summary>Answer 1</summary>
+<pre><code>int count(T key) {
+    int c = 0;
+    for (int i = 0; i &lt; n; i++) {
+        if (arr[i].equals(key)) c++;
+    }
+    return c;
+}</code></pre>
+<p><code>==</code> compares references: two equal strings or readings created separately are different objects, so <code>==</code> would miss them. O(n) time, O(1) space.</p>
+</details>
+<details>
+<summary>Answer 2</summary>
+<pre><code>public int compareTo(Reading other) {
+    return day.compareTo(other.day);
+}</code></pre>
+<p><code>findMax</code> now returns the reading whose day name is last alphabetically, "Wed" (19 C). <code>GenericStaticArray</code> is unchanged: the algorithm asks the element for its order, so changing the element's <code>compareTo</code> changes the answer.</p>
+</details>
+<details>
+<summary>Answer 3</summary>
+<pre><code>boolean isSorted() {
+    for (int i = 1; i &lt; n; i++) {
+        if (arr[i - 1].compareTo(arr[i]) &gt; 0) return false;
+    }
+    return true;
+}</code></pre>
+<p>Binary search discards the half that "cannot" hold the key, which is only true when the elements are sorted. On unsorted data it may discard the half that holds the key and return -1. O(n) time, O(1) space.</p>
+</details>
+</main>
+<footer>Generated from <code>exercises.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

@@ -1,0 +1,431 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "static-array-generic-recursive"
+category = "arrays-and-lists"
+title = "Static Array (Generic, Recursive)"
+package = "staticarraygenericrecursive"
+main_class = "GenericRecursiveStaticArrayDemo"
+example = "One week held as day names, temperatures and readings, every operation recursive"
+tagline = "Any element type, one element at a time"
+bold = "The generic recursive static array holds any comparable type T, compares elements with equals and compareTo, and writes every operation as a method that handles one element or one half and calls itself for the rest; its time is the same as the loop version, and its extra space is the recursion depth."
+analogy_short = "A queue of people passing a question back, whatever the question is about"
+jdk = "Nothing: Java's generic collections and `java.util.Arrays` are iterative"
+thumb_lines = ["STATIC ARRAY", "GENERIC + RECURSIVE"]
+thumb_code = "search(key, i + 1)"
+youtube_title = "Generic Recursive Static Array in Java - equals, compareTo and the Call Stack"
+youtube_tags = ["java generics", "recursion", "recursive binary search", "comparable", "call stack", "static array"]
+youtube_description = """Generic Recursive Static Array in Java, explained with one week held as String day names, Integer temperatures and Reading records by the same class. We trace a recursive linear search for "Thu" call by call, each call asking equals and passing the rest of the array to the next call, until the match at depth 4. We traverse all three element types at depth 7, find a separately made "Fri" that == would miss, binary search the sorted day names with compareTo in 3 calls, and find the hottest reading with compareTo on the way back up the call stack. We insert, delete and reverse recursively, clearing the freed place for the garbage collector, and finish at the limit: binary search on a million Integers goes only 20 calls deep, while linear search throws a real StackOverflowError."""
+
+[readme]
+intro = """This project combines the two variations of the **static array**. Like `static-array-generic`, the element type is a **type parameter** `T extends Comparable<T>`, so the same class holds day names, temperatures or readings, stores **references**, and compares elements with **`equals`** and **`compareTo`**. Like `static-array-recursive`, every operation that can be recursive is: it handles one element or one half, **calls itself** for the rest, and stops at a **base case**, so each call still waiting keeps a **frame** on the **call stack**. The time of every operation is unchanged from the plain static array; the extra space of each recursive operation is its **recursion depth**: O(n) for traversal, linear search, maximum and shifting, O(log n) for binary search."""
+analogy = """Picture a queue of seven people, each holding a card. You want to know who holds a card that matches yours. You ask the first person to compare their card with yours. If it does not match, they ask the person behind them the same question and wait. The cards may be anything, numbers, names, photographs: each person just knows how to compare two cards of that kind. When someone finds a match, or the queue runs out, the answer travels back up the queue to you. While the question travels down, everyone asked is standing there waiting: that is the call stack."""
+example = """The weather station's week is stored three ways by the same class: day names as `String`, temperatures as `Integer`, and `Reading(day, celsius)` records ordered by temperature. The demo traces a recursive search for "Thu", traverses all three arrays, binary searches the sorted day names, finds the hottest reading and the last day name with one recursive `findMax`, inserts, deletes and reverses recursively, and finally runs out of call stack on a million elements."""
+why = """The generic version answers "how do I write the structure once for every type?"; the recursive version answers "how do the textbook's recursive definitions run?". Real code needs both at once: every recursive algorithm later in the course, on trees, heaps and graphs, is written generically, comparing elements with `compareTo`. Seeing the two together on the simplest structure makes those later projects easier to read."""
+when_use = [
+  "The structure must hold several element types, and the algorithm is naturally recursive.",
+  "The recursion depth is logarithmic, as in binary search.",
+  "Learning: this is how the tree and divide-and-conquer code later in the course is written.",
+]
+when_not = [
+  "Linear recursion over large arrays: a million elements overflow Java's call stack; use the loops of `static-array-generic`.",
+  "Millions of plain numbers: `int[]` avoids a reference and an object per element.",
+]
+met_before = [
+  "Recursive generic methods in textbooks, such as `<T extends Comparable<T>> int binarySearch(T[] a, T key, int low, int high)`.",
+  "`Comparable<T>` on `String`, `Integer` and `LocalDate`.",
+  "Any `StackOverflowError` from a method that called itself too deeply.",
+]
+
+[[word]]
+term = "type parameter T"
+meaning = "The element type, filled in at each use: `GenericRecursiveStaticArray<String>`."
+[[word]]
+term = "equals / compareTo"
+meaning = "How generic code asks two objects whether they are equal, and which is larger; `==` and `<` are not used on elements."
+[[word]]
+term = "base case"
+meaning = "The input answered without another call: no elements left, a match found, or an empty range."
+[[word]]
+term = "recursive case"
+meaning = "One element's work, then a call on the rest: `linearSearch(key, i + 1)`."
+[[word]]
+term = "call stack and frame"
+meaning = "Java keeps one frame, holding a call's parameters and local variables, for every call that has not returned."
+[[word]]
+term = "recursion depth"
+meaning = "The most frames on the stack at once: the extra space of a recursive operation."
+
+[[operation]]
+name = "Traverse"
+does = "Visit arr[i], then traverse from i + 1"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "7 reads, depth 7, for each type"
+[[operation]]
+name = "Access `get(i)` / update"
+does = "One address calculation (not recursive)"
+time = "O(1) / O(1) / O(1)"
+recursive_space = "O(1)"
+space = "O(1)"
+counted = "1 step"
+[[operation]]
+name = "Insert `insertAt(pos, x)`"
+does = "shiftRight from the last element down to pos"
+time = "O(1) at the end / O(n) / O(n) at the front"
+recursive_space = "O(n - pos)"
+space = "O(1)"
+counted = "5 shifts at depth 5"
+[[operation]]
+name = "Delete `deleteAt(pos)`"
+does = "shiftLeft from pos, then set the freed place to null"
+time = "O(1) at the end / O(n) / O(n) at the front"
+recursive_space = "O(n - pos)"
+space = "O(1)"
+counted = "7 shifts at depth 7"
+[[operation]]
+name = "Linear search"
+does = "arr[i].equals(key)? If not, search from i + 1"
+time = "O(1) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "4 equals calls at depth 4 to find \"Thu\""
+[[operation]]
+name = "Binary search (sorted)"
+does = "compareTo with the middle, search one half"
+time = "O(1) / O(log n) / O(log n)"
+recursive_space = "O(log n)"
+space = "O(1)"
+counted = "3 calls for \"Thu\"; 20 on 1,000,000"
+[[operation]]
+name = "Find maximum"
+does = "compareTo arr[i] with the maximum of the rest"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "6 compareTo calls at depth 6"
+[[operation]]
+name = "Reverse"
+does = "Swap the ends, reverse the middle"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n / 2)"
+space = "O(1)"
+counted = "3 swaps at depth 3"
+
+listing_intro = """Each operation is a public method that starts the recursion and a private method that calls itself. Compare them with `static-array-recursive`: the recursion is identical, and only the comparisons have changed, from `==` and `<` to `equals` and `compareTo`."""
+[[listing]]
+op = "Linear search with equals"
+method = "GenericRecursiveStaticArray#linearSearch"
+note = """Two base cases: no elements left (-1), and a match, found with `equals`, which compares contents. Otherwise the call passes the rest of the array, `i + 1`, to the next call. One frame per element examined."""
+[[listing]]
+op = "Binary search with compareTo"
+method = "GenericRecursiveStaticArray#binarySearch"
+note = """`compareTo` returns negative, zero or positive, which decides the half. The base case is an empty range. Each call halves the range, so the depth is about log2(n): 3 for 7 names, 20 for a million."""
+[[listing]]
+op = "Find maximum"
+method = "GenericRecursiveStaticArray#findMax"
+note = """The base case is the last element. Every other call first finds the maximum of the rest, then compares it with its own element using `compareTo`, on the way back up. The element's own `compareTo` decides the order: temperature for readings, alphabetical for names."""
+[[listing]]
+op = "Deletion"
+method = "GenericRecursiveStaticArray#deleteAt,shiftLeft"
+note = """`shiftLeft` moves `arr[i + 1]` into `arr[i]` and recurses on `i + 1`, stopping at the last element. Afterwards the freed place is set to `null`, so the deleted object is not kept alive by the array."""
+
+[compare]
+intro = """The four static-array projects side by side (n elements):"""
+columns = ["Property", "Generic, recursive (this)", "Generic, loops", "int, recursive", "int, loops"]
+rows = [
+  ["Element types", "any Comparable T", "any Comparable T", "int", "int"],
+  ["Compares with", "equals, compareTo", "equals, compareTo", "==, <", "==, <"],
+  ["Traverse, linear search", "O(n) time, O(n) stack", "O(n) time, O(1) space", "O(n) time, O(n) stack", "O(n) time, O(1) space"],
+  ["Binary search", "O(log n) time and stack", "O(log n) time, O(1) space", "O(log n) time and stack", "O(log n) time, O(1) space"],
+  ["Insert / delete at front", "O(n), O(n) stack", "O(n), O(1) space", "O(n), O(n) stack", "O(n), O(1) space"],
+  ["A million elements", "linear recursion overflows", "fine", "linear recursion overflows", "fine"],
+]
+
+pros = [
+  "One class for every comparable type, and code that reads like the textbook's recursive definitions.",
+  "Binary search needs only O(log n) stack: 20 frames for a million elements.",
+  "Exactly the shape of the generic recursive code used for trees and heaps later in the course.",
+]
+cons = [
+  "O(n) stack for linear recursion, and a StackOverflowError on large arrays.",
+  "References and separate objects cost more memory than `int[]`.",
+  "Two easy mistakes at once: `==` on objects, and a missing base case.",
+]
+
+[[mistake]]
+mistake = "Comparing elements with `==` or `<`"
+happens = "`==` only matches the very same object, and `<` does not compile on objects."
+fix = "Use `equals` for equality and `compareTo` for order."
+[[mistake]]
+mistake = "No base case, or no progress towards it"
+happens = "The method calls itself for ever and throws `StackOverflowError`."
+fix = "Write the base case first; make every call work on `i + 1` or a smaller half."
+[[mistake]]
+mistake = "Leaving the deleted reference in the array"
+happens = "The object stays reachable and is never freed."
+fix = "Set the freed place to `null` after shifting."
+[[mistake]]
+mistake = "Linear recursion on large data"
+happens = "One frame per element: a million elements overflow the call stack."
+fix = "Recurse where the depth is logarithmic; loop over long linear passes."
+
+[[exercise]]
+level = "easy"
+question = """Write a recursive `int count(T key, int i)` returning how many elements from index i on are equal to `key`. Name its base case and its extra space."""
+answer = """```java
+int count(T key, int i) {
+    if (i == n) return 0;                                    // base case: none left
+    return (arr[i].equals(key) ? 1 : 0) + count(key, i + 1);
+}
+```
+Called as `count(key, 0)`. The base case is `i == n`. O(n) time and O(n) stack, one frame per element."""
+[[exercise]]
+level = "medium"
+question = """Write a recursive `boolean isSorted(int i)` using `compareTo`. How deep does it go on the day names in week order, [Mon, Tue, Wed, Thu, Fri, Sat, Sun]?"""
+answer = """```java
+boolean isSorted(int i) {
+    if (i >= n - 1) return true;                             // zero or one element left
+    if (arr[i].compareTo(arr[i + 1]) > 0) return false;      // a pair out of order
+    return isSorted(i + 1);
+}
+```
+The first call checks "Mon" before "Tue": in order, so it calls again. The second checks "Tue" before "Wed": in order, so it calls again. The third finds "Wed" after "Thu" alphabetically and returns false. Depth 3."""
+[[exercise]]
+level = "harder"
+question = """Write a generic recursive `int findMin(int i)` that returns the index of the smallest element. Then change `Reading.compareTo` to order by day name and say what `findMin` returns on the readings, without changing the array class."""
+answer = """```java
+int findMin(int i) {
+    if (i == n - 1) return i;                                 // base case: last element
+    int restMin = findMin(i + 1);
+    return arr[i].compareTo(arr[restMin]) <= 0 ? i : restMin;
+}
+```
+With readings ordered by day name, the smallest is "Fri" (24 C), the first alphabetically. The array class is unchanged: the element decides the order through its own `compareTo`."""
+
+[hero]
+caption = "linearSearch(\"Thu\") goes one call deeper per element, asking equals, until the match"
+picture = { type = "stack", cells = ["linearSearch(0): Mon", "linearSearch(1): Tue", "linearSearch(2): Wed", "linearSearch(3): Thu found"], width = 300, marks = { "3" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "Recursion, for any element type"
+summary = "Recursive linear search for \"Thu\": each call asks equals and, if not, calls itself on the rest, until the match at index 3, depth 4."
+detail = """The recursive linear search is defined in one sentence: either the element at i equals the key, or the key is in the rest of the array. The demo traces it on the day names. `linearSearch(0)` asks whether "Mon" equals "Thu": no, so it calls `linearSearch(1)`, and waits. "Tue", no; "Wed", no; "Thu", yes: that call returns index 3 without calling again, a base case. The other base case is running out of elements. The search used 4 `equals` calls and 4 frames on the call stack at once."""
+speech = """First, recursion for any element type. [[slnc 400]] Recursive linear search asks one question. [[slnc 300]] Is the element here equal to the key? [[slnc 400]] If not, search the rest, by calling itself, and wait. [[slnc 500]] Monday, no. [[slnc 200]] Tuesday, no. [[slnc 200]] Wednesday, no. [[slnc 200]] Thursday, yes. [[slnc 400]] That is a base case: the search stops. [[slnc 400]] Four calls, four frames on the stack."""
+console = [["linearSearch(0): Mon.equals(Thu)? no -> linearSearch(1)", "muted"], ["  ... Tue, no; Wed, no", "muted"], ["    linearSearch(3): Thu.equals(Thu) -> found, index 3   <- base case", "ok"], ["linearSearch(\"Thu\") = index 3: 4 equals calls, depth 4", "amber"]]
+[[act.frame]]
+caption = "Four calls waiting on the call stack; the top one found \"Thu\""
+say = """Here is the call stack at the moment of the match. [[slnc 300]] The first call is at the bottom. [[slnc 300]] Each call pushed a new frame on top. [[slnc 400]] The top call found Thursday, and its answer now travels back down through every frame."""
+picture = { type = "stack", cells = ["linearSearch(0): Mon", "linearSearch(1): Tue", "linearSearch(2): Wed", "linearSearch(3): Thu found"], width = 300, marks = { "3" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "The same recursion, three types"
+summary = "Traversal of Integer, String and Reading arrays is the same recursive method, depth 7 each; a separately made \"Fri\" is found with equals at depth 5."
+detail = """The same recursive traverse runs on `GenericRecursiveStaticArray<Integer>`, `<String>` and `<Reading>`: each visits one element and calls itself for the rest, 7 frames deep for 7 elements, whatever the type. Searching for `new String("Fri")`, a separate object with the same text, succeeds at index 4, depth 5, because the search asks `equals`; `==` would compare references and never match."""
+speech = """The same recursion works for every type. [[slnc 400]] Traversal of the temperatures, the day names, and the readings. [[slnc 300]] Each one goes seven calls deep. [[slnc 500]] And a search for a new string, Fri, finds it at index four, five calls deep. [[slnc 400]] It works because the search asks equals, which compares the text, not the object."""
+console = [["<Integer> traverse: [21, 23, 19, 25, 24, 22, 20], depth 7", "ok"], ["<String>  traverse: [Mon, Tue, Wed, Thu, Fri, Sat, Sun], depth 7", "ok"], ["<Reading> traverse: [Mon 21 C, ... Sun 20 C], depth 7", "ok"], ["linearSearch(new String(\"Fri\")) = index 4 at depth 5: equals compares the text, == would not match", "amber"]]
+[[act.frame]]
+caption = "One class, three element types, the same depth"
+say = """Here are two of the arrays. [[slnc 300]] Numbers and names. [[slnc 300]] The recursive method does not care which: it goes one call per element, seven deep, in both."""
+picture = { type = "group", items = [ { type = "array", cells = [21, 23, 19, 25, 24, 22, 20], title = "<Integer>: depth 7" }, { type = "array", cells = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], title = "<String>: depth 7" } ], gap = 30 }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "compareTo, recursively"
+summary = "Recursive binary search finds \"Thu\" in the sorted names with 3 compareTo calls at depth 3; recursive findMax gives Thu 25 C for readings and Wed for names."
+detail = """Recursive binary search compares the key with the middle element using `compareTo` and calls itself on one half. On the sorted names [Fri, Mon, Sat, Sun, Thu, Tue, Wed] it compares with "Sun" (go right), "Tue" (go left), then "Thu": 3 calls, depth 3. Recursive `findMax` goes all the way to the last element, its base case, and then compares on the way back up: 6 `compareTo` calls at depth 6. For readings the order is temperature, so the answer is "Thu 25 C"; for names the same method returns "Wed"."""
+speech = """Now compare to, recursively. [[slnc 400]] Binary search on the sorted day names. [[slnc 300]] Sunday: go right. [[slnc 300]] Tuesday: go left. [[slnc 300]] Thursday: found. [[slnc 400]] Three calls, three deep. [[slnc 500]] Find max goes down to the last element, then compares on the way back up. [[slnc 400]] For readings, the hottest is Thursday. [[slnc 300]] For day names, the same method gives Wednesday."""
+console = [["sorted [Fri, Mon, Sat, Sun, Thu, Tue, Wed]: binarySearch(\"Thu\") = index 4, 3 compareTo calls, depth 3", "ok"], ["findMax on readings = Thu 25 C: 6 compareTo calls on the way back up, depth 6", "ok"], ["findMax on day names = Wed: the same method, alphabetical order", "muted"]]
+[[act.frame]]
+caption = "Recursive binary search: call 1 at Sun, call 2 at Tue, call 3 finds Thu"
+say = """Here are the three calls. [[slnc 300]] Each call looks at the middle of its range, and calls itself on one half. [[slnc 400]] The third call finds Thursday."""
+picture = { type = "array", cells = ["Fri", "Mon", "Sat", "Sun", "Thu", "Tue", "Wed"], marks = { "0" = "dim", "1" = "dim", "2" = "dim", "3" = "hi", "5" = "hi", "4" = "ok", "6" = "dim" }, pointers = [[3, "call 1"], [5, "call 2"], [4, "call 3"]] }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Insertion, deletion and reversal, recursively"
+summary = "insertAt(2, Wed* 18 C) shifts 5 at depth 5; deleteAt(0) shifts 7 at depth 7 and clears the freed place; reverse swaps 3 at depth 3."
+detail = """`insertAt(2, Wed* 18 C)` calls `shiftRight` from the last reading down to index 2: 5 shifts, 5 frames, and the new reading is stored. `deleteAt(0)` calls `shiftLeft` from index 0: 7 shifts, 7 frames; then the place that fell out of use is set to `null`, so the array holds no reference to the deleted reading. `reverse` swaps the two ends and calls itself on the middle: 3 swaps, depth 3."""
+speech = """Insertion and deletion, recursively, on the readings. [[slnc 400]] Inserting at index two shifts five readings, five calls deep. [[slnc 400]] Deleting index zero shifts seven, seven calls deep. [[slnc 300]] Then the freed place is set to null. [[slnc 500]] And reverse swaps the ends, then reverses the middle: three swaps, three calls deep."""
+console = [["insertAt(2, Wed* 18 C): 5 shifts, depth 5", "amber"], ["deleteAt(0) removed Mon 21 C: 7 shifts, depth 7; the freed place is set to null", "amber"], ["reverse: 3 swaps, depth 3; [Sun 20 C, Sat 22 C, Fri 24 C, Thu 25 C, Wed 19 C, Wed* 18 C, Tue 23 C]", "ok"]]
+[[act.frame]]
+caption = "After deleteAt(0): seven references shifted by seven calls, and the freed place is null"
+say = """Here is the array after the deletion. [[slnc 300]] Seven readings shifted left, one call each. [[slnc 400]] The place after them is null, so the deleted reading can be freed."""
+picture = { type = "array", cells = ["Tue 23", "Wed* 18", "Wed 19", "Thu 25", "Fri 24", "Sat 22", "Sun 20", "null", "", ""], size = 7, marks = { "0" = "hi", "1" = "hi", "2" = "hi", "3" = "hi", "4" = "hi", "5" = "hi", "6" = "hi", "7" = "dim" } }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The limit of recursion"
+summary = "On 1,000,000 Integers, recursive binary search is 20 compareTo calls deep; recursive linear search throws StackOverflowError."
+detail = """Generics do not change the depth. Binary search on a million sorted Integers makes 20 `compareTo` calls, 20 frames deep, and is always safe. Linear search on the same array needs one frame per element, and the call stack runs out long before a million: Java throws `StackOverflowError`. The loop version in `static-array-generic` searches the million with O(1) extra space. Generics change what is compared; recursion changes how much stack is used; neither changes the time."""
+speech = """And the limit. [[slnc 400]] Binary search on a million integers is only twenty calls deep. [[slnc 500]] Linear search needs one frame per element, and the call stack runs out: a stack overflow error. [[slnc 500]] So, generics change what is compared. [[slnc 300]] Recursion changes how much stack is used. [[slnc 300]] Neither changes the time."""
+console = [["binarySearch on 1,000,000 Integers: 20 compareTo calls, depth 20", "ok"], ["linearSearch on 1,000,000: StackOverflowError, one frame per element", "bad"], ["generics change what is compared, recursion changes how much stack is used; neither changes the time", "muted"]]
+[[act.frame]]
+caption = "Depth 20 fits on the call stack; depth 1,000,000 does not"
+say = """Here are the two depths. [[slnc 300]] Twenty frames for binary search. [[slnc 300]] A million frames for linear search, far beyond what the call stack can hold."""
+picture = { type = "group", items = [ { type = "stack", cells = ["binarySearch(0..999999)", "...", "binarySearch: call 20"], width = 280, marks = { "2" = "ok" }, top_label = "depth 20" }, { type = "stack", cells = ["linearSearch(0)", "linearSearch(1)", "...", "StackOverflowError"], width = 280, marks = { "3" = "bad" }, top_label = "overflow" } ], gap = 60 }
+
+[animation]
+subtitle = "One generic class holding names, temperatures and readings, with every operation recursive: equals and compareTo, base cases, the call stack, and the limit of recursion."
+
+[docs.problem]
+scenario = """A weather station keeps its week as day names, temperatures and readings, and wants the textbook array operations written once for every type and written recursively."""
+naive = """A separate recursive class per element type, all identical; or recursion on objects with `==`, which misses equal elements, and linear recursion on large data, which overflows the call stack."""
+deliver = [
+  "A `GenericRecursiveStaticArray<T extends Comparable<T>>` written by hand, with recursive traverse, insertAt, deleteAt, linearSearch (equals), binarySearch and findMax (compareTo), and reverse.",
+  "Steps and recursion depth counted; the freed place cleared on deletion.",
+  "A real StackOverflowError on a million-element linear recursion, beside a 20-deep binary search.",
+  "Time and stack space of every operation, compared with the other three static-array projects.",
+]
+
+[docs.prerequisites]
+required = ["The static-array-generic and static-array-recursive projects, or generics and recursion basics", "Java basics: classes, methods, `if`"]
+not_required = ["Big-O notation (START-HERE.md introduces it by counting steps)"]
+
+[docs.session]
+objectives = [
+  "Write a recursive method in a generic class, comparing elements with equals and compareTo.",
+  "Identify the base cases of recursive linear search, binary search and findMax.",
+  "State the time and stack space of each operation.",
+  "Explain why generics change neither the time nor the depth.",
+]
+walkthrough = """Start with the queue analogy. Trace the recursive search for "Thu" on the board, one line per call. Run the demo; in act two, point out that the depth is 7 for every type. In act three, trace binary search on the sorted names. In act five, show the StackOverflowError and compare with the loop in static-array-generic. Finish with the four-column comparison table."""
+
+[docs.explained]
+sentence = """The generic recursive static array holds any comparable type, compares with equals and compareTo, and writes each operation as one element's work plus a call on the rest; the time is unchanged and the extra space is the recursion depth."""
+verdict = """This is the shape of most textbook code for trees and heaps: generic, recursive, and comparing with compareTo. On arrays, keep recursion for logarithmic depth such as binary search, and use loops for linear passes over large data."""
+recognise = [
+  "`class X<T extends Comparable<T>>` with private methods that call themselves.",
+  "`arr[i].equals(key)` and `arr[mid].compareTo(key)` inside a recursive method.",
+  "A base case such as `if (i == n) return -1;` at the top.",
+]
+
+[spec]
+purpose = """Teach generics and recursion together on the static array, as a bridge to the generic recursive code of trees and heaps."""
+requirements = [
+  "Written by hand on a `T[]` created as `Comparable[]`: no Java collections or `Arrays` helpers.",
+  "Fixed capacity; overflow, underflow and null elements refused.",
+  "Recursive traverse, insertAt, deleteAt, linearSearch, binarySearch, findMax and reverse; get and update O(1).",
+  "Steps and recursion depth counted; a real StackOverflowError demonstrated.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["Loop versions (static-array-generic)", "int-only versions (static-array, static-array-recursive)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Static Array (Generic, Recursive): the pieces"
+caption = "The demo uses one generic class with three element types; each public operation starts a private recursive method."
+nodes = [
+  { id = "demo", label = "Demo", sub = "GenericRecursiveStaticArrayDemo", col = 0, row = 0, colour = "client" },
+  { id = "arr", label = "GenericRecursiveStaticArray<T>", sub = "T = String, Integer, Reading", col = 1, row = 0, colour = "accent" },
+  { id = "rec", label = "recursive helpers", sub = "linearSearch(key, i), binarySearch(key, low, high)", col = 2, row = 0, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = "steps, enter / exit, maxDepth", col = 1, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "arr", label = "linearSearch(\"Thu\")" }, { from = "arr", to = "rec", label = "linearSearch(key, 0)" }, { from = "rec", to = "steps", label = "depth" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Static Array (Generic, Recursive): the classes"
+caption = "`T extends Comparable<T>`; `Reading` is one such type; `StepCounter` measures steps and depth."
+nodes = [
+  { id = "arr", label = "GenericRecursiveStaticArray<T>", sub = ["- T[] arr", "- int n", "+ traverse / get / update", "+ insertAt / deleteAt", "+ linearSearch: equals", "+ binarySearch: compareTo", "+ findMax / reverse", "- shiftRight / shiftLeft"], col = 0, row = 0, colour = "accent" },
+  { id = "cmp", label = "Comparable<T>", sub = ["+ compareTo(T) int"], col = 1, row = 0, colour = "green" },
+  { id = "rd", label = "Reading", sub = ["record: day, celsius", "+ compareTo: by celsius"], col = 1, row = 1, colour = "client" },
+  { id = "steps", label = "StepCounter", sub = ["reads, compares, shifts, swaps", "+ enter() / exit()", "+ maxDepth()"], col = 0, row = 1, colour = "amber" },
+]
+edges = [ { from = "arr", to = "cmp", label = "T extends" }, { from = "rd", to = "cmp", label = "implements" }, { from = "arr", to = "steps", label = "has one" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Static Array (Generic, Recursive): one call of linearSearch"
+caption = "Two base cases, then a call on the rest."
+nodes = [
+  { id = "call", label = "linearSearch(key, i)", sub = "called with i = 0", col = 0, row = 0, colour = "client" },
+  { id = "end", label = "i == n?", sub = "yes: return -1", col = 1, row = 0, colour = "red" },
+  { id = "eq", label = "arr[i].equals(key)?", sub = "yes: return i", col = 2, row = 0, colour = "green" },
+  { id = "rec", label = "linearSearch(key, i + 1)", sub = "this frame waits", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "call", to = "end", label = "" }, { from = "end", to = "eq", label = "no" }, { from = "eq", to = "rec", label = "no" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Static Array (Generic, Recursive): binarySearch(\"Thu\")"
+caption = "Three calls, each on half the range; the index returns through every frame."
+participants = ["Demo", "search(0..6)", "search(4..6)", "search(4..4)"]
+steps = [
+  ["Demo", "search(0..6)", "binarySearch(\"Thu\")"],
+  ["search(0..6)", "search(4..6)", "\"Sun\".compareTo(\"Thu\") < 0"],
+  ["search(4..6)", "search(4..4)", "\"Tue\".compareTo(\"Thu\") > 0"],
+  ["search(4..4)", "search(4..6)", "\"Thu\": index 4", "reply"],
+  ["search(4..6)", "search(0..6)", "index 4", "reply"],
+  ["search(0..6)", "Demo", "index 4, depth 3", "reply"],
+]
+
+[poster]
+headline = [["STATIC ARRAY", "text"], ["GENERIC + RECURSIVE", "accent"]]
+before = { code = "arr[i] == key", note = "misses equal objects", tag = "WRONG" }
+after = { code = "arr[i].equals(key)", note = "then search(i + 1)", tag = "RIGHT" }
+taglines = [["Any type, one element at a time.", "text"], ["equals, compareTo, and a base case.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Static Array (Generic, Recursive)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the generic, recursive static array, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] It is a static array written once for any element type, whose operations call themselves. [[slnc 400]] Each call handles one element, compares it with equals or compare to, and passes the rest to the next call, until a base case stops it. [[slnc 700]] Our example is a weather station's week, as day names, temperatures, and readings. [[slnc 400]] By the end, you will know how generics and recursion work together, and what each one costs."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Each person compares their card, or passes the question back and waits"
+picture = { type = "array", cells = ["you", "card", "card", "card", "card", "card", "last"], marks = { "6" = "ok" }, pointers = [[0, "asks"], [6, "base case"]], title = "a queue of seven people holding cards" }
+narration = """Think of a queue of seven people, each holding a card. [[slnc 400]] You want to find a card that matches yours. [[slnc 400]] The first person compares their card with yours. [[slnc 300]] If it does not match, they ask the person behind them, and wait. [[slnc 500]] The cards could be numbers, names, or photographs. [[slnc 300]] Each person just knows how to compare two cards of that kind. [[slnc 500]] When someone finds a match, or the queue runs out, the answer travels back up. [[slnc 400]] Everyone waiting is the call stack."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["T: the element type, filled in at each use", "equals: same contents?  compareTo: which is larger?", "base case: no call; recursive case: call on the rest", "", "recursion depth = frames at once = extra space"]
+narration = """The words. [[slnc 400]] T is the element type, filled in each time the class is used. [[slnc 400]] Equals asks whether two elements have the same contents. [[slnc 300]] Compare to asks which one is larger. [[slnc 400]] The base case answers without calling again. [[slnc 300]] The recursive case handles one element and calls itself on the rest. [[slnc 500]] And the recursion depth, the number of frames at once, is the extra memory used."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["get, update: O(1), not recursive", "traverse, linear search, max: O(n) time, O(n) stack", "binary search: O(log n) time and stack", "insert, delete: O(n) time and stack at the front", "", "the loop versions: the same time, O(1) space"]
+narration = """Here are the costs. [[slnc 400]] Get and update are order one, and not recursive. [[slnc 400]] Traversal, linear search and find max take order n time, and order n stack. [[slnc 400]] Binary search takes order log n time and stack. [[slnc 400]] Insertion and deletion at the front take order n time and stack. [[slnc 500]] The loop versions take the same time, with order one extra space."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "The Four Static Arrays"
+body = ["int, loops: the fastest, the smallest", "int, recursive: O(depth) stack", "generic, loops: any type, references", "generic, recursive: any type, O(depth) stack", "", "generics: what is compared; recursion: how much stack"]
+narration = """How do the four static arrays compare? [[slnc 400]] The int array with loops is the fastest and the smallest. [[slnc 400]] The recursive int array adds a stack frame per waiting call. [[slnc 400]] The generic array with loops holds any type, through references. [[slnc 400]] And this one does both. [[slnc 500]] Generics change what is compared. [[slnc 300]] Recursion changes how much stack is used."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["== or < on elements", "no base case, or no progress", "leaving the deleted reference", "linear recursion on large data"]
+narration = """Four mistakes to watch for. [[slnc 400]] Using double equals or less than on elements, instead of equals and compare to. [[slnc 400]] A recursion with no base case, or no progress towards it. [[slnc 400]] Leaving the deleted reference in the array. [[slnc 400]] And linear recursion on large data, which overflows the stack."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the generic, recursive static array. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] Compare with equals and compare to, handle one element, and let the call on the rest do the remainder, until a base case. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Write a recursive find min, and see how the element's own compare to decides the answer. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

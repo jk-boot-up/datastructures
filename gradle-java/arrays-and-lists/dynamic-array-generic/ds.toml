@@ -1,0 +1,433 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "dynamic-array-generic"
+category = "arrays-and-lists"
+title = "Dynamic Array (Generic)"
+package = "dynamicarraygeneric"
+main_class = "GenericDynamicArrayDemo"
+example = "A playlist of Song records, beside the same class holding titles and play counts"
+tagline = "ArrayList, built by hand"
+bold = "A generic dynamic array is the dynamic array written once with a type parameter T: it stores references on an Object[] cast to T[], doubles when full and halves when a quarter full, copies references (not objects) when it resizes, and finds elements with equals; this is how Java's ArrayList<E> is written."
+analogy_short = "Moving house with a list of addresses, not the furniture"
+jdk = "`java.util.ArrayList<E>`, written on an `Object[]` exactly like this"
+thumb_lines = ["DYNAMIC ARRAY", "GENERIC <T>"]
+thumb_code = "GenericDynamicArray<T>"
+youtube_title = "Generic Dynamic Array in Java - Build Your Own ArrayList<E>"
+youtube_tags = ["java generics", "dynamic array", "arraylist", "resizable array", "equals", "amortized"]
+youtube_description = """Generic Dynamic Array in Java, explained with a music playlist of Song records, beside the same class holding titles and play counts. We see why the array inside is created as (T[]) new Object[4], then append until it is full and watch a resize copy 4 references, not 4 songs: the Song at index 0 is still the very same object. We grow to 9 songs with 2 resizes, insert an intro at the front with 9 shifts, delete from the middle with 4, and find a separately made Song with equals, because a record's equals compares its fields. We clear freed places so the garbage collector can reclaim deleted songs, shrink to fit, and finish with the bill: 1,020 references copied for 1,000 appends, and the capacity halving when a quarter full. This is how java.util.ArrayList is built."""
+
+[readme]
+intro = """A **generic dynamic array** is the `dynamic-array` project written once for **any element type**. The class has a **type parameter** `T`, so `GenericDynamicArray<Song>` holds songs, `GenericDynamicArray<String>` holds titles and `GenericDynamicArray<Integer>` holds numbers. Everything about growing is unchanged: a **size** and a **capacity**, doubling when full, halving when only a quarter is in use, O(1) amortised appends. What changes is what the places hold: **references** to objects. A resize copies the references, not the objects, so every element stays the very same object. Elements are found with **`equals`**. Since no ordering is needed, `T` may be any type at all. This is, almost line for line, how Java's `ArrayList<E>` is written."""
+analogy = """Picture moving house again, but instead of carrying the furniture, you carry a list of where each piece is stored in a warehouse. When the list runs out of lines, you copy it onto a sheet twice as long, one address at a time. The furniture never moves: only the addresses are copied. And the list does not care whether the addresses point at chairs, books or bicycles."""
+example = """The music app's playlist now holds `Song` records, each with a title and a length in seconds. The same class also holds the titles as strings and the play counts as integers. The demo grows the playlist until it resizes twice, inserts an intro at the front, deletes a song from the middle, searches for a separately made `Song` with `equals`, deletes from the end, shrinks to fit, and measures a thousand appends."""
+why = """Without generics, a playlist of songs, a list of titles and a list of play counts would each need their own copy of the dynamic-array code, or one class storing `Object` that accepts anything and needs a cast on every read. One generic class serves every type, and the compiler checks each use. That is why every collection in Java, starting with `ArrayList<E>`, is generic."""
+when_use = [
+  "A growing list of objects of one type: songs, orders, readings.",
+  "Mostly appending at the end and reading by index.",
+  "Whenever you would use `ArrayList<E>`; this project shows what it does inside.",
+]
+when_not = [
+  "Frequent insertion and deletion at the front: every element shifts; use a linked list or a deque.",
+  "Millions of plain numbers: an `int[]` avoids a reference and an object per element.",
+]
+met_before = [
+  "`java.util.ArrayList<E>`, `List<E>` and `Vector<E>`.",
+  "`StringBuilder`, which grows its character array the same way.",
+  "C++'s `std::vector<T>` and Python's `list`.",
+]
+
+[[word]]
+term = "type parameter T"
+meaning = "The element type, filled in at each use: `GenericDynamicArray<Song>`."
+[[word]]
+term = "size and capacity"
+meaning = "The number of elements in use, and the number of places in the array inside."
+[[word]]
+term = "reference"
+meaning = "What each place holds: the address of an object stored elsewhere."
+[[word]]
+term = "resize"
+meaning = "A new array of a different capacity, with every reference copied across; the objects do not move."
+[[word]]
+term = "equals"
+meaning = "How elements are compared: by contents. A record's `equals` compares all its fields."
+[[word]]
+term = "amortised O(1)"
+meaning = "The average cost of an append, counting the rare resize: about one copy per append."
+
+[[operation]]
+name = "Traverse"
+does = "Visit arr[0] to arr[size-1]"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "one read per element"
+[[operation]]
+name = "Access `get(i)` / `update(i, x)`"
+does = "Read or replace the reference in arr[i]"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "1 step"
+[[operation]]
+name = "Insert at end `append(x)`"
+does = "Store x at arr[size]; double first when full"
+time = "O(1) / O(1) amortised / O(n) when it resizes"
+space = "O(1) amortised; O(n) for the new array during a resize"
+counted = "1,020 references copied over 1,000 appends"
+[[operation]]
+name = "Resize (inside append)"
+does = "A new T[] of twice the capacity, references copied"
+time = "O(n) / O(n) / O(n), but rare"
+space = "O(n)"
+counted = "4 references at the 5th song, 8 at the 9th"
+[[operation]]
+name = "Insert `insertAt(pos, x)`"
+does = "Shift arr[pos..size-1] right, store x"
+time = "O(1) at the end / O(n) / O(n) at the front"
+space = "O(1), plus a resize when full"
+counted = "9 shifts at the front of 9 songs"
+[[operation]]
+name = "Delete at end `deleteAtEnd()`"
+does = "Clear arr[size-1]; halve when a quarter full"
+time = "O(1) / O(1) amortised / O(n) when it shrinks"
+space = "O(1) amortised"
+counted = "0 shifts"
+[[operation]]
+name = "Delete `deleteAt(pos)`"
+does = "Shift arr[pos+1..size-1] left, clear the freed place"
+time = "O(1) at the end / O(n) / O(n) at the front"
+space = "O(1)"
+counted = "4 shifts to delete index 5 of 10"
+[[operation]]
+name = "Linear search"
+does = "arr[i].equals(key), for each i in turn"
+time = "O(1) / O(n) / O(n)"
+space = "O(1)"
+counted = "7 comparisons to find Echoes"
+[[operation]]
+name = "Shrink to fit"
+does = "Resize to exactly size places"
+time = "O(n) / O(n) / O(n)"
+space = "O(n)"
+counted = "8 references copied"
+
+listing_intro = """The parts that differ from the String-only `dynamic-array` project, exactly as they appear in `GenericDynamicArray.java`. The growing and shrinking logic is unchanged."""
+[[listing]]
+op = "Creating a T[]"
+method = "GenericDynamicArray#newArray"
+note = """`new T[capacity]` does not compile, because Java erases `T` when it compiles. An `Object[]` can hold a reference of any type, and the cast is safe because the class only ever stores `T`. `ArrayList` does the same: it keeps an `Object[] elementData`."""
+[[listing]]
+op = "Resize: copying references"
+method = "GenericDynamicArray#resize"
+note = """The loop copies `arr[i]`, a reference, into the new array. The objects stay where they are, so after a resize every element is still the very same object."""
+[[listing]]
+op = "Deletion at a position"
+method = "GenericDynamicArray#deleteAt"
+note = """After the shift, the last place in use is set to `null`. With objects this matters: a leftover reference would keep the deleted song alive, and the garbage collector could never free it."""
+[[listing]]
+op = "Linear search with equals"
+method = "GenericDynamicArray#linearSearch"
+note = """`arr[i].equals(key)` compares contents. A `Song` record's `equals` compares title and length, so a separately made song with the same fields is found."""
+
+[compare]
+intro = """The generic dynamic array against its neighbours (n elements):"""
+columns = ["Property", "Generic dynamic array", "Dynamic array of String", "Generic static array"]
+rows = [
+  ["Element types", "any T", "String only", "any Comparable T"],
+  ["Access element i", "O(1)", "O(1)", "O(1)"],
+  ["Append", "O(1) amortised", "O(1) amortised", "overflow when full"],
+  ["Insert or delete at the front", "O(n) shifts", "O(n) shifts", "O(n) shifts"],
+  ["A resize copies", "references", "references to strings", "not possible: fixed capacity"],
+  ["Finds elements with", "equals", "equals", "equals, and compareTo for binary search"],
+  ["Java's own", "ArrayList<E>", "ArrayList<String>", "T[]"],
+]
+
+pros = [
+  "One class for every element type, checked by the compiler.",
+  "O(1) access, O(1) amortised appends, and it shrinks again when mostly deleted.",
+  "No ordering is required: T may be any type at all.",
+]
+cons = [
+  "References and separate objects cost more memory than a primitive array.",
+  "A resize still pauses for O(n) copies.",
+  "Insertion and deletion at the front shift every element.",
+  "`new T[n]` is impossible; an `Object[]` is cast to `T[]`.",
+]
+
+[[mistake]]
+mistake = "Writing `new T[capacity]`"
+happens = "It does not compile: T is not known when the program runs."
+fix = "`(T[]) new Object[capacity]`, kept inside the class."
+[[mistake]]
+mistake = "Searching with `==`"
+happens = "An equal song made elsewhere is a different object, so it is not found."
+fix = "Compare with `equals`."
+[[mistake]]
+mistake = "Not clearing freed places"
+happens = "Deleted objects stay referenced and are never garbage-collected: a memory leak."
+fix = "Set every place that falls out of use to `null`."
+[[mistake]]
+mistake = "Growing by a fixed amount"
+happens = "Every append near the limit copies everything: about n squared over 2 copies."
+fix = "Grow by a factor: double, or one and a half as `ArrayList` does."
+
+[[exercise]]
+level = "easy"
+question = """Write `boolean contains(T key)` using the methods the class already has. What does `contains(new Song("Echoes", 201))` return after the demo's act three, and why?"""
+answer = """```java
+boolean contains(T key) {
+    return linearSearch(key) >= 0;
+}
+```
+It returns true: `linearSearch` uses `equals`, and a record's `equals` compares title and length, so a new `Song("Echoes", 201)` equals the one in the playlist. O(n) time, O(1) space."""
+[[exercise]]
+level = "medium"
+question = """Write `boolean deleteByKey(T key)`, which deletes the first element equal to `key`. What does it cost?"""
+answer = """```java
+boolean deleteByKey(T key) {
+    int i = linearSearch(key);
+    if (i < 0) return false;
+    deleteAt(i);
+    return true;
+}
+```
+One comparison per element examined, plus one shift per element after the one deleted: a single pass over the array, O(n)."""
+[[exercise]]
+level = "harder"
+question = """Add a constructor `GenericDynamicArray(T[] values)` that builds the array from an existing array with one resize at most. How many references does it copy for 9 songs, and how does that compare with appending them one by one from capacity 4?"""
+answer = """```java
+GenericDynamicArray(T[] values) {
+    this(values.length);
+    for (int i = 0; i < values.length; i++) {
+        arr[i] = values[i];
+    }
+    size = values.length;
+}
+```
+It allocates exactly 9 places and copies 9 references once. Appending one by one from capacity 4 copies 4 + 8 = 12 references in two resizes, then 9 writes. Knowing the size in advance avoids every resize."""
+
+[hero]
+caption = "GenericDynamicArray<Song>: size 5, capacity 8; each place holds a reference to a Song"
+picture = { type = "array", cells = ["Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Paper Moon", "", "", ""], size = 5, pointers = [[5, "size = 5"]], title = "GenericDynamicArray<Song>, capacity 8" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "One class, any element type"
+summary = "The same class holds String titles, Integer play counts and Song records; inside each is (T[]) new Object[4]."
+detail = """Three playlists use one class. `GenericDynamicArray<String>` holds titles, `GenericDynamicArray<Integer>` holds play counts, and `GenericDynamicArray<Song>` holds records of our own, each a title and a length. Inside each is an array created as `(T[]) new Object[4]`, because Java cannot create `new T[4]`: T is erased when the program runs. Capacity 4, size 3 in each."""
+speech = """First, one class for any type. [[slnc 400]] The same dynamic array holds song titles, as strings. [[slnc 300]] It holds play counts, as integers. [[slnc 300]] And it holds songs, a type of our own. [[slnc 500]] Inside each is an ordinary array of four places. [[slnc 300]] It is created as an array of object, because Java cannot create an array of T directly."""
+console = [["GenericDynamicArray<String>:  [Blue Sky, Rain Dance, Night Drive]", "ok"], ["GenericDynamicArray<Integer>: [10, 20, 30]", "ok"], ["GenericDynamicArray<Song>:    [Blue Sky (3:34), Rain Dance (3:07), Night Drive (4:03)]", "ok"], ["inside each: (T[]) new Object[4], capacity 4, size 3", "muted"]]
+[[act.frame]]
+caption = "Three arrays from one class: Strings, Integers and Songs"
+say = """Here are two of them. [[slnc 300]] Titles and play counts. [[slnc 300]] The same class, the same code, four places each, three in use."""
+picture = { type = "group", items = [ { type = "array", cells = ["Blue Sky", "Rain Dance", "Night Drive", ""], size = 3, title = "<String>" }, { type = "array", cells = [10, 20, 30, ""], size = 3, title = "<Integer>" } ], gap = 50 }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Full? Double it, copying references"
+summary = "Appending Paper Moon to 4 songs resizes to 8 and copies 4 references; the Song at index 0 is still the same object; 9 songs take 2 resizes."
+detail = """After the fourth song the array is full, so appending "Paper Moon" allocates an array of 8 places and copies the 4 references across, then stores the new one. The songs themselves never move: after the resize, index 0 still holds the very same `Song` object. Four more songs follow; the ninth doubles the capacity again to 16. Nine appends, two resizes, twelve references copied: the same counts as the String-only dynamic array."""
+speech = """Now the playlist fills up. [[slnc 400]] Appending a fifth song needs a resize: a new array of eight places. [[slnc 400]] Four references are copied across. [[slnc 300]] Not four songs: four addresses. [[slnc 500]] The song at index zero is still the very same object. [[slnc 400]] Nine songs take two resizes, exactly as before."""
+console = [["append(Paper Moon (2:56)): full, new array of 8 places, 4 references copied", "amber"], ["index 0 still holds the very same Song object: true", "ok"], ["9 songs appended, 2 resizes, capacity 16", "ok"]]
+[[act.frame]]
+caption = "The resize copies references: the Song objects stay where they are"
+say = """Here is the resize. [[slnc 300]] The old array of four, and the new array of eight. [[slnc 400]] Each place holds an arrow to a song. [[slnc 300]] The arrows are copied, and the songs stay put."""
+picture = { type = "group", items = [ { type = "array", cells = ["ref", "ref", "ref", "ref"], title = "old: 4 references" }, { type = "array", cells = ["ref", "ref", "ref", "ref", "ref", "", "", ""], size = 5, marks = { "0" = "new", "1" = "new", "2" = "new", "3" = "new", "4" = "hi" }, title = "new: 4 copied, 1 written" } ], gap = 50 }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "The middle, and equals"
+summary = "insertAt(0, Intro) shifts 9 songs; deleteAt(5) shifts 4; a new Song(\"Echoes\", 201) is found at index 6 by equals, although it is a different object."
+detail = """Inserting an intro at the front shifts all 9 song references one place right; deleting index 5, "Paper Moon", shifts the 4 after it left. Then a new `Song("Echoes", 201)` is made and searched for. Linear search compares with `equals`, and a record's `equals` compares its fields, title and length, so the search finds it at index 6 after 7 comparisons. It is not the same object as the one stored: `==` would have missed it."""
+speech = """Now the middle. [[slnc 400]] Inserting an intro at the front shifts nine songs. [[slnc 300]] Deleting index five shifts four. [[slnc 500]] Then we make a new song called Echoes, with the same length, and search for it. [[slnc 400]] Search uses equals, and a record's equals compares the title and the length. [[slnc 300]] So it is found, at index six, although it is a different object."""
+console = [["insertAt(0, Intro (0:42)): 9 songs shifted right", "amber"], ["deleteAt(5) removed Paper Moon (2:56): 4 songs shifted left", "amber"], ["linearSearch(new Song(\"Echoes\", 201)) = index 6 after 7 comparisons: a record's equals compares title and length", "ok"], ["but it is a different object: holdsSameObject = false", "muted"]]
+[[act.frame]]
+caption = "linearSearch with equals: indexes 0 to 5 do not match, index 6 does"
+say = """Here is the search. [[slnc 300]] Six songs compared, and not equal. [[slnc 300]] The seventh, Echoes, is equal: same title, same length. [[slnc 300]] Seven comparisons."""
+picture = { type = "array", cells = ["Intro", "Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Wild Honey", "Echoes", "Firefly", "Last Train"], marks = { "0" = "dim", "1" = "dim", "2" = "dim", "3" = "dim", "4" = "dim", "5" = "dim", "6" = "ok" }, pointers = [[6, "equals"]] }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Deleting clears references"
+summary = "16 places, 9 in use, 7 spare and all null; deleteAtEnd sets the freed place to null so the Song can be freed; shrinkToFit copies 8 references."
+detail = """Spare places hold `null`: capacity 16, size 9, seven empty. `deleteAtEnd` removes "Last Train" and sets its place to `null`, so no reference to the song remains in the array and the garbage collector can free it. Forgetting that line is a classic memory leak in a hand-written list. `shrinkToFit` then resizes to exactly 8 places, copying 8 references."""
+speech = """Deleting is where references matter most. [[slnc 400]] Deleting the last song sets its place to null. [[slnc 400]] If the array kept the reference, the song could never be freed from memory. [[slnc 300]] That is a memory leak. [[slnc 500]] Then shrink to fit copies eight references into exactly eight places."""
+console = [["capacity 16, size 9: 7 places spare, all null", "muted"], ["deleteAtEnd() removed Last Train (3:52); its place is set to null so the Song can be freed", "amber"], ["shrinkToFit(): capacity 8, 8 references copied", "ok"]]
+[[act.frame]]
+caption = "After deleteAtEnd: the freed place holds null, not a leftover reference"
+say = """Here is the array after the deletion. [[slnc 300]] Eight songs. [[slnc 300]] The place that held Last Train is now null, like every spare place."""
+picture = { type = "array", cells = ["Intro", "Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Wild Honey", "Echoes", "Firefly", "null", "null"], size = 8, marks = { "8" = "dim", "9" = "dim" } }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The bill"
+summary = "1,000 appends copy 1,020 references, about one each; deleting down to 256 of 1,024 halves the capacity; the costs equal the String-only version."
+detail = """A thousand appends copy 4 + 8 + ... + 512 = 1,020 references in total, about one per append: O(1) amortised, exactly as in the String-only dynamic array. Deleting from the end down to 256, a quarter of 1,024, halves the capacity to 512. Generics change the element type, not the algorithm or its costs. Java's `ArrayList<E>` is this structure on an `Object[]`, growing by half rather than doubling."""
+speech = """And the bill. [[slnc 400]] A thousand appends copy one thousand and twenty references. [[slnc 300]] About one per append. [[slnc 400]] Deleting down to a quarter halves the capacity. [[slnc 500]] Every cost is the same as the string-only version. [[slnc 400]] Generics change the type, not the algorithm. [[slnc 400]] And this is how Java's array list is built."""
+console = [["1,000 appends: 1,020 references copied, about 1 per append", "ok"], ["deleteAtEnd down to 256 of capacity 1024: capacity halves to 512", "ok"], ["the same costs as the String-only dynamic array: generics change the type, not the algorithm", "muted"], ["already in Java: java.util.ArrayList<E>, written exactly this way on an Object[]", "muted"]]
+[[act.frame]]
+caption = "References copied at each resize: 4, 8, 16 ... 512, about one per append"
+say = """Here are the copies at each resize. [[slnc 300]] Four, eight, sixteen, doubling each time, up to five hundred and twelve. [[slnc 400]] One thousand and twenty in all, for a thousand appends."""
+picture = { type = "grid", rows = [[4, 8, 16, 32, 64, 128, 256, 512]], col_labels = ["5th", "9th", "17th", "33rd", "65th", "129th", "257th", "513th"], cell_w = 80, cell_h = 52, note = "references copied at each resize: 1,020 in total" }
+
+[animation]
+subtitle = "A playlist of Song records in a generic dynamic array: a T[] made from Object[], resizes that copy references, equals for search, and null for freed places."
+
+[docs.problem]
+scenario = """A music app keeps growing lists of songs, titles and play counts, and wants one dynamic array class for all of them."""
+naive = """A separate copy of the dynamic-array code per element type, or one class of `Object` that accepts anything and needs a cast on every read."""
+deliver = [
+  "A `GenericDynamicArray<T>` written by hand on an `Object[]` cast to `T[]`, with append, insertAt, deleteAtEnd, deleteAt, linearSearch, get, update, traverse and shrinkToFit.",
+  "Doubling when full and halving when a quarter full, with every reference copied counted.",
+  "equals for search, and freed places set to null.",
+  "Time and space complexity of every operation, and a comparison with the String-only and static versions.",
+]
+
+[docs.prerequisites]
+required = ["The dynamic-array project (size, capacity, doubling)", "What an object and a reference are"]
+not_required = ["Previous experience of writing generic classes"]
+
+[docs.session]
+objectives = [
+  "Write a generic class on an `Object[]` cast to `T[]`.",
+  "Explain that a resize copies references, not objects.",
+  "Explain why freed places must be set to null.",
+  "State that every cost is unchanged from the String-only dynamic array.",
+]
+walkthrough = """Show the String-only DynamicArray and ask how to store songs. Replace String with T and hit `new T[n]`; introduce the Object[] cast. Run the demo; in act two, draw references as arrows and show they are copied. In act three, show equals finding a separately made Song. In act four, discuss the memory leak a leftover reference causes. Finish by opening the source of java.util.ArrayList and finding elementData."""
+
+[docs.explained]
+sentence = """A generic dynamic array stores references to any type T on an Object[] cast to T[], doubles when full, halves when a quarter full, and finds elements with equals: Java's ArrayList, built by hand."""
+verdict = """This is the most used data structure in Java; in real code use `ArrayList<E>`, which is exactly this. Build it once by hand to understand what `add`, `remove` and `get` cost, and why a leftover reference is a memory leak."""
+recognise = [
+  "`(T[]) new Object[capacity]` in a generic class.",
+  "`if (size == arr.length) resize(arr.length * 2);` before storing.",
+  "`arr[--size] = null;` or `arr[size - 1] = null;` after a deletion.",
+]
+
+[spec]
+purpose = """Teach Java generics on the dynamic array: one class for every element type, the same costs, and the reference-handling rules objects bring."""
+requirements = [
+  "Written by hand on an `Object[]` cast to `T[]`: no Java collections or `Arrays` helpers.",
+  "Doubling when full, halving when a quarter full, shrinkToFit.",
+  "append, insertAt, deleteAtEnd, deleteAt, linearSearch (equals), get, update, traverse.",
+  "Freed places set to null; null elements refused.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["The String-only version (dynamic-array)", "Recursive versions (dynamic-array-generic-recursive)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Dynamic Array (Generic): the pieces"
+caption = "The demo appends Songs to one generic class; its T[] holds references to Song objects elsewhere in memory."
+nodes = [
+  { id = "demo", label = "Demo", sub = "GenericDynamicArrayDemo", col = 0, row = 0, colour = "client" },
+  { id = "arr", label = "GenericDynamicArray<T>", sub = "append, insertAt, deleteAt, linearSearch", col = 1, row = 0, colour = "accent" },
+  { id = "mem", label = "T[] arr", sub = "made as (T[]) new Object[n]", col = 2, row = 0, colour = "green" },
+  { id = "obj", label = "Song objects", sub = "never moved by a resize", col = 2, row = 1, colour = "amber" },
+  { id = "steps", label = "StepCounter", sub = "writes, shifts, copies", col = 1, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "arr", label = "append(song)" }, { from = "arr", to = "mem", label = "arr[size++]" }, { from = "mem", to = "obj", label = "refers to" }, { from = "arr", to = "steps", label = "counts" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Dynamic Array (Generic): the classes"
+caption = "`GenericDynamicArray<T>` holds any type; `Song` is a record of our own."
+nodes = [
+  { id = "arr", label = "GenericDynamicArray<T>", sub = ["- T[] arr", "- int size", "+ traverse / get / update", "+ append / insertAt", "+ deleteAtEnd / deleteAt", "+ linearSearch: equals", "+ shrinkToFit", "- resize / newArray"], col = 0, row = 0, colour = "accent" },
+  { id = "song", label = "Song", sub = ["record: title, seconds", "equals: both fields"], col = 1, row = 0, colour = "client" },
+  { id = "steps", label = "StepCounter", sub = ["reads, writes, compares", "shifts, copies"], col = 0, row = 1, colour = "amber" },
+]
+edges = [ { from = "arr", to = "song", label = "T = Song" }, { from = "arr", to = "steps", label = "has one" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Dynamic Array (Generic): what one append does"
+caption = "Write into a spare place, or resize first by copying references."
+nodes = [
+  { id = "add", label = "append(song)", sub = "a reference", col = 0, row = 0, colour = "client" },
+  { id = "check", label = "size == capacity?", sub = "is it full?", col = 1, row = 0, colour = "amber" },
+  { id = "write", label = "arr[size++] = song", sub = "1 write", col = 2, row = 0, colour = "green" },
+  { id = "resize", label = "new T[2 x capacity]", sub = "copy every reference", col = 1, row = 1, colour = "red" },
+]
+edges = [ { from = "add", to = "check", label = "" }, { from = "check", to = "write", label = "no" }, { from = "check", to = "resize", label = "yes" }, { from = "resize", to = "write", label = "then" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Dynamic Array (Generic): appending the fifth song"
+caption = "The resize copies four references; the Song objects are not touched."
+participants = ["Demo", "GenericDynamicArray", "old T[4]", "new T[8]"]
+steps = [
+  ["Demo", "GenericDynamicArray", "append(Paper Moon)"],
+  ["note", "GenericDynamicArray", "size 4 == capacity 4"],
+  ["GenericDynamicArray", "new T[8]", "(T[]) new Object[8]"],
+  ["old T[4]", "new T[8]", "copy 4 references"],
+  ["GenericDynamicArray", "new T[8]", "arr[4] = Paper Moon"],
+  ["GenericDynamicArray", "Demo", "size 5", "reply"],
+]
+
+[poster]
+headline = [["DYNAMIC ARRAY", "text"], ["GENERIC <T>", "accent"]]
+before = { code = "DynamicArray", note = "String only", tag = "ONE TYPE" }
+after = { code = "GenericDynamicArray<T>", note = "Song, String, Integer", tag = "ANY TYPE" }
+taglines = [["ArrayList, built by hand.", "text"], ["Copy references, clear freed places.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Dynamic Array (Generic)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the generic dynamic array, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] A generic dynamic array is an array that grows by itself, written once for any type of element. [[slnc 400]] It stores references to objects, and doubles its room when it is full. [[slnc 700]] Our example is a music playlist of songs. [[slnc 400]] By the end, you will know how Java's array list is built, what a resize really copies, and why deleted places must be cleared."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Copy the list of addresses, not the furniture"
+picture = { type = "group", items = [ { type = "array", cells = ["addr", "addr", "addr", "addr"], title = "old list: full" }, { type = "array", cells = ["addr", "addr", "addr", "addr", "", "", "", ""], size = 4, marks = { "0" = "new", "1" = "new", "2" = "new", "3" = "new" }, title = "new list: twice as long" } ], gap = 50 }
+narration = """Think of moving house, but with a warehouse. [[slnc 400]] Your furniture stays in the warehouse, and you keep a list of where each piece is. [[slnc 500]] When the list runs out of lines, you copy it onto a sheet twice as long. [[slnc 400]] Only the addresses are copied. [[slnc 300]] The furniture never moves. [[slnc 500]] And the list does not care whether the addresses point at chairs, or books, or bicycles."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["T: the element type, filled in at each use", "size and capacity: in use, and available", "reference: the address of an object", "resize: copy references, not objects", "", "equals: compare contents"]
+narration = """The words. [[slnc 400]] T is the element type, filled in each time the class is used. [[slnc 400]] Size is how many elements are in use, and capacity is how many places there are. [[slnc 400]] Each place holds a reference, the address of an object. [[slnc 400]] A resize copies the references, not the objects. [[slnc 400]] And equals compares contents."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["append: O(1) amortised, O(n) on a resize", "get, update: O(1)", "insertAt, deleteAt: O(n) at the front", "linear search: O(n)", "", "the same as the String-only version"]
+narration = """Here are the costs in time and space. [[slnc 400]] Append is order one amortised, and order n when it resizes. [[slnc 400]] Get and update are order one. [[slnc 400]] Insert and delete at the front are order n. [[slnc 400]] Linear search is order n. [[slnc 500]] Every one of them is the same as the string-only version."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Compared With Related Structures"
+body = ["String-only dynamic array: the same costs, one type", "generic static array: fixed capacity", "int[]: values, not references: less memory", "", "Java's own: ArrayList<E>"]
+narration = """How does it compare? [[slnc 400]] The string-only dynamic array has the same costs, but holds one type. [[slnc 400]] The generic static array holds any type, but cannot grow. [[slnc 400]] A plain int array stores values, not references, so it uses less memory. [[slnc 500]] And Java's own array list is exactly this structure."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["writing new T[capacity]", "searching with ==", "not clearing freed places", "growing by a fixed amount"]
+narration = """Four mistakes to watch for. [[slnc 400]] Writing new T array, which does not compile. [[slnc 400]] Searching with double equals, which misses equal objects. [[slnc 400]] Not clearing freed places, which leaks memory. [[slnc 400]] And growing by a fixed amount instead of doubling."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the generic dynamic array. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] Store references in an array of object, double it when full, and clear every place you free. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Write delete by key, using linear search and delete at. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

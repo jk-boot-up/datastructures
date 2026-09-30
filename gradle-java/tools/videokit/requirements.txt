@@ -1,0 +1,12 @@
+# The voices: Piper (MIT) speaks the amy-slow narration; Kokoro (Apache 2.0)
+# supplies the espeak library Piper's phonemiser uses.
+piper-tts>=1.8
+phonemizer>=3.3
+kokoro-onnx>=0.4
+# Audio I/O.
+soundfile>=0.12
+numpy>=2
+# Slides, diagrams and the structure pictures (SVG to PNG).
+pillow>=10
+matplotlib>=3.8
+cairosvg>=2.7

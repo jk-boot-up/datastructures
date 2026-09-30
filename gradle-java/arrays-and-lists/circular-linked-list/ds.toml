@@ -1,0 +1,426 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "circular-linked-list"
+category = "arrays-and-lists"
+title = "Circular Linked List"
+package = "circularlinkedlist"
+main_class = "CircularLinkedListDemo"
+example = "Taking turns in a board game, round and round"
+tagline = "A list with no end"
+bold = "A circular linked list points its last node back at its first, so there is no end: moving on is always one step, which suits anything that goes round and round; the price is that nothing tells a loop when to stop."
+analogy_short = "Players sitting round a table, passing the turn to the left"
+jdk = "None in `java.util`; `ArrayDeque` goes round a circular array instead (see the circular buffer)"
+thumb_lines = ["CIRCULAR", "LINKED LIST"]
+thumb_code = "first = last.next"
+youtube_title = "Circular Linked List in Java - Insertion, Deletion and the Counting-Out Game"
+youtube_tags = ["circular linked list", "linked list java", "round robin", "josephus problem", "circular list buffer"]
+youtube_description = """Circular Linked List in Java, explained with players taking turns round a board game. We start with the players in a straight line, where the turn falls off the end after the last player and a special case sends it back to the first. Then we join the ends by hand, as a C textbook does: the last node points back at the first, and the list keeps a single pointer, last, so the first node is last.next and both ends are one step away. We count the real cost of every textbook operation: turns with no special case, insertAtBeginning and insertAtEnd in O(1), insertAtPosition, deleteAtBeginning in one pointer change, deleteAtEnd walking round to the node before last, and deleteByKey. Then a loop waiting for null walks a thousand steps and never finds one, and a do-while traversal stops where it started. We finish with the counting-out game, every third player out until one is left."""
+
+[readme]
+intro = """A **circular linked list** is a linked list whose last node points back at its first. There is no `null` at the end, because there is no end: follow the pointers and you go round and round. It suits anything that takes turns, such as players round a table, tasks sharing a processor, or a playlist on repeat. As in C textbooks, the list keeps a single pointer, `last`, to the last node; the first node is `last.next`, so both ends are one step away, and insertion at the beginning and at the end are both O(1). It is built by hand with the textbook operations: insertAtBeginning, insertAtEnd, insertAtPosition, deleteAtBeginning, deleteAtEnd, deleteByKey, search, display and count."""
+analogy = """Picture friends sitting round a table playing a board game. When your turn ends, you pass the dice to your left. After the last person, the dice simply carry on to the first person again, because a circle has no last seat. A newcomer squeezes in between two players; someone who is out leaves their seat, and the person before them passes straight to the person after. Nobody ever has to say "we have reached the end, go back to the start"."""
+example = """Four players, Ann, Ben, Cat and Dan, take turns round a board game. The demo moves the turn on round the table, lets newcomers join at the beginning, the end and a position, removes players at the beginning, the end and by name, and finally plays a counting-out game in which every third player leaves until one is left."""
+why = """In a straight list, the turn falls off the end after the last player: the next pointer is `null`, and a special case has to send the turn back to the first player every round. In a circular list there is no end and no special case: the last node's next simply points to the first, so taking a turn is always the same one step."""
+when_use = [
+  "Something goes round and round: turns, round-robin scheduling, a looping playlist.",
+  "You keep your place in the circular list and move on one step at a time.",
+  "Players or tasks join and leave while the circular list keeps turning.",
+]
+when_not = [
+  "The data has a real beginning and end: a plain list is clearer.",
+  "You read by position: position n is still n steps.",
+  "The code is shared with people who expect `null` at the end: loops that wait for `null` never stop.",
+]
+met_before = [
+  "Players taking turns, a carousel, the hands of a clock.",
+  "Operating systems giving each program a turn of the processor (round-robin scheduling).",
+  "`java.util.ArrayDeque` and circular buffers use the same wrap-around idea on an array.",
+]
+
+[[word]]
+term = "circular linked list"
+meaning = "A linked list whose last node's next points back to the first node: it has no end and no null."
+[[word]]
+term = "last"
+meaning = "The only pointer the list keeps: the last node. The first node is `last.next`."
+[[word]]
+term = "node"
+meaning = "One element: its `data` and a `next` pointer, which for the last node is the first node."
+[[word]]
+term = "do-while loop"
+meaning = "A loop that runs its body first and checks afterwards; the natural way to go once round a circular list and stop back at the first node."
+[[word]]
+term = "counting out"
+meaning = "A game where every k-th player round the circle leaves; also known as the Josephus problem."
+
+[[operation]]
+name = "Display / count"
+does = "do-while from last.next until back at last.next"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "4 steps for 4 players"
+[[operation]]
+name = "Next turn"
+does = "current = current.next, always, with no special case"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "6 turns in 6 steps"
+[[operation]]
+name = "Insert at beginning"
+does = "newNode.next = last.next; last.next = newNode"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "0 steps, 2 pointer changes"
+[[operation]]
+name = "Insert at end"
+does = "Insert at the beginning, then last = the new node"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "0 steps, 3 pointer changes"
+[[operation]]
+name = "Insert at position"
+does = "Walk to the node before, then 2 pointers"
+time = "O(1) at 0 / O(n) / O(n)"
+space = "O(1)"
+counted = "2 steps, 2 pointer changes"
+[[operation]]
+name = "Delete at beginning"
+does = "last.next = last.next.next"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "1 pointer change"
+[[operation]]
+name = "Delete at end"
+does = "Walk round to the node before last; it points to the first and becomes last"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "4 steps on 6 nodes"
+[[operation]]
+name = "Delete by key / search"
+does = "Go round once with prev and current"
+time = "O(1) / O(n) / O(n)"
+space = "O(1)"
+counted = "4 comparisons, 1 pointer change"
+[[operation]]
+name = "Counting out (k)"
+does = "Count k round the circle, unlink, repeat until one is left"
+time = "O(n k) / O(n k) / O(n k)"
+space = "O(1)"
+counted = "8 steps, 4 pointer changes for 5 players, k = 3"
+
+listing_intro = """The operations that make a circular list different, exactly as they appear in `CircularLinkedList.java`. Everything hangs on one pointer, `last`, and on the fact that `last.next` is the first node."""
+[[listing]]
+op = "Insertion at the beginning"
+method = "CircularLinkedList#insertAtBeginning"
+note = """The new node goes between `last` and the old first node: it points to `last.next`, and `last` points to it. An empty list is the special case: the new node points to itself and becomes `last`."""
+[[listing]]
+op = "Insertion at the end"
+method = "CircularLinkedList#insertAtEnd"
+note = """The textbook trick: in a circle, the beginning and the end are the same place. Insert at the beginning, then move `last` on one node, and the new node is last instead of first. O(1)."""
+[[listing]]
+op = "Display"
+method = "CircularLinkedList#display"
+note = """There is no `null` to stop at, so the traversal is a do-while that starts at `last.next` and stops when it comes back to it. The body runs before the check, so a list of one node is displayed once."""
+[[listing]]
+op = "Deletion at the end"
+method = "CircularLinkedList#deleteAtEnd"
+note = """The one end operation that is not O(1): the node before `last` must point to the first node and become `last`, and in a singly linked circle it can only be found by walking round."""
+[[listing]]
+op = "The counting-out game"
+method = "CircularLinkedList#countOut"
+note = """`prev` counts k - 1 steps round the circle; the node after it is out, and `prev.next = gone.next` removes it. The circle never ends, so counting simply carries on past the last player."""
+
+[compare]
+intro = """How a circular linked list compares with its neighbours (n nodes):"""
+columns = ["Operation", "Circular list (last pointer)", "Singly list (head only)", "Doubly list (head, tail)"]
+rows = [
+  ["Insert at the beginning", "O(1)", "O(1)", "O(1)"],
+  ["Insert at the end", "O(1)", "O(n)", "O(1)"],
+  ["Delete at the beginning", "O(1)", "O(1)", "O(1)"],
+  ["Delete at the end", "O(n)", "O(n)", "O(1)"],
+  ["Next after the last node", "the first node", "null", "null"],
+  ["Loop end condition", "back at the start (do-while)", "null", "null"],
+  ["Pointers per node", "1", "1", "2"],
+]
+
+pros = [
+  "Going round and round needs no special case: the last node leads to the first.",
+  "Both ends in O(1) insertion from a single pointer, `last`.",
+  "Natural for turns, round-robin scheduling and looping playlists.",
+]
+cons = [
+  "No `null` at the end: a loop written for a straight list never stops.",
+  "Deleting at the end is O(n): the node before `last` must be found by walking.",
+  "Every traversal needs a starting node to come back to.",
+]
+
+[[mistake]]
+mistake = "Looping `while (current != null)`"
+happens = "There is no null, so the loop never ends."
+fix = "Use a do-while that stops when `current` is back at the first node."
+[[mistake]]
+mistake = "Using a while loop that checks first"
+happens = "`while (current != last.next)` starting at `last.next` never runs its body."
+fix = "Check after the body: `do { ... } while (current != last.next);`."
+[[mistake]]
+mistake = "Forgetting the one-node list"
+happens = "A single node must point to itself; deleting it must set `last` to null."
+fix = "Handle `last.next == last` separately."
+[[mistake]]
+mistake = "Deleting the last node without moving `last`"
+happens = "`last` keeps pointing at a deleted node."
+fix = "When the deleted node is `last`, set `last` to the node before it."
+
+[[exercise]]
+level = "easy"
+question = """Write `String playerAfter(String name, int k)` that returns the player k turns after `name`, going round as often as needed. What is its time complexity?"""
+answer = """```java
+String playerAfter(String name, int k) {
+    Node current = last.next;
+    while (!current.data.equals(name)) current = current.next;   // assumes the name is present
+    for (int i = 0; i < k; i++) current = current.next;
+    return current.data;
+}
+```
+O(n + k): finding the player, then k steps; no special case at the end of the circle."""
+[[exercise]]
+level = "medium"
+question = """Write `void split(CircularLinkedList a, CircularLinkedList b)` that splits a circular list with an even number of nodes into two circular halves. How many pointers change?"""
+answer = """Walk `slow` one step and `fast` two steps from `last.next` until `fast` reaches `last` (or the node before it): `slow` is then the end of the first half. Then:
+```java
+Node firstA = last.next, firstB = slow.next;
+slow.next = firstA;          // close the first half into a circle
+last.next = firstB;          // close the second half into a circle
+a.last = slow;
+b.last = last;
+```
+Two next pointers change, plus the two lists' `last`. O(n) for the walk."""
+[[exercise]]
+level = "harder"
+question = """In the counting-out game with n players and k = 2, where should you sit to win? Work out n = 5 and n = 8 with the list, then find the pattern."""
+answer = """With k = 2 every second player leaves. For n = 5 the winner is the 3rd seat; for n = 8 it is the 1st. Writing n = 2^m + L (with 2^m the largest power of two not above n), the winner is seat 2L + 1: 5 = 4 + 1 gives 3; 8 = 8 + 0 gives 1. The list simulation costs O(n k); the formula answers in O(1), which is why this is also a classic mathematics puzzle."""
+
+[hero]
+caption = "The last node points back to the first; the list keeps only last, and last.next is the first node"
+picture = { type = "linked", nodes = ["Ann", "Ben", "Cat", "Dan"], circular = true, pointers = [[0, "last.next"], [3, "last"]] }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "Players in a straight line"
+summary = "Four players in a straight list: after Dan the next pointer is null, and a special case sends the turn back to Ann."
+detail = """With the players in an ordinary list, Ann -> Ben -> Cat -> Dan -> null, taking turns works until Dan. Dan's next is `null`: the line has ended, and every round a special case must send the turn back to Ann. In six turns that special case is needed once; in a long game, once every round."""
+speech = """First, the players in a straight line. [[slnc 400]] Ann, Ben, Cat, Dan, and then null. [[slnc 400]] After Dan, the line ends. [[slnc 300]] A special case has to send the turn back to Ann. [[slnc 500]] Every round needs that special case."""
+console = [["Ann -> Ben -> Cat -> Dan -> null", "muted"], ["6 turns: Ann, Ben, Cat, Dan, Ann, Ben; after Dan the line ends, and 1 special case sends it back to Ann", "bad"]]
+[[act.frame]]
+caption = "A straight line: Dan's next is null"
+say = """Here is the straight line. [[slnc 300]] Dan's next pointer is null. [[slnc 300]] The turn has nowhere to go."""
+picture = { type = "linked", nodes = ["Ann", "Ben", "Cat", "Dan"], pointers = [[3, "then?"]] }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Join the ends: last.next is the first node"
+summary = "Built with insertAtEnd: 0 steps, 12 pointer changes; the list keeps only last, Dan, and last.next is Ann."
+detail = """In the circular list, Dan's next points back to Ann. The list keeps a single pointer, `last`, to Dan; the first node is `last.next`, Ann. So both ends are one step from one pointer, and building the table with `insertAtEnd` walks nowhere: 12 pointer changes for four players, and 0 steps. The display is a do-while from Ann round to Ann."""
+speech = """Now join the ends. [[slnc 400]] Dan's next pointer points back to Ann. [[slnc 400]] The list keeps just one pointer, last, to Dan. [[slnc 300]] The first player is last dot next: Ann. [[slnc 500]] So both ends are one step away, and inserting at the end walks nowhere."""
+console = [["built with insertAtEnd: 0 steps, 12 pointer changes; the list keeps only last", "ok"], ["display(): Ann -> Ben -> Cat -> Dan -> (back to Ann)", "ok"], ["last = Dan, last.next = Ann: both ends are one step from one pointer", "amber"]]
+[[act.frame]]
+caption = "A circle: Dan is last, and Dan's next is Ann"
+say = """Here is the circle. [[slnc 300]] Last points at Dan. [[slnc 300]] Dan points back to Ann."""
+picture = { type = "linked", nodes = ["Ann", "Ben", "Cat", "Dan"], circular = true, pointers = [[0, "last.next"], [3, "last"]] }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Turns, insertion and deletion"
+summary = "6 turns in 6 steps; insertAtBeginning and insertAtEnd in 0 steps; insertAtPosition(3) in 2 steps; deleteAtBeginning 1 pointer; deleteAtEnd 4 steps; deleteByKey 4 comparisons."
+detail = """Six turns take six steps, with no special case: after Dan comes Ann. `insertAtBeginning("Eve")` puts Eve between Dan and Ann: 2 pointer changes. `insertAtEnd("Fay")` does the same and then moves `last` on to Fay: 3 pointer changes, no walking. `insertAtPosition(3, "Gus")` walks 2 steps to Ben and links Gus in after Ben. `deleteAtBeginning` removes Eve by pointing `last` past Eve's node: 1 pointer. `deleteAtEnd` must find the node before Fay, walking 4 steps round from Ann to Dan, because a singly linked circle cannot step back. `deleteByKey("Cat")` goes round comparing: 4 comparisons, 1 pointer change."""
+speech = """Now the textbook operations. [[slnc 400]] Six turns take six steps, with no special case. [[slnc 400]] Inserting at the beginning or at the end walks nowhere. [[slnc 300]] At the end, it inserts at the beginning, and then moves last on. [[slnc 500]] Deleting at the beginning changes one pointer. [[slnc 400]] But deleting at the end must walk round to the node before last."""
+console = [["6 turns: Ann, Ben, Cat, Dan, Ann, Ben; 6 steps, no special case", "ok"], ["insertAtBeginning(\"Eve\"): 0 steps, 2 pointer changes", "ok"], ["insertAtEnd(\"Fay\"): 0 steps, 3 pointer changes: insert at the beginning, then move last on", "ok"], ["insertAtPosition(3, \"Gus\"): 2 steps, 2 pointer changes", "amber"], ["deleteAtBeginning() removed Eve: 1 pointer change", "ok"], ["deleteAtEnd() removed Fay: 4 steps round to the node before last", "amber"], ["deleteByKey(\"Cat\"): 4 comparisons, 1 pointer change", "ok"], ["Ann -> Ben -> Gus -> Dan -> (back to Ann)", "muted"]]
+[[act.frame]]
+caption = "insertAtEnd(\"Fay\"): Fay goes in after Dan, then last moves on to Fay"
+say = """Here is the insertion at the end. [[slnc 300]] Fay goes in between Dan and the first player. [[slnc 400]] Then last moves on to Fay. [[slnc 300]] No walking at all."""
+picture = { type = "linked", nodes = ["Eve", "Ann", "Ben", "Cat", "Dan", "Fay"], circular = true, marks = { "5" = "new" }, pointers = [[5, "last"]] }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Waiting for null"
+summary = "A while (current != null) loop walks 1,000 steps and never stops by itself; a do-while stops back at the first node; one node points to itself, and deleting it sets last to null."
+detail = """Code written for a straight list waits for `null`, and a circular list has none: the loop went round the four players 250 times, 1,000 steps, until the demo stopped it. A circular traversal is a do-while: visit, move on, and stop when back at the first node. A list of one node is a circle of one, pointing to itself; when that node is deleted, `last` becomes `null` and the list is empty."""
+speech = """What if a loop waits for null? [[slnc 400]] There is none. [[slnc 300]] The loop went round and round, a thousand steps, until it was stopped. [[slnc 500]] A circular list is traversed with a do while loop, which stops when it is back at the start. [[slnc 400]] And a list of one node points to itself."""
+console = [["a loop \"while (current != null)\" walked 1000 steps and never found null; it was stopped", "bad"], ["a circular traversal is a do-while that stops when it is back at the first node", "ok"], ["a list of one node: Zoe -> (back to Zoe); its next points to itself", "muted"], ["and when that player leaves: (empty), last is null", "muted"]]
+[[act.frame]]
+caption = "A list of one node: Zoe's next is Zoe"
+say = """Here is a circle of one. [[slnc 300]] Zoe's node points to itself."""
+picture = { type = "linked", nodes = ["Zoe"], loops = [[0, 0, "ok"]], null_end = false, pointers = [[0, "last"]] }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "Counting out, and the bill"
+summary = "Five players, every third out: Cat, Ann, Eve, Ben; winner Dan, in 8 steps and 4 pointer changes."
+detail = """In the counting-out game, the players count round the circle and every third one leaves: Cat, then Ann, then Eve, then Ben, and Dan wins. Each removal is one pointer change, `prev.next = gone.next`, and the counting simply carries on past the last player, because there is no end: 8 steps and 4 pointer changes for the whole game. The bill: with no end to stop at, every traversal needs a starting node to come back to, and deleting at the end still walks. `java.util` has no circular linked list; `ArrayDeque` goes round a circular array instead."""
+speech = """Finally, the counting-out game. [[slnc 400]] Every third player leaves. [[slnc 300]] Cat, then Ann, then Eve, then Ben. [[slnc 400]] Dan wins. [[slnc 500]] Each player out is one pointer change, and the counting simply goes round and round. [[slnc 500]] The bill: no end to stop at, so every loop needs a starting point to come back to."""
+console = [["counting out every third player: out: Cat, Ann, Eve, Ben; winner Dan", "ok"], ["8 steps and 4 pointer changes for the whole game", "ok"], ["the bill: no end to stop at, so every traversal needs a starting node to come back to", "amber"], ["already in Java: no circular linked list in java.util; ArrayDeque goes round a circular array instead", "muted"]]
+[[act.frame]]
+caption = "Every third player out; Dan is the winner"
+say = """Here is the circle as the game ends. [[slnc 300]] Four players out, in grey. [[slnc 300]] Dan, in green, is left."""
+picture = { type = "linked", nodes = ["Ann", "Ben", "Cat", "Dan", "Eve"], circular = true, marks = { "0" = "dim", "1" = "dim", "2" = "dim", "3" = "ok", "4" = "dim" } }
+
+[animation]
+subtitle = "Players round a board game as a circular linked list: last.next as the first node, O(1) insertion at both ends, turns with no special case, the loop that waits for null, and the counting-out game."
+
+[docs.problem]
+scenario = """Players take turns round a board game; newcomers join and players leave while the turns keep going round."""
+naive = """A straight list ends in null after the last player, so every round needs a special case to send the turn back to the first."""
+deliver = [
+  "A `CircularLinkedList` of `Node`s (`data`, `next`) keeping only `last`, written by hand.",
+  "The textbook operations: insertAtBeginning, insertAtEnd, insertAtPosition, deleteAtBeginning, deleteAtEnd, deleteByKey, search, display, count; turns and the counting-out game.",
+  "Steps, comparisons and pointer changes counted; underflow reported.",
+  "Time and space complexity of every operation, and a comparison with the singly and doubly linked lists.",
+]
+
+[docs.prerequisites]
+required = ["The singly-linked-list project", "Java basics, including the do-while loop"]
+not_required = ["The Josephus problem"]
+
+[docs.session]
+objectives = [
+  "Draw a circular list with its single `last` pointer.",
+  "Implement insertion at both ends in O(1), and explain why deletion at the end is O(n).",
+  "Traverse with a do-while that stops back at the start.",
+  "Simulate the counting-out game.",
+]
+walkthrough = """Start with the table analogy. Run the demo; in act two, show that last.next is the first node. In act three, perform insertAtEnd on the board as insert-at-beginning plus a move of last. In act four, discuss why while (current != null) never stops. Play the counting-out game with the class in act five."""
+
+[docs.explained]
+sentence = """A circular linked list points its last node back to its first and keeps only last, so both ends are one step away, turns need no special case, and traversals stop when they come back round rather than at null."""
+verdict = """Use a circular list for anything that goes round: turns, round-robin scheduling, a looping playlist. When there is a real beginning and end, a straight list is clearer; when deletion at the end matters, a doubly linked circle."""
+recognise = [
+  "A list class holding only `last`, with `last.next` used as the first node.",
+  "`do { ...; current = current.next; } while (current != last.next);`.",
+  "`newNode.next = newNode` for a list of one.",
+]
+
+[spec]
+purpose = """Teach the circular singly linked list with the operations of a data-structures textbook, their costs, and the loop mistakes it invites."""
+requirements = [
+  "Written by hand: `Node` with `data` and `next`; the list keeps only `last`; no Java collections.",
+  "insertAtBeginning, insertAtEnd, insertAtPosition, deleteAtBeginning, deleteAtEnd, deleteByKey, search, display, count; turns; countOut.",
+  "Steps, comparisons and pointer changes counted; underflow reported.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["A doubly linked circle", "Recursive versions (circular-linked-list-recursive)", "Generic element types (circular-linked-list-generic)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Circular Linked List: the pieces"
+caption = "The list keeps only last; last.next is the first node; the nodes form a circle."
+nodes = [
+  { id = "demo", label = "Demo", sub = "CircularLinkedListDemo, five acts", col = 0, row = 0, colour = "client" },
+  { id = "list", label = "CircularLinkedList", sub = "last only", col = 1, row = 0, colour = "accent" },
+  { id = "lastn", label = "last node", sub = "Dan", col = 2, row = 0, colour = "green" },
+  { id = "firstn", label = "first node = last.next", sub = "Ann", col = 2, row = 1, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = "steps, comparisons, pointer changes", col = 1, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "list", label = "insertAtEnd(player)" }, { from = "list", to = "lastn", label = "last" }, { from = "lastn", to = "firstn", label = "next" }, { from = "list", to = "steps", label = "counts" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Circular Linked List: the classes"
+caption = "`CircularLinkedList` holds last; each `Node` holds data and next."
+nodes = [
+  { id = "list", label = "CircularLinkedList", sub = ["- Node last", "+ insertAtBeginning / AtEnd", "+ insertAtPosition", "+ deleteAtBeginning / AtEnd", "+ deleteByKey / search", "+ display / count", "+ turns / countOut"], col = 0, row = 0, colour = "accent" },
+  { id = "node", label = "Node", sub = ["data: String", "next: Node (never null)"], col = 1, row = 0, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = ["steps, compares", "pointerChanges"], col = 0, row = 1, colour = "amber" },
+]
+edges = [ { from = "list", to = "node", label = "last" }, { from = "list", to = "steps", label = "has one" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Circular Linked List: insertAtEnd(x)"
+caption = "Insert at the beginning, then move last on."
+nodes = [
+  { id = "in", label = "insertAtEnd(x)", sub = "", col = 0, row = 0, colour = "client" },
+  { id = "empty", label = "last == null?", sub = "yes: x points to itself", col = 1, row = 0, colour = "amber" },
+  { id = "begin", label = "x.next = last.next; last.next = x", sub = "insert at the beginning", col = 2, row = 0, colour = "green" },
+  { id = "move", label = "last = x", sub = "now x is last", col = 2, row = 1, colour = "accent" },
+]
+edges = [ { from = "in", to = "empty", label = "" }, { from = "empty", to = "begin", label = "no" }, { from = "begin", to = "move", label = "then" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Circular Linked List: deleteAtEnd()"
+caption = "Walk round to the node before last, then two pointer changes."
+participants = ["Demo", "CircularLinkedList", "Ann ... Dan", "Fay (last)"]
+steps = [
+  ["Demo", "CircularLinkedList", "deleteAtEnd()"],
+  ["CircularLinkedList", "Ann ... Dan", "walk 4 steps to Dan"],
+  ["CircularLinkedList", "Ann ... Dan", "Dan.next = Fay.next (Ann)"],
+  ["CircularLinkedList", "Fay (last)", "last = Dan"],
+  ["CircularLinkedList", "Demo", "Fay", "reply"],
+]
+
+[poster]
+headline = [["CIRCULAR LINKED LIST", "text"], ["IN JAVA", "accent"]]
+before = { code = "Dan.next = null", note = "a special case every round", tag = "STRAIGHT" }
+after = { code = "first = last.next", note = "round and round, no end", tag = "CIRCULAR" }
+taglines = [["A list with no end.", "text"], ["Both ends from one pointer.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Circular Linked List"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the circular linked list, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] A circular linked list is a linked list whose last node points back to the first. [[slnc 400]] There is no end, and no null. [[slnc 400]] The list keeps one pointer, to the last node, and the first node is the one after it. [[slnc 700]] Our example is players taking turns round a board game. [[slnc 400]] By the end, you will know every textbook operation on a circular list, what each one costs, and the loop that never stops."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Friends round a table: after the last seat, the dice carry on to the first"
+picture = { type = "linked", nodes = ["Ann", "Ben", "Cat", "Dan"], circular = true, pointers = [[0, "dice"]] }
+narration = """Picture friends sitting round a table, playing a board game. [[slnc 400]] When your turn ends, you pass the dice to your left. [[slnc 400]] After the last person, the dice simply carry on to the first person again. [[slnc 400]] A circle has no last seat. [[slnc 500]] Nobody ever has to say, we have reached the end, go back to the start. [[slnc 500]] That is a circular linked list."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["circular: the last node's next is the first", "last: the only pointer the list keeps", "first node = last.next", "do-while: stop when back at the start"]
+narration = """The words. [[slnc 400]] Circular: the last node's next pointer is the first node. [[slnc 400]] Last is the only pointer the list keeps. [[slnc 400]] The first node is last dot next. [[slnc 400]] And a traversal is a do while loop, which stops when it is back at the start."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["insert at beginning or end: O(1)", "delete at beginning: O(1)", "delete at end: O(n), walk to the node before last", "search, display, count: O(n)", "", "next turn: O(1), never a special case"]
+narration = """Here are the costs in time and space. [[slnc 400]] Inserting at the beginning or the end is order one. [[slnc 400]] Deleting at the beginning is order one. [[slnc 400]] Deleting at the end is order n, because the node before last must be found. [[slnc 400]] Search, display and count are order n. [[slnc 500]] And the next turn is always one step."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Compared With Related Structures"
+body = ["insert at end: circular O(1), singly O(n)", "delete at end: circular O(n), doubly O(1)", "after the last node: circular the first, others null", "", "loops: do-while back to the start, not null"]
+narration = """How does it compare? [[slnc 400]] Inserting at the end is order one in a circular list, and order n in a singly list with only a head. [[slnc 400]] Deleting at the end is order n here, and order one in a doubly linked list. [[slnc 400]] After the last node, a circular list goes back to the first, where the others reach null."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["while (current != null): never stops", "a while loop that checks first: never starts", "forgetting the one-node list", "deleting the last node without moving last"]
+narration = """Four mistakes to watch for. [[slnc 400]] Waiting for null, which never comes. [[slnc 400]] A while loop that checks before its body, and so never starts. [[slnc 400]] Forgetting that a single node points to itself. [[slnc 400]] And deleting the last node without moving the last pointer."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the circular linked list. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] The last node points back to the first, so one pointer reaches both ends, and every loop stops back where it started. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Find where to sit to win the counting-out game with every second player out. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

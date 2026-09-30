@@ -1,0 +1,492 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "static-array"
+category = "arrays-and-lists"
+title = "Static Array"
+package = "staticarray"
+main_class = "StaticArrayDemo"
+example = "A week of daily temperatures, one element per day"
+tagline = "Any element in one step"
+bold = "A static array stores its elements in consecutive memory locations, so arr[i] is found by one address calculation in O(1); its capacity is fixed when it is created, so insertion and deletion shift elements and a full array overflows."
+analogy_short = "A row of numbered lockers"
+jdk = "Java's own arrays (`int[]`), with `java.util.Arrays` for `fill`, `copyOf`, `sort` and `binarySearch`"
+thumb_lines = ["STATIC", "ARRAY"]
+thumb_code = "arr[i]  O(1)"
+youtube_title = "Static Array in Java - Operations and Complexity"
+youtube_tags = ["static array", "array operations", "linear search", "binary search", "array insertion deletion", "time complexity"]
+youtube_description = """Static Array in Java, explained with a week of daily temperatures stored in int arr[10] with n = 7 elements. We start with seven separate variables and see why every question needs code written out by hand, then store the week in one array and compute the address of arr[3] with base + i x size. We count the real cost of each textbook operation: access and update in one step, linear search in n comparisons, binary search on a sorted array in 3, insertion and deletion shifting 5 and 7 elements, and an overflow when the array is full. We finish with binary search on a million elements in 20 comparisons and the bill: a capacity that never changes. Every operation here is iterative, using O(1) extra space."""
+
+[readme]
+intro = """A **static array** is a collection of elements of the same type stored in **consecutive memory locations**, each identified by an **index** from 0 to `capacity - 1`. In C it is `int arr[MAX]`; in Java, `new int[capacity]`. Because the elements are consecutive, the address of `arr[i]` is computed as `base address + i x element size`, so any element is reached in O(1). The capacity is fixed when the array is created. This project keeps `n` elements in `arr[0..n-1]` and implements the operations a data-structures textbook lists for arrays: traversal, access, update, insertion, deletion, linear search, binary search, finding the maximum, and reversal. Every operation is written iteratively, with loops; the `static-array-recursive` project writes the same operations recursively."""
+analogy = """Picture a row of numbered lockers in a school corridor: locker 0, locker 1, locker 2, all the same size and all touching. If someone says "open locker 3", you do not search; you walk straight to it, because you know where locker 3 is. That is array access by index. To fit a new locker into the middle, every locker after it would have to move one place along, and the corridor has a fixed length: when it is full, there is no room for another."""
+example = """A weather station records one temperature a day, in whole degrees Celsius. The week is stored in `int arr[10]`: Monday at index 0 through Sunday at index 6, so n = 7, with 3 spare places for corrections. The demo asks the station's questions: the temperature on a given day, correcting a reading, whether it ever reached 24 or 30 degrees, inserting a late reading, deleting a wrong one, and what happens when the array fills up."""
+why = """Without an array, seven days are seven separate variables, and every question has to name them all: finding the maximum needs six comparisons written out by hand, and "the temperature on day 3" needs a switch with a branch for each day. An array gives the seven values one name and an index, so one loop answers every question for 7 values or 7 million, and any single value is one address calculation away."""
+when_use = [
+  "The number of elements is known in advance and does not change much.",
+  "You access elements by index, and need that access to be O(1).",
+  "Memory must be compact: an array stores nothing but the elements.",
+  "The data is sorted and searched often: binary search needs O(1) access to the middle.",
+]
+when_not = [
+  "The number of elements grows without a known limit: use a dynamic array.",
+  "You insert or delete at the front or middle often: every later element shifts; a linked list does it in O(1) once positioned.",
+  "Elements are looked up by a key rather than an index: use a hash table.",
+]
+met_before = [
+  "`String[] args` in every Java `main` method.",
+  "Pixels of an image, the squares of a chess board, the days of a month.",
+  "Inside Java's `ArrayList`, `HashMap` and `ArrayDeque`, which all store their data in arrays.",
+]
+
+[[word]]
+term = "array"
+meaning = "A collection of elements of the same type in consecutive memory locations, accessed by index."
+[[word]]
+term = "element"
+meaning = "One value stored in the array; `arr[i]` is the element at index i."
+[[word]]
+term = "index"
+meaning = "The position of an element, from 0 to capacity - 1. The first element is at index 0."
+[[word]]
+term = "base address"
+meaning = "The memory address of `arr[0]`. The address of `arr[i]` is base address + i x element size."
+[[word]]
+term = "capacity (MAX)"
+meaning = "The number of places the array has, fixed when it is created: 10 here."
+[[word]]
+term = "size (n)"
+meaning = "The number of elements actually stored, in `arr[0]` to `arr[n-1]`: 7 here."
+[[word]]
+term = "traversal"
+meaning = "Visiting every element once, from index 0 to n - 1."
+[[word]]
+term = "shift"
+meaning = "Moving an element one position left or right to open or close a gap during insertion or deletion."
+[[word]]
+term = "overflow and underflow"
+meaning = "Inserting into a full array (overflow) or deleting from an empty one (underflow)."
+
+[[operation]]
+name = "Traverse"
+does = "Visit arr[0] to arr[n-1] once"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "7 reads for the week"
+[[operation]]
+name = "Access `get(i)`"
+does = "Return arr[i], by address calculation"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "1 step, for any i and any n"
+[[operation]]
+name = "Update `update(i, x)`"
+does = "Replace arr[i]"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "1 step"
+[[operation]]
+name = "Insert `insertAt(pos, x)`"
+does = "Shift arr[pos..n-1] right, store x"
+time = "O(1) at the end / O(n) / O(n) at the front"
+space = "O(1)"
+counted = "5 shifts to insert at index 2 of 7"
+[[operation]]
+name = "Delete `deleteAt(pos)`"
+does = "Shift arr[pos+1..n-1] left"
+time = "O(1) at the end / O(n) / O(n) at the front"
+space = "O(1)"
+counted = "7 shifts to delete index 0 of 8"
+[[operation]]
+name = "Linear search"
+does = "Compare with each element in turn"
+time = "O(1) / O(n) / O(n)"
+space = "O(1)"
+counted = "5 comparisons to find 24; 7 to learn 30 is absent"
+[[operation]]
+name = "Binary search (sorted)"
+does = "Compare with the middle, discard half, repeat"
+time = "O(1) / O(log n) / O(log n)"
+space = "O(1)"
+counted = "3 comparisons on the sorted week; 20 on 1,000,000"
+[[operation]]
+name = "Find maximum"
+does = "Compare each element with the largest so far"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "n - 1 comparisons"
+[[operation]]
+name = "Reverse"
+does = "Swap arr[i] and arr[n-1-i] moving inward"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "n / 2 swaps"
+[[operation]]
+name = "Grow"
+does = "Impossible in place: allocate a bigger array and copy"
+time = "O(n) / O(n) / O(n)"
+space = "O(n)"
+counted = "7 copies to grow the week to 31 places"
+
+listing_intro = """These are the five operations every textbook array chapter shows, exactly as they appear in `StaticArray.java`. Each is a loop, and each uses O(1) extra space: a few index variables, whatever the size of the array."""
+[[listing]]
+op = "Traversal"
+method = "StaticArray#traverse"
+note = """One loop from 0 to n - 1: every element is visited exactly once, so traversal is O(n) time and O(1) space."""
+[[listing]]
+op = "Insertion at a position"
+method = "StaticArray#insertAt"
+note = """The loop runs from the last element down to `pos`, so each element moves into the empty place to its right; running it from `pos` upwards would overwrite elements before they are moved. The number of shifts is n - pos: the whole array for pos = 0, nothing for pos = n."""
+[[listing]]
+op = "Deletion at a position"
+method = "StaticArray#deleteAt"
+note = """The mirror image of insertion: the loop runs upwards from `pos`, each element moving into the place to its left, n - pos - 1 shifts."""
+[[listing]]
+op = "Linear search"
+method = "StaticArray#linearSearch"
+note = """Compare with each element in turn and stop at the first match: 1 comparison in the best case, n in the worst, and n when the key is absent."""
+[[listing]]
+op = "Binary search"
+method = "StaticArray#binarySearch"
+note = """Only for a sorted array. Each comparison with the middle element discards half of the remaining range, so at most about log2(n) + 1 comparisons: 20 for a million elements. `mid` is computed as `low + (high - low) / 2`, because `(low + high) / 2` can overflow when both are large."""
+
+[compare]
+intro = """How a static array compares with the structures it is usually weighed against (n elements):"""
+columns = ["Operation", "Static array", "Dynamic array", "Singly linked list"]
+rows = [
+  ["Access element i", "O(1)", "O(1)", "O(n)"],
+  ["Insert or delete at the front", "O(n) shifts", "O(n) shifts", "O(1)"],
+  ["Insert or delete at the end", "O(1), until full", "O(1) amortised", "O(n), or O(1) with a tail pointer"],
+  ["Search (unsorted)", "O(n)", "O(n)", "O(n)"],
+  ["Search (sorted)", "O(log n), binary search", "O(log n), binary search", "O(n): no middle to jump to"],
+  ["Size", "fixed at creation", "grows by copying", "grows one node at a time"],
+  ["Extra memory per element", "none", "spare capacity", "one next pointer per node"],
+  ["Memory layout", "consecutive", "consecutive", "scattered nodes"],
+]
+
+pros = [
+  "O(1) access to any element by index.",
+  "No extra memory: nothing is stored but the elements.",
+  "Consecutive memory is fast to read in order (the processor cache loads neighbours together).",
+  "Binary search works, because the middle element can be reached directly.",
+]
+cons = [
+  "The capacity is fixed; growing means allocating a new array and copying.",
+  "Insertion and deletion shift elements: O(n) at the front.",
+  "Space is wasted when n is much smaller than the capacity.",
+  "Inserting into a full array is an overflow.",
+]
+
+[[mistake]]
+mistake = "Counting indexes from 1"
+happens = "Monday is read from `arr[1]` and skipped, and the last read goes past the end."
+fix = "The first index is 0 and the last is n - 1."
+[[mistake]]
+mistake = "Looping with `i <= n`"
+happens = "The last pass reads `arr[n]`, beyond the elements (or beyond the array, which throws `ArrayIndexOutOfBoundsException`)."
+fix = "Loop with `i < n`."
+[[mistake]]
+mistake = "Shifting in the wrong direction on insertion"
+happens = "Shifting from `pos` upwards copies `arr[pos]` into every later place, overwriting the data."
+fix = "Insertion shifts from the end down to `pos`; deletion shifts from `pos` up to the end."
+[[mistake]]
+mistake = "Binary search on unsorted data"
+happens = "It discards the half that actually holds the key and reports -1."
+fix = "Sort first, or use linear search."
+[[mistake]]
+mistake = "`mid = (low + high) / 2`"
+happens = "For very large arrays `low + high` overflows `int` and becomes negative."
+fix = "`mid = low + (high - low) / 2`."
+
+[[exercise]]
+level = "easy"
+question = """Write `int countAbove(int limit)` that returns how many elements are greater than `limit`. What is its time and space complexity?"""
+answer = """```java
+int countAbove(int limit) {
+    int count = 0;
+    for (int i = 0; i < n; i++) {
+        if (arr[i] > limit) count++;
+    }
+    return count;
+}
+```
+One pass over n elements: O(n) time, O(1) extra space (one counter)."""
+[[exercise]]
+level = "medium"
+question = """Write `void insertSorted(int x)`, which inserts `x` into an array that is sorted ascending so that it stays sorted. How many shifts does inserting 22 into [19, 20, 21, 23, 24, 25, 26] take?"""
+answer = """```java
+void insertSorted(int x) {
+    if (n == arr.length) throw new IllegalStateException("overflow");
+    int i = n - 1;
+    while (i >= 0 && arr[i] > x) {
+        arr[i + 1] = arr[i];
+        i--;
+    }
+    arr[i + 1] = x;
+    n++;
+}
+```
+It shifts every element greater than x one place right, starting from the end: 23, 24, 25 and 26, four shifts, then stores 22 at index 3. This is also the inner step of insertion sort."""
+[[exercise]]
+level = "harder"
+question = """Binary search in this project returns any index holding the key. Write `int firstOccurrence(int key)` that returns the lowest index holding `key` in a sorted array with duplicates, still in O(log n)."""
+answer = """```java
+int firstOccurrence(int key) {
+    int low = 0, high = n - 1, result = -1;
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] == key) {
+            result = mid;          // remember it, but keep looking to the left
+            high = mid - 1;
+        } else if (arr[mid] < key) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+    return result;
+}
+```
+When the middle equals the key, it is recorded and the search continues in the left half, so the loop still halves the range each time: O(log n)."""
+
+[hero]
+caption = "int arr[10] with n = 7: elements at indexes 0 to 6, three free places"
+picture = { type = "array", cells = [21, 23, 19, 25, 24, 22, 20, "", "", ""], size = 7, pointers = [[7, "n = 7"]], title = "a week of temperatures, Monday at index 0" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "Seven separate variables"
+summary = "Without an array: six hand-written comparisons to find the maximum, and a seven-branch switch for 'day number 3'."
+detail = """The week is first stored in seven variables, `mon` to `sun`. It works, but nothing connects them: finding the maximum means writing six comparisons one after another, and asking for "the temperature on day 3" needs a `switch` with a branch for each day. A second week would need seven more variables and all of this code again."""
+speech = """First, the week without an array. [[slnc 400]] Seven separate variables, one for each day. [[slnc 500]] To find the maximum, we must write six comparisons, one after another, by hand. [[slnc 400]] And to ask for day number three, we need a switch with seven branches. [[slnc 500]] Nothing connects the seven variables."""
+console = [["mon=21 tue=23 wed=19 thu=25 fri=24 sat=22 sun=20", "muted"], ["the maximum, by hand: 6 comparisons written out one by one, answer 25 C", "amber"], ["\"day number 3\" needs a switch with 7 branches: 25 C", "amber"]]
+[[act.frame]]
+caption = "Seven separate variables: no index, so no loop"
+say = """Here are the seven variables. [[slnc 300]] Each has its own name, and there is no index. [[slnc 400]] Without an index, a loop cannot visit them, so every question names all seven days."""
+picture = { type = "grid", rows = [[21, 23, 19, 25, 24, 22, 20]], col_labels = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"], cell_w = 76, cell_h = 56, marks = { "0,3" = "hi" }, note = "the maximum, 25 C, found by six comparisons written by hand" }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "One array: int arr[10], n = 7"
+summary = "The week in consecutive memory: capacity 10, n = 7, 40 bytes, and the address of arr[3] computed as base + 3 x 4."
+detail = """`int arr[10]` reserves ten consecutive `int` places, 40 bytes in one block; the week fills the first seven, so n = 7. Traversal visits `arr[0]` to `arr[6]`. The important property is the address calculation: every element is 4 bytes, so `arr[3]` is at base address + 3 x 4 = base + 12. The computer does not search for element 3; it calculates where it is. That is why access by index is O(1), for 7 elements or 7 million."""
+speech = """Now the same week in one array. [[slnc 400]] We reserve ten places, side by side in memory, and store the seven days in the first seven. [[slnc 400]] So the capacity is ten, and n, the number of elements, is seven. [[slnc 500]] Each element takes four bytes. [[slnc 300]] So the address of element three is the base address, plus three times four."""
+console = [["traverse: [21, 23, 19, 25, 24, 22, 20]", "ok"], ["capacity 10, n = 7, 40 bytes in one block", "muted"], ["address of arr[3] = base + 3 x 4 = base + 12: computed, not searched", "amber"]]
+[[act.frame]]
+caption = "Capacity 10, n = 7: indexes 0 to 6 in use, 7 to 9 free"
+say = """Here is the array. [[slnc 300]] The small numbers above are the indexes, from zero to nine. [[slnc 400]] The first seven hold the week. [[slnc 300]] The last three, dashed, are free. [[slnc 400]] n, the number of elements, points at the first free place."""
+picture = { type = "array", cells = [21, 23, 19, 25, 24, 22, 20, "", "", ""], size = 7, pointers = [[7, "n = 7"]] }
+[[act.frame]]
+caption = "arr[3] is at base + 3 x 4: one calculation, no search"
+say = """How does the computer find element three? [[slnc 400]] It takes the base address, where element zero starts, and adds three times four bytes. [[slnc 400]] One calculation. [[slnc 300]] Element three, or element three million, costs the same single step. [[slnc 400]] That is order one access."""
+picture = { type = "array", cells = [21, 23, 19, 25, 24, 22, 20, "", "", ""], size = 7, marks = { "3" = "hi" }, pointers = [[3, "base + 3 x 4"]] }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Access, update, search"
+summary = "get(3) and update(5, 26) take 1 step each; linear search finds 24 after 5 comparisons and misses 30 after 7; binary search on the sorted week finds 24 in 3."
+detail = """Access and update use the address calculation: `get(3)` returns 25 in one step, and `update(5, 26)` corrects Saturday in one step. Searching for a value is different, because the array does not know where a value is. Linear search compares with `arr[0]`, `arr[1]` and so on: 24 is found at index 4 after 5 comparisons, and 30 is reported absent only after all 7. If the array is sorted, binary search does much better: compare with the middle element and discard the half that cannot contain the key. On the sorted week, [19, 20, 21, 23, 24, 25, 26], it finds 24 at index 4 after 3 comparisons."""
+speech = """Now we count. [[slnc 400]] Get element three: one step. [[slnc 300]] Update element five to twenty six: one step. [[slnc 500]] Searching for a value is different. [[slnc 300]] Linear search compares with each element in turn. [[slnc 300]] It finds twenty four after five comparisons, and needs all seven to learn that thirty is not there. [[slnc 500]] On a sorted array, binary search finds twenty four in three."""
+console = [["get(3) = 25 C (Thursday): 1 step", "ok"], ["update(5, 26) (Saturday): 1 step", "ok"], ["linearSearch(24): index 4 after 5 comparisons", "amber"], ["linearSearch(30): -1 after 7 comparisons", "bad"], ["sorted [19, 20, 21, 23, 24, 25, 26]: binarySearch(24) = index 4 after 3 comparisons", "ok"]]
+[[act.frame]]
+caption = "Linear search for 24: indexes 0 to 3 compared and passed, index 4 matches: 5 comparisons"
+say = """Linear search for twenty four. [[slnc 300]] Index zero, no. [[slnc 200]] One, no. [[slnc 200]] Two, no. [[slnc 200]] Three, no. [[slnc 300]] Index four matches. [[slnc 400]] Five comparisons."""
+picture = { type = "array", cells = [21, 23, 19, 25, 24, 26, 20, "", "", ""], size = 7, marks = { "0" = "dim", "1" = "dim", "2" = "dim", "3" = "dim", "4" = "ok" }, pointers = [[4, "found: 5 comparisons"]] }
+[[act.frame]]
+caption = "Binary search for 24 on the sorted week: middle 23 (go right), 25 (go left), 24: 3 comparisons"
+say = """Binary search, on the sorted week. [[slnc 300]] The middle element is twenty three: too small, so the left half is discarded. [[slnc 400]] The middle of what is left is twenty five: too big. [[slnc 400]] Then twenty four. [[slnc 300]] Three comparisons. [[slnc 400]] Each comparison halves the range, so a million elements need only twenty."""
+picture = { type = "array", cells = [19, 20, 21, 23, 24, 25, 26], marks = { "0" = "dim", "1" = "dim", "2" = "dim", "3" = "hi", "5" = "hi", "4" = "ok", "6" = "dim" }, pointers = [[3, "1st: 23"], [5, "2nd: 25"], [4, "3rd"]] }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Insertion, deletion, overflow"
+summary = "insertAt(2, 18) shifts 5 elements right; deleteAt(0) shifts 7 left; at n = 10 the next insertion is an overflow."
+detail = """A late reading of 18 degrees must go at index 2. Insertion shifts `arr[2]` to `arr[6]` one place right, starting from the end so nothing is overwritten: five shifts, and n becomes 8. Deleting the element at index 0 shifts the remaining seven elements one place left: seven shifts. The nearer the front, the more shifts. Three more readings fill the array to n = 10, the capacity, and the next insertion is refused as an **overflow**: a static array cannot grow. Reading `get(10)` is refused too, because only indexes 0 to n - 1 hold elements."""
+speech = """Now insertion and deletion. [[slnc 400]] A late reading, eighteen, must go at index two. [[slnc 400]] The elements from index two onwards shift one place right, starting from the end. [[slnc 300]] Five shifts. [[slnc 500]] Deleting the element at index zero shifts seven elements left. [[slnc 500]] And when all ten places are full, the next insertion is an overflow."""
+console = [["insertAt(2, 18): 5 elements shifted right, n = 8", "amber"], ["[21, 23, 18, 19, 25, 24, 26, 20]", "muted"], ["deleteAt(0) removed 21: 7 elements shifted left, n = 7", "amber"], ["n = 10, insertAt(0, 30): overflow: the array is full (10 of 10)", "bad"], ["get(10): Index 10 out of bounds for length 10", "bad"]]
+[[act.frame]]
+caption = "insertAt(2, 18): the elements at indexes 2 to 6 each shifted one place right"
+say = """Here is the array after the insertion. [[slnc 300]] Eighteen, in purple, is at index two. [[slnc 400]] The five elements after it, in amber, each shifted one place to the right, starting from the end. [[slnc 400]] Five shifts for one insertion."""
+picture = { type = "array", cells = [21, 23, 18, 19, 25, 24, 26, 20, "", ""], size = 8, marks = { "2" = "new", "3" = "hi", "4" = "hi", "5" = "hi", "6" = "hi", "7" = "hi" } }
+[[act.frame]]
+caption = "n = 10 = capacity: the next insertion is an overflow"
+say = """Now the array is full. [[slnc 300]] Ten elements, in ten places. [[slnc 400]] There is no eleventh place, so the next insertion is refused. [[slnc 300]] That is an overflow. [[slnc 400]] A static array cannot grow."""
+picture = { type = "array", cells = [23, 18, 19, 25, 24, 26, 20, 27, 28, 29, "30?"], size = 10, marks = { "10" = "bad" }, pointers = [[10, "overflow"]] }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The bill"
+summary = "Binary search on 1,000,000 elements: 20 comparisons; linear search: 1,000,000, with O(1) extra space; growing from 7 to 31 places means a new array and 7 copies."
+detail = """The strengths and the costs show at scale. On a million sorted elements, binary search needs only 20 comparisons, while linear search needs a million; both use O(1) extra space, because they are loops that keep only a few index variables. The capacity is the cost: to hold a month instead of a week, the array cannot grow in place, so a new array of 31 places is allocated and the 7 elements copied across. Java's own `int[]` is this structure, and `java.util.Arrays` provides `fill`, `copyOf` (the grow-by-copying above), `sort` and `binarySearch`. The same operations written recursively are in the `static-array-recursive` project."""
+speech = """And the bill. [[slnc 400]] On a million sorted elements, binary search needs twenty comparisons. [[slnc 300]] Linear search needs a million. [[slnc 400]] Both are loops, so both use only a few extra variables: order one extra space. [[slnc 500]] And the capacity never changes. [[slnc 300]] To grow from seven to thirty one places, we allocate a new array and copy every element."""
+console = [["binarySearch on 1,000,000 sorted elements: 20 comparisons", "ok"], ["linearSearch on 1,000,000: -1 after 1,000,000 comparisons, with O(1) extra space", "amber"], ["growing 7 to 31: a new array and 7 copies; capacity 31", "amber"], ["every loop here uses O(1) extra space; the static-array-recursive project writes them recursively", "muted"], ["already in Java: int[] itself, and java.util.Arrays for fill, copyOf, sort, binarySearch", "muted"]]
+[[act.frame]]
+caption = "Growing is copying: a new array of 31 places, the 7 elements copied across"
+say = """Here is the grow. [[slnc 300]] The old array of seven, and a new array of thirty one. [[slnc 400]] The seven elements are copied across, in purple. [[slnc 400]] The old array is discarded. [[slnc 300]] Growing a static array always costs one copy per element."""
+picture = { type = "group", items = [ { type = "array", cells = [21, 23, 19, 25, 24, 22, 20], title = "int[7]" }, { type = "array", cells = [21, 23, 19, 25, 24, 22, 20, "", "", ""], size = 7, marks = { "0" = "new", "1" = "new", "2" = "new", "3" = "new", "4" = "new", "5" = "new", "6" = "new" }, title = "int[31], first 10 of 31 places shown" } ], gap = 60 }
+
+[animation]
+subtitle = "A week of temperatures in int arr[10]: address calculation, access, linear and binary search, insertion and deletion with shifts, overflow, and growing by copying."
+
+[docs.problem]
+scenario = """A weather station stores one whole-number temperature a day and must answer: the temperature on a given day, corrections, whether a value occurs, inserting late readings, deleting wrong ones, and what happens when storage fills up."""
+naive = """Seven separate variables, one per day: every question must be written out for each day, a loop is impossible without an index, and a second week means seven more variables."""
+deliver = [
+  "A `StaticArray` of fixed capacity holding n elements, written by hand with the textbook operations: traverse, get, update, insertAt, deleteAt, linearSearch, binarySearch, findMax, sum, reverse.",
+  "Every operation iterative, with O(1) extra space, and every step counted.",
+  "Overflow on insertion into a full array and underflow on deletion from an empty one.",
+  "Time and space complexity of every operation, and a comparison with the dynamic array and the linked list.",
+]
+
+[docs.prerequisites]
+required = ["Java basics: variables, `for` and `while` loops, methods and classes", "What `int` is"]
+not_required = ["Any previous data-structures knowledge", "Big-O notation (START-HERE.md introduces it by counting steps)"]
+
+[docs.session]
+objectives = [
+  "Explain why access by index is O(1), using base address + i x size.",
+  "Implement insertion and deletion with shifts in the correct direction.",
+  "Implement linear and binary search, and state their best, average and worst cases.",
+  "Compare the static array with the dynamic array and the linked list.",
+]
+walkthrough = """Start with the lockers analogy and draw ten boxes with indexes. Run the demo; in act two, compute the address of arr[3] on the board. In act three, trace linear search and then binary search on the sorted week, counting comparisons. In act four, perform insertAt(2, 18) on paper, shifting from the end, and ask what goes wrong when shifting from the front. Finish with the complexity table and the comparison table, and point to the static-array-recursive project for the same operations written recursively."""
+
+[docs.explained]
+sentence = """A static array stores elements of one type in consecutive memory locations, so arr[i] is found in O(1) by base address + i x element size, while its capacity is fixed, insertion and deletion shift elements in O(n), and a full array overflows."""
+verdict = """Use a static array when the number of elements is known and access by index matters: it is the fastest and smallest structure there is, and binary search makes sorted data quick to search. When the size changes, use a dynamic array; when you insert and delete at the front often, a linked list; when you look things up by key, a hash table."""
+recognise = [
+  "`int[] arr = new int[MAX]` with a separate count `n` of elements in use.",
+  "Loops `for (int i = n - 1; i >= pos; i--) arr[i + 1] = arr[i];` (insertion) and the mirror loop (deletion).",
+  "`low`, `high` and `mid` variables: binary search.",
+]
+
+[spec]
+purpose = """Teach the static array with the operations of a data-structures textbook, written iteratively, with the time and space complexity of each."""
+requirements = [
+  "Written by hand on an `int[]`: no Java collections or `Arrays` helpers.",
+  "Fixed capacity; n elements in arr[0..n-1]; overflow and underflow reported.",
+  "traverse, get, update, insertAt, deleteAt, linearSearch, binarySearch, findMax, sum, reverse, copyWithCapacity, all iterative.",
+  "Reads, writes, comparisons, shifts, swaps and copies counted.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["Recursive versions (the static-array-recursive project)", "Generic element types (the static-array-generic project)", "Growing automatically (the dynamic-array project)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Static Array: the pieces"
+caption = "The demo calls the textbook operations on `StaticArray`, which keeps an `int[]` of fixed capacity and a count n, and reports every step to `StepCounter`."
+nodes = [
+  { id = "demo", label = "StaticArrayDemo", sub = "the five acts", col = 0, row = 0, colour = "client" },
+  { id = "arr", label = "StaticArray", sub = "traverse, get, update, insertAt, deleteAt, linearSearch, binarySearch", col = 1, row = 0, colour = "accent" },
+  { id = "mem", label = "int[] arr, int n", sub = "capacity places, n in use", col = 2, row = 0, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = "reads, writes, comparisons, shifts", col = 1, row = 1, colour = "amber" },
+  { id = "vars", label = "WeekInVariables", sub = "the 'before' of act one", col = 0, row = 1, colour = "red" },
+]
+edges = [
+  { from = "demo", to = "arr", label = "insertAt(2, 18)" },
+  { from = "arr", to = "mem", label = "arr[i]" },
+  { from = "arr", to = "steps", label = "counts" },
+  { from = "demo", to = "vars", label = "act one", dashed = true },
+]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Static Array: the classes"
+caption = "`StaticArray` is the data structure; `StepCounter` measures it; `WeekInVariables` is act one's 'before'; `Lines` collects the demo's output."
+nodes = [
+  { id = "arr", label = "StaticArray", sub = ["# int[] arr", "# int n", "+ traverse() String", "+ get(i) / update(i, x)", "+ insertAt(pos, x)", "+ deleteAt(pos) int", "+ linearSearch(key) int", "+ binarySearch(key) int", "+ findMax() / sum() / reverse()"], col = 0, row = 0, colour = "accent" },
+  { id = "steps", label = "StepCounter", sub = ["reads, writes", "compares, shifts", "swaps, copies", "+ reset()"], col = 1, row = 0, colour = "amber" },
+  { id = "vars", label = "WeekInVariables", sub = ["record: mon ... sun", "+ hottest() int", "+ day(n) int"], col = 2, row = 0, colour = "red" },
+]
+edges = [ { from = "arr", to = "steps", label = "has one" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Static Array: insertAt(pos, x)"
+caption = "Check for overflow, shift from the end down to pos, store, increase n."
+nodes = [
+  { id = "in", label = "insertAt(2, 18)", sub = "position and value", col = 0, row = 0, colour = "client" },
+  { id = "full", label = "n == capacity?", sub = "yes: overflow", col = 1, row = 0, colour = "red" },
+  { id = "shift", label = "shift arr[n-1..pos] right", sub = "5 shifts, from the end", col = 2, row = 0, colour = "amber" },
+  { id = "store", label = "arr[pos] = x; n++", sub = "n = 8", col = 2, row = 1, colour = "green" },
+]
+edges = [ { from = "in", to = "full", label = "" }, { from = "full", to = "shift", label = "no" }, { from = "shift", to = "store", label = "" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Static Array: binarySearch(24) on the sorted week"
+caption = "Three comparisons, each halving the range."
+participants = ["Demo", "StaticArray", "arr[3]", "arr[5]", "arr[4]"]
+steps = [
+  ["Demo", "StaticArray", "binarySearch(24)"],
+  ["StaticArray", "arr[3]", "compare: 23 < 24, low = 4"],
+  ["StaticArray", "arr[5]", "compare: 25 > 24, high = 4"],
+  ["StaticArray", "arr[4]", "compare: 24 == 24"],
+  ["StaticArray", "Demo", "index 4, 3 comparisons", "reply"],
+]
+
+[poster]
+headline = [["STATIC ARRAY", "text"], ["IN JAVA", "accent"]]
+before = { code = "linearSearch", note = "1,000,000 comparisons", tag = "O(n)" }
+after = { code = "binarySearch", note = "20 comparisons", tag = "O(log n)" }
+taglines = [["arr[i] in one step.", "text"], ["A capacity that never changes.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Static Array"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the static array, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] A static array stores elements of the same type in consecutive memory locations. [[slnc 300]] Each element has an index, starting from zero. [[slnc 400]] Because the elements are consecutive, the address of any element is calculated in one step. [[slnc 400]] And the capacity is fixed when the array is created. [[slnc 700]] Our example is a weather station, storing one temperature a day. [[slnc 400]] By the end, you will know every textbook array operation, what each one costs in time and in space, and how the array compares with a dynamic array and a linked list."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "A row of numbered lockers: walk straight to locker 3"
+picture = { type = "array", cells = ["", "", "", "", "", "", ""], size = 7, marks = { "3" = "hi" }, pointers = [[3, "locker 3"]], title = "seven lockers, numbered from 0" }
+narration = """Think of a row of numbered lockers in a school corridor. [[slnc 400]] Locker zero, locker one, locker two, all the same size and all touching. [[slnc 400]] If someone says, open locker three, you do not search. [[slnc 300]] You walk straight to it. [[slnc 500]] But to fit a new locker into the middle, every locker after it would have to move. [[slnc 400]] And when the corridor is full, there is no room for another. [[slnc 500]] That is an array."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["index: 0 to capacity - 1", "base address: where arr[0] starts", "capacity (MAX): places, fixed", "n: elements stored, arr[0..n-1]", "", "overflow: insert into a full array", "underflow: delete from an empty one"]
+narration = """The words a textbook uses. [[slnc 400]] An index is an element's position, from zero. [[slnc 400]] The base address is where element zero starts in memory. [[slnc 400]] The capacity is the number of places, fixed when the array is created. [[slnc 300]] And n is the number of elements actually stored. [[slnc 500]] Inserting into a full array is an overflow. [[slnc 300]] Deleting from an empty one is an underflow."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["access, update: O(1)", "traverse, linear search, max, reverse: O(n)", "binary search (sorted): O(log n)", "insert, delete: O(n) at the front, O(1) at the end", "", "extra space: O(1) for every loop"]
+narration = """Here are the costs in time and space. [[slnc 400]] Access and update are order one. [[slnc 400]] Traversal, linear search, finding the maximum, and reversal are order n. [[slnc 400]] Binary search on a sorted array is order log n. [[slnc 400]] Insertion and deletion are order n at the front, because of the shifts, and order one at the end. [[slnc 500]] And every operation here is a loop, so the extra space is order one."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Compared With Related Structures"
+body = ["access i: array O(1), linked list O(n)", "insert at front: array O(n), linked list O(1)", "size: static fixed, dynamic grows by copying", "memory: array consecutive, list scattered with pointers", "", "sorted search: only arrays can binary search"]
+narration = """How does the static array compare? [[slnc 400]] Access by index is order one in an array, and order n in a linked list. [[slnc 400]] Insertion at the front is order n in an array, and order one in a linked list. [[slnc 400]] A static array's size is fixed, while a dynamic array grows by copying. [[slnc 400]] And only an array can binary search, because only an array can jump to its middle."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["indexes from 1: the first index is 0", "i <= n: one past the last element", "shifting the wrong way on insertion", "binary search on unsorted data", "mid = (low + high) / 2 can overflow"]
+narration = """Five mistakes to watch for. [[slnc 400]] Counting indexes from one. [[slnc 400]] Looping while i is less than or equal to n, which goes one past the last element. [[slnc 400]] Shifting in the wrong direction on insertion, which overwrites the data. [[slnc 400]] Binary search on unsorted data. [[slnc 400]] And computing the middle as low plus high over two, which can overflow."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the static array. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] An array reaches any element in one step because its elements are consecutive, and pays for it with a capacity that never changes. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Insert twenty two into the sorted week so that it stays sorted, and count the shifts. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

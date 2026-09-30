@@ -1,0 +1,409 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "doubly-linked-list-recursive"
+category = "arrays-and-lists"
+title = "Doubly Linked List (Recursive)"
+package = "doublylinkedlistrecursive"
+main_class = "RecursiveDoublyLinkedListDemo"
+example = "A photo viewer whose walks are recursive, forwards and backwards"
+tagline = "Recurse on next, or recurse on prev"
+bold = "The recursive doubly linked list walks by calling itself on node.next, or on node.prev from the tail; it finds nodes recursively and then links or unlinks them in O(1), and works at both ends with no recursion at all; each walk costs one call-stack frame per node visited."
+analogy_short = "A train guard who hands the question to the next carriage, in either direction"
+jdk = "Nothing: `java.util.LinkedList` uses loops"
+thumb_lines = ["DOUBLY LIST", "RECURSIVE"]
+thumb_code = "display(node.prev)"
+youtube_title = "Doubly Linked List in Java, Recursively - Both Directions and Reverse"
+youtube_tags = ["doubly linked list", "recursion", "recursive linked list", "reverse doubly linked list", "call stack", "stack overflow"]
+youtube_description = """Doubly Linked List in Java, written recursively, explained with a photo viewer. We trace a recursive display backward from the tail, following prev pointers five calls deep, and see display forward use the same recursion on next. We insert and delete at both ends with no recursion at all, then find nodes recursively and link or unlink them in O(1): insertAtPosition finds the node before it two calls deep and sets four pointers, deleteByKey finds cake three calls deep and changes two. We reverse the list by swapping each node's prev and next and recursing on the old next. We finish at the limit: counting a million photos recursively throws a real StackOverflowError."""
+
+[readme]
+intro = """A **doubly linked list** gives every node a **prev** and a **next** pointer and keeps **head** and **tail**. This project writes its walks **recursively**. Forwards, a list is empty or a node followed by the list from `node.next`; backwards, the same with `node.prev`, starting at the tail. So the same recursive shape displays the list in either direction. Finding a node is recursive; linking it in or unlinking it is the usual O(1) pointer work, because a doubly linked list can change a node without searching for its predecessor. Insertion and deletion at the ends need no walk and no recursion. The time of every operation is that of `doubly-linked-list`; a recursive walk costs one call-stack **frame** per node."""
+analogy = """Picture a guard on a train asked how many carriages are behind them. They do not walk the train; they ask the guard in the next carriage back and wait, and so on to the last carriage, where the answer is "none behind me". The answers come back up, each guard adding one. The same could be done towards the front. Taking a carriage out, once the right one is found, is still just uncoupling two neighbours."""
+example = """The photo album from `doubly-linked-list`: beach, cake, dog, forest and mountain. The demo traces a recursive backward display, displays forward, inserts and deletes at the ends, counts, searches, inserts at a position and deletes by key, reverses the list recursively, and finally counts a million photos."""
+why = """A doubly linked list shows that recursion is about the walk, not the structure: the same recursion runs along `next` or along `prev`. It also separates the two costs of an operation, finding and changing, and shows that only the finding needs recursion here. The call stack is the price: one frame per node on every recursive walk."""
+when_use = [
+  "Learning how recursion follows pointers in either direction.",
+  "Short lists, where the recursion depth is small.",
+]
+when_not = [
+  "Long lists: a million nodes overflow the call stack. Use the loops of `doubly-linked-list`.",
+]
+met_before = [
+  "`doubly-linked-list`, the same structure with loops.",
+  "`singly-linked-list-recursive`, the same recursions on one direction only.",
+]
+
+[[word]]
+term = "prev and next"
+meaning = "The pointers to the node before and after; a recursion can follow either."
+[[word]]
+term = "base case"
+meaning = "`null`: past the tail going forwards, past the head going backwards; or the node being looked for."
+[[word]]
+term = "find, then link"
+meaning = "The recursive part finds a node; the pointer changes are then O(1), with no recursion."
+[[word]]
+term = "recursion depth"
+meaning = "The most frames on the call stack at once: one per node walked."
+
+[[operation]]
+name = "Display forward / backward"
+does = "This node, then recurse on next (or prev, from the tail)"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 5 each way for 5 photos"
+[[operation]]
+name = "Count"
+does = "0 for null, otherwise 1 + count(node.next)"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "6, depth 6"
+[[operation]]
+name = "Insert / delete at beginning or end"
+does = "Change head or tail and one neighbour: no walk"
+time = "O(1) / O(1) / O(1)"
+recursive_space = "O(1)"
+space = "O(1)"
+counted = "depth 0; 3 pointers per insertion"
+[[operation]]
+name = "Insert at position"
+does = "Find the node before recursively, then set 4 pointers"
+time = "O(1) at 0 / O(n) / O(n)"
+recursive_space = "O(pos)"
+space = "O(1)"
+counted = "depth 2, 4 pointers"
+[[operation]]
+name = "Delete by key"
+does = "Find the node recursively, then unlink it with 2 pointers"
+time = "O(1) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 3, 2 pointers"
+[[operation]]
+name = "Search / get"
+does = "Match here, or recurse on node.next"
+time = "O(1) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "5 comparisons, depth 5"
+[[operation]]
+name = "Reverse"
+does = "Swap prev and next here, recurse on the old next; then swap head and tail"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 5, 12 pointer changes"
+
+listing_intro = """The recursive walks of the doubly linked list. In each, find the base case (`node == null`) and the one recursive call, on `node.next` or on `node.prev`."""
+[[listing]]
+op = "Display backward"
+method = "RecursiveDoublyLinkedList#displayBackward"
+note = """The public method starts at `tail`; the private one appends this node and recurses on `node.prev`. It is `displayForward` with `next` replaced by `prev`: the recursion does not care which way the pointers go."""
+[[listing]]
+op = "Delete by key: find recursively, unlink in O(1)"
+method = "RecursiveDoublyLinkedList#deleteByKey,find"
+note = """`find` is recursive: the empty list or a match is the base case. Once the node is found, `deleteNode` points its two neighbours at each other, with no predecessor search and no recursion."""
+[[listing]]
+op = "Reversal"
+method = "RecursiveDoublyLinkedList#reverse"
+note = """Each call swaps its node's `prev` and `next`, then recurses on the old next, saved before the swap. When the recursion runs past the old tail, the public method swaps `head` and `tail`."""
+
+[compare]
+intro = """The recursive doubly linked list against the loop version and the recursive singly list (n nodes):"""
+columns = ["Operation", "Recursive doubly list", "Doubly list (loops)", "Recursive singly list"]
+rows = [
+  ["Insert / delete at both ends", "O(1), no recursion", "O(1)", "O(1) at the beginning; O(n) time and stack at the end"],
+  ["Display backward", "O(n) time and stack, from tail", "O(n) time, O(1) space", "O(n) time and stack, after the call"],
+  ["Delete by key", "find O(n) stack, unlink O(1)", "O(n) time, O(1) space", "O(n) time and stack"],
+  ["Reverse", "O(n) time and stack", "O(n) time, O(1) space", "O(n) time and stack"],
+  ["A million nodes", "StackOverflowError", "fine", "StackOverflowError"],
+]
+
+pros = [
+  "One recursive shape walks either direction.",
+  "Separates finding (recursive) from changing (O(1)).",
+  "Work at both ends involves no recursion at all.",
+]
+cons = [
+  "O(n) stack for every recursive walk.",
+  "Long lists overflow the call stack.",
+  "Two pointers per node, as in any doubly linked list.",
+]
+
+[[mistake]]
+mistake = "Recursing on node.next after swapping in reverse"
+happens = "After the swap, `node.next` is the old prev, so the recursion walks backwards and stops."
+fix = "Save the old next before the swap and recurse on it."
+[[mistake]]
+mistake = "Recursing to reach the tail"
+happens = "An O(n) walk and O(n) stack for something the tail pointer gives in O(1)."
+fix = "Use `tail` for work at the end."
+[[mistake]]
+mistake = "Forgetting to update head or tail when unlinking at an end"
+happens = "`head` or `tail` keeps pointing at a deleted node."
+fix = "`deleteNode` moves `head` when `prev` is null and `tail` when `next` is null."
+[[mistake]]
+mistake = "Recursing over long lists"
+happens = "One frame per node: a million overflow."
+fix = "Use loops for long lists."
+
+[[exercise]]
+level = "easy"
+question = """Write a recursive `int countBackward(Node node)` that counts from the tail using `prev`. Does it give the same answer as `count()`?"""
+answer = """```java
+int countBackward(Node node) {
+    if (node == null) return 0;
+    return 1 + countBackward(node.prev);
+}
+```
+Called as `countBackward(tail)`. On a correctly linked list it equals `count()`; if they differ, a `prev` pointer is wrong, which makes it a useful check. O(n) time and stack."""
+[[exercise]]
+level = "medium"
+question = """Write a recursive `boolean isPalindrome(Node front, Node back)` that compares the data from both ends inward. What are its base cases?"""
+answer = """```java
+boolean isPalindrome(Node front, Node back) {
+    if (front == back || front.prev == back) return true;     // met in the middle
+    if (!front.data.equals(back.data)) return false;
+    return isPalindrome(front.next, back.prev);
+}
+```
+Called as `isPalindrome(head, tail)` on a non-empty list. It stops when the two pointers meet (odd length) or cross (even length), or at the first mismatch. O(n) time, O(n / 2) stack; only a doubly linked list can walk inward from both ends."""
+[[exercise]]
+level = "harder"
+question = """Write a recursive `Node nodeAtFromNearerEnd(int pos, int size)` that recurses from the head for the first half and from the tail for the second. What is its worst-case depth?"""
+answer = """```java
+Node fromHead(Node node, int k) { return k == 0 ? node : fromHead(node.next, k - 1); }
+Node fromTail(Node node, int k) { return k == 0 ? node : fromTail(node.prev, k - 1); }
+
+Node nodeAtFromNearerEnd(int pos, int size) {
+    return pos < size / 2 ? fromHead(head, pos) : fromTail(tail, size - 1 - pos);
+}
+```
+The worst case is the middle: about n / 2 calls deep. Still O(n), but half the stack of a walk from the head."""
+
+[hero]
+caption = "displayBackward: each call prints its node, then recurses on prev, down to null"
+picture = { type = "stack", cells = ["back(mountain)", "back(forest)", "back(dog)", "back(cake)", "back(beach)", "back(null)"], width = 240, marks = { "5" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "The same recursion in both directions"
+summary = "displayBackward starts at the tail and recurses on prev, 5 calls deep; displayForward does the same on next from the head."
+detail = """The recursive display backward starts at the tail, mountain, prints it, and calls itself on `mountain.prev`, forest, and so on until `beach.prev`, which is `null`: the base case. Five calls deep for five photos. `displayForward` is the same method with `next` in place of `prev` and `head` in place of `tail`, and also goes five deep. A singly linked list can only recurse forwards; here the recursion can follow either pointer."""
+speech = """First, the same recursion in both directions. [[slnc 400]] Display backward starts at the tail, the mountain. [[slnc 300]] It prints it, and calls itself on the previous node. [[slnc 400]] Forest, dog, cake, beach. [[slnc 300]] Then null: the base case. [[slnc 500]] Display forward is the same, following next from the head. [[slnc 300]] Five calls deep, either way."""
+console = [["displayBackward(mountain): print it, then displayBackward(prev)", "muted"], ["  ... forest, dog, cake, beach", "muted"], ["    displayBackward(null): past the head   <- base case", "ok"], ["tail -> mountain <-> forest <-> dog <-> cake <-> beach <- head, depth 5", "ok"], ["head -> beach <-> cake <-> dog <-> forest <-> mountain <- tail, depth 5", "ok"]]
+[[act.frame]]
+caption = "Five displayBackward calls, from the tail along prev pointers"
+say = """Here is the call stack. [[slnc 300]] Each call waits for the call on the node before it. [[slnc 400]] On top, null: past the head."""
+picture = { type = "stack", cells = ["back(mountain)", "back(forest)", "back(dog)", "back(cake)", "back(beach)", "back(null)"], width = 240, marks = { "5" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Both ends need no recursion"
+summary = "Inserting at both ends and deleting at the end: depth 0, through head and tail; count() recurses 6 deep."
+detail = """Work at the ends uses `head` and `tail` directly: `insertAtBeginning("airport")` and `insertAtEnd("river")` set 6 pointers between them with no recursion, depth 0, and `deleteAtEnd` goes straight through the tail. Only operations that must visit nodes recurse: `count` goes six calls deep for six photos."""
+speech = """Both ends need no recursion. [[slnc 400]] Inserting at the beginning and at the end uses the head and the tail directly. [[slnc 300]] Depth zero. [[slnc 400]] So does deleting at the end. [[slnc 500]] Counting must visit every node, so it recurses six deep."""
+console = [["insertAtBeginning(\"airport\") and insertAtEnd(\"river\"): depth 0, 6 pointer changes", "ok"], ["deleteAtEnd() removed \"river\": depth 0, through tail", "ok"], ["count() = 6, depth 6", "amber"]]
+[[act.frame]]
+caption = "Head and tail reach both ends directly"
+say = """Here is the album with its new first photo. [[slnc 300]] Head and tail reach both ends without a walk."""
+picture = { type = "linked", nodes = ["airport", "beach", "cake", "dog", "forest", "mountain"], double = true, marks = { "0" = "new" }, pointers = [[0, "head"], [5, "tail"]] }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Find recursively, link in O(1)"
+summary = "search(\"forest\") is 5 comparisons at depth 5; insertAtPosition(3) finds the node before at depth 2 and sets 4 pointers; deleteByKey(\"cake\") finds it at depth 3 and changes 2."
+detail = """Operations in the middle split into finding and changing. `search("forest")` recurses along next and finds it at position 4, five calls deep. `insertAtPosition(3, "garden")` finds the node before the position, cake, two calls deep, then sets four pointers with no recursion. `deleteByKey("cake")` finds cake three calls deep and unlinks it by pointing beach and garden at each other: two pointer changes, no predecessor search."""
+speech = """In the middle, an operation first finds, then changes. [[slnc 400]] Search for the forest recurses five deep. [[slnc 400]] Insert at position three finds the node before it, two calls deep, then sets four pointers. [[slnc 400]] Delete the cake finds it three calls deep, then changes two pointers. [[slnc 500]] Only the finding is recursive."""
+console = [["search(\"forest\") = position 4: 5 comparisons, depth 5", "amber"], ["insertAtPosition(3, \"garden\"): the node before found at depth 2, then 4 pointers set", "ok"], ["deleteByKey(\"cake\"): found at depth 3, then 2 pointers changed", "ok"], ["head -> airport <-> beach <-> garden <-> dog <-> forest <-> mountain <- tail", "muted"]]
+[[act.frame]]
+caption = "deleteByKey(\"cake\"): found recursively, then beach and garden joined"
+say = """Here is the album after the deletion. [[slnc 300]] Beach and garden now point at each other."""
+picture = { type = "linked", nodes = ["airport", "beach", "garden", "dog"], double = true, marks = { "1" = "ok", "2" = "ok" } }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Reversal, recursively"
+summary = "reverse swaps each node's prev and next and recurses on the old next: depth 5, 12 pointer changes with head and tail."
+detail = """Each call of `reverse(node)` saves `node.next`, swaps `node.prev` and `node.next`, and recurses on the saved old next. Five calls deep for five photos, 10 pointer changes, and then `head` and `tail` are swapped: 12 in all. The album now runs from mountain to beach."""
+speech = """Reversal, recursively. [[slnc 400]] Each call swaps its node's previous and next pointers. [[slnc 300]] Then it recurses on the old next, which it saved first. [[slnc 400]] Five calls deep. [[slnc 300]] Finally the head and the tail are swapped."""
+console = [["reverse(): swap this node's prev and next, then reverse from the old next: depth 5, 12 pointer changes", "ok"], ["head -> mountain <-> forest <-> dog <-> cake <-> beach <- tail", "muted"]]
+[[act.frame]]
+caption = "After reverse: head at mountain, tail at beach"
+say = """Here is the reversed album."""
+picture = { type = "linked", nodes = ["mountain", "forest", "dog", "cake", "beach"], double = true, pointers = [[0, "head"], [4, "tail"]] }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The limit of recursion"
+summary = "A million photos inserted at the end with no recursion; counting them recursively throws StackOverflowError."
+detail = """A million `insertAtEnd` calls use the tail pointer and never recurse. Counting the million recursively needs a frame per node, and Java throws `StackOverflowError`. The loops of `doubly-linked-list` do the same walk in O(1) extra space."""
+speech = """And the limit. [[slnc 400]] A million photos, inserted at the end, with no recursion. [[slnc 400]] Counting them recursively needs a million frames. [[slnc 300]] The stack overflows. [[slnc 400]] The loop version needs order one extra space."""
+console = [["1,000,000 photos, built with insertAtEnd: no recursion, O(1) each", "muted"], ["count(): StackOverflowError, one frame per node", "bad"], ["the loops of the doubly-linked-list project need O(1) extra space", "muted"]]
+[[act.frame]]
+caption = "One frame per node: a million-node count overflows"
+say = """One call per node. [[slnc 300]] Far too many."""
+picture = { type = "stack", cells = ["count(node 0)", "count(node 1)", "...", "StackOverflowError"], width = 240, marks = { "3" = "bad" }, top_label = "overflow" }
+
+[animation]
+subtitle = "A photo viewer as a recursive doubly linked list: recursion along next or prev, both ends without recursion, find recursively and link in O(1), recursive reversal, and a stack overflow."
+
+[docs.problem]
+scenario = """The photo viewer's album as a doubly linked list whose walks are recursive, in both directions."""
+naive = """Recursing for work at the ends, which the head and tail pointers do in O(1); or recursing over long lists, which overflows."""
+deliver = [
+  "A `RecursiveDoublyLinkedList` with recursive displayForward, displayBackward, count, search, find, nodeAt and reverse.",
+  "insertAtBeginning, insertAtEnd, deleteAtBeginning and deleteAtEnd in O(1) with no recursion; insertAtPosition and deleteByKey that find recursively and link in O(1).",
+  "Recursion depth counted; underflow reported; a real StackOverflowError.",
+  "Time and stack space of every operation, compared with the loop version.",
+]
+
+[docs.prerequisites]
+required = ["The doubly-linked-list and singly-linked-list-recursive projects"]
+not_required = ["Functional programming"]
+
+[docs.session]
+objectives = [
+  "Write one recursion that walks along next or along prev.",
+  "Separate finding (recursive) from linking (O(1)).",
+  "Reverse a doubly linked list recursively.",
+  "State the time and stack space of each operation.",
+]
+walkthrough = """Recall the doubly linked list. Trace displayBackward from the tail. Run the demo; in act two, ask why no recursion is needed at the ends. In act three, split each operation into its finding and its linking. In act four, trace reverse on three nodes. Finish with the StackOverflowError."""
+
+[docs.explained]
+sentence = """The recursive doubly linked list recurses along next or prev to walk and find, links and unlinks in O(1), and works at both ends without recursion; each walk costs a frame per node."""
+verdict = """A study of recursion along pointers in both directions; for real lists, the loop version or `java.util.LinkedList`."""
+recognise = [
+  "`display(node.prev, s)` or `display(node.next, s)` with `if (node == null) return;`.",
+  "A recursive `find` followed by an O(1) `deleteNode`.",
+]
+
+[spec]
+purpose = """Teach recursion on the doubly linked list: walking either way, and finding versus linking."""
+requirements = [
+  "Written by hand: `Node` with `data`, `prev`, `next`; `head` and `tail`; no Java collections.",
+  "Recursive walks; O(1) work at the ends; find recursively, link in O(1).",
+  "Recursion depth counted; underflow; a real StackOverflowError.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["The loop version (doubly-linked-list)", "Generic element types (doubly-linked-list-generic-recursive)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Doubly Linked List (Recursive): the pieces"
+caption = "Walks recurse along next or prev; linking is O(1) pointer work."
+nodes = [
+  { id = "demo", label = "Demo", sub = "RecursiveDoublyLinkedListDemo", col = 0, row = 0, colour = "client" },
+  { id = "list", label = "RecursiveDoublyLinkedList", sub = "head, tail", col = 1, row = 0, colour = "accent" },
+  { id = "find", label = "find(node, key)", sub = "recursive on next", col = 2, row = 0, colour = "green" },
+  { id = "link", label = "deleteNode(node)", sub = "2 pointers, O(1)", col = 2, row = 1, colour = "amber" },
+  { id = "steps", label = "StepCounter", sub = "pointer changes, maxDepth", col = 1, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "list", label = "deleteByKey(photo)" }, { from = "list", to = "find", label = "find(head, key)" }, { from = "list", to = "link", label = "then" }, { from = "find", to = "steps", label = "depth" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Doubly Linked List (Recursive): the classes"
+caption = "Public operations; the recursive walks take a Node."
+nodes = [
+  { id = "list", label = "RecursiveDoublyLinkedList", sub = ["- Node head, tail", "+ displayForward / Backward", "+ count / search / get", "+ insertAtBeginning / AtEnd", "+ insertAtPosition", "+ deleteAtBeginning / AtEnd", "+ deleteByKey / deleteNode", "+ reverse"], col = 0, row = 0, colour = "accent" },
+  { id = "node", label = "Node", sub = ["data", "prev, next"], col = 1, row = 0, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = ["steps, compares", "pointerChanges, maxDepth"], col = 0, row = 1, colour = "amber" },
+]
+edges = [ { from = "list", to = "node", label = "head, tail" }, { from = "list", to = "steps", label = "has one" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Doubly Linked List (Recursive): reverse(node)"
+caption = "Swap, then recurse on the saved old next."
+nodes = [
+  { id = "in", label = "reverse(node)", sub = "", col = 0, row = 0, colour = "client" },
+  { id = "base", label = "node == null?", sub = "yes: return", col = 1, row = 0, colour = "green" },
+  { id = "swap", label = "swap prev and next", sub = "save old next first", col = 2, row = 0, colour = "accent" },
+  { id = "rec", label = "reverse(oldNext)", sub = "this frame waits", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "in", to = "base", label = "" }, { from = "base", to = "swap", label = "no" }, { from = "swap", to = "rec", label = "" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Doubly Linked List (Recursive): deleteByKey(\"cake\")"
+caption = "Three find calls, then two pointer changes."
+participants = ["Demo", "list", "find(airport)", "find(beach)", "find(cake)"]
+steps = [
+  ["Demo", "list", "deleteByKey(\"cake\")"],
+  ["list", "find(airport)", "find(head, cake)"],
+  ["find(airport)", "find(beach)", "not equal"],
+  ["find(beach)", "find(cake)", "not equal"],
+  ["find(cake)", "list", "found", "reply"],
+  ["list", "Demo", "beach <-> garden: 2 pointers", "reply"],
+]
+
+[poster]
+headline = [["DOUBLY LIST", "text"], ["RECURSIVE", "accent"]]
+before = { code = "display(node.next)", note = "forwards", tag = "NEXT" }
+after = { code = "display(node.prev)", note = "backwards, same code", tag = "PREV" }
+taglines = [["One recursion, either direction.", "text"], ["Find recursively, link in O(1).", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Doubly Linked List (Recursive)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the doubly linked list, written recursively, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] A doubly linked list has a previous and a next pointer in every node. [[slnc 400]] Here, every walk is a recursion, which can follow either pointer. [[slnc 400]] Finding a node is recursive; changing the links is still one step. [[slnc 700]] Our example is a photo viewer. [[slnc 400]] By the end, you will know how recursion walks a list in both directions, and what it costs."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Each guard asks the next carriage back, and waits"
+picture = { type = "linked", nodes = ["guard 1", "guard 2", "guard 3", "end"], double = true, marks = { "3" = "ok" } }
+narration = """Think of guards on a train. [[slnc 400]] Asked how many carriages are behind, a guard asks the guard in the next carriage back, and waits. [[slnc 400]] At the last carriage, the answer is none. [[slnc 300]] Then the answers come back, each guard adding one. [[slnc 500]] The same works towards the front. [[slnc 400]] That is recursion on a doubly linked list."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["recurse on next, or on prev", "base case: null, or the node wanted", "find recursively, then link in O(1)", "", "depth: one frame per node walked"]
+narration = """The words. [[slnc 400]] A recursion can follow the next pointer, or the previous pointer. [[slnc 400]] The base case is null, or the node you want. [[slnc 400]] Finding is recursive, and linking is one step. [[slnc 400]] And the depth is one frame per node walked."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["insert, delete at both ends: O(1), no recursion", "display, count, search: O(n) time and stack", "insert, delete in the middle: O(n) to find, O(1) to link", "reverse: O(n) time and stack", "", "the loop version: the same time, O(1) space"]
+narration = """Here are the costs. [[slnc 400]] Insertion and deletion at both ends are order one, with no recursion. [[slnc 400]] Display, count and search take order n time and stack. [[slnc 400]] In the middle, finding is order n, and linking order one. [[slnc 400]] Reverse is order n time and stack. [[slnc 500]] The loop version takes the same time, with order one space."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Recursive or Loop?"
+body = ["the same time for every operation", "recursion: one frame per node walked", "both ends: no recursion either way", "", "a million nodes: only the loop finishes"]
+narration = """Recursive or loop? [[slnc 400]] The time is the same. [[slnc 300]] Recursion adds a frame per node walked. [[slnc 400]] At both ends, neither needs a walk. [[slnc 500]] On a million nodes, only the loop finishes."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["recursing on next after the swap in reverse", "recursing to reach the tail", "not updating head or tail when unlinking", "recursing over long lists"]
+narration = """Four mistakes. [[slnc 400]] In reverse, recursing on next after the swap. [[slnc 400]] Recursing to reach the tail, which the tail pointer gives for free. [[slnc 400]] Not updating the head or tail when unlinking an end. [[slnc 400]] And recursing over long lists."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the doubly linked list, written recursively. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] The same recursion can follow next or previous, and only finding needs it; linking is one step. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Check whether the album reads the same from both ends, recursively. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

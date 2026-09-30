@@ -1,0 +1,457 @@
+# ds.toml: everything about this project that is not Java code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "singly-linked-list"
+category = "arrays-and-lists"
+title = "Singly Linked List"
+package = "singlylinkedlist"
+main_class = "SinglyLinkedListDemo"
+example = "A treasure hunt: each clue says where the next one is"
+tagline = "Change two pointers, move nothing"
+bold = "A singly linked list is a chain of nodes, each holding a value and a pointer to the next node; inserting or removing changes a pointer or two and moves nothing, but reaching node number n means following n pointers."
+analogy_short = "A treasure hunt: each clue tells you where the next one is"
+jdk = "`java.util.LinkedList` (which links both ways: see the doubly linked list)"
+thumb_lines = ["SINGLY", "LINKED LIST"]
+thumb_code = "newNode.next = prev.next"
+youtube_title = "Singly Linked List in Java - Insertion, Deletion, Search and Reverse"
+youtube_tags = ["singly linked list", "linked list java", "node next pointer", "linked list insert", "linked list vs array"]
+youtube_description = """Singly Linked List in Java, explained with a treasure hunt where each clue says where the next one is hidden. We start with the hunt in an array, where one new clue near the front shifts five others. Then we build the list by hand, the way a C textbook does: a Node with data and a next pointer, and a head. We run every textbook operation and count the real cost: insertAtEnd walking to the last node, count by traversal, search in 5 comparisons, insertAtPosition and insertAtBeginning changing 2 pointers and shifting nothing, deleteByKey, deleteAtBeginning and deleteAtEnd. Then we set the two pointers of an insertion in the wrong order and watch a clue point at itself and four clues vanish. We finish by reversing the list with three pointers, prev, current and next, and with the bill: 999 steps to reach position 999, where an array takes one."""
+
+[readme]
+intro = """A **singly linked list** keeps its values in separate **nodes** that can sit anywhere in memory. Each node holds its **data** and a **next pointer** (in Java, a reference) to the next node. The last node's pointer is `null`: it points nowhere. The list itself remembers only the first node, the **head**. Because nothing is side by side, inserting or deleting means changing a pointer or two, and no data moves. This project builds one by hand, the way a C textbook does with `struct node { data; struct node *next; }`, with the textbook operations: insertAtBeginning, insertAtEnd, insertAtPosition, deleteAtBeginning, deleteAtEnd, deleteAtPosition, deleteByKey, search, display, count and reverse."""
+analogy = """Think of a treasure hunt. The first clue is handed to you. It says: the next clue is under the oak tree. Under the oak tree, a clue says: the next one is in the old well. Nobody gives you a map of every clue; each one only knows where the next is. To add a clue, you rewrite just one clue to point at the new spot, and the new clue points on to where that one used to lead. To reach the sixth clue, though, you have to walk the whole trail from the start."""
+example = """A treasure hunt has six clues, in order: the oak tree, the old well, the red gate, the bridge, the fountain and the chest. The organisers keep adding and removing clues as they plan the route. The demo stores the hunt first in an array and then as a linked list, searches it, inserts a clue at a position and at the front, deletes by key, at the beginning and at the end, sets two pointers in the wrong order to see what is lost, and reverses the list."""
+why = """In an array, a new clue near the front means every later clue shifts one place to make room: five shifts for a hunt of six, a million for a list of a million. A linked list never moves data. Once you have reached the right node, inserting is two pointer changes and deleting is one, however long the list is."""
+when_use = [
+  "You insert and delete a lot, especially at the beginning, and rarely jump to a position.",
+  "You do not know the size in advance and do not want spare places.",
+  "You build other structures: stacks and queues are often a linked list inside.",
+]
+when_not = [
+  "You read by position: node n is n steps away, where an array takes one step.",
+  "Memory matters: each node carries a pointer and an object header as well as its value.",
+  "You need to walk backwards: a singly linked list only points forwards (see the doubly linked list).",
+]
+met_before = [
+  "A treasure hunt, a chain of emails replying to each other, a train of carriages.",
+  "`java.util.LinkedList` is a linked list that links both ways.",
+  "Every Java object reference is a pointer of this kind; a linked list is just objects pointing at objects.",
+]
+
+[[word]]
+term = "node"
+meaning = "One element of the list: its `data` and a `next` pointer to the following node. Here it is the class `Node`."
+[[word]]
+term = "next pointer"
+meaning = "The field `next` in every node: a reference (in C, a pointer) to the following node."
+[[word]]
+term = "head"
+meaning = "The first node. The list only remembers this one; every other node is found by following pointers."
+[[word]]
+term = "null"
+meaning = "A pointer that points nowhere. The last node's `next` is `null`, which marks the end."
+[[word]]
+term = "traverse"
+meaning = "To visit the nodes one by one by following next pointers. Each move to the next node is one step, and the demo counts them."
+[[word]]
+term = "pointer change"
+meaning = "Setting one pointer (head or a next) to a different node. Inserting takes two; deleting takes one."
+[[word]]
+term = "prev and current"
+meaning = "The two pointers used to walk a list: `current` is the node being looked at, `prev` the one before it, needed to delete `current` or insert before it."
+
+[[operation]]
+name = "Display (traverse)"
+does = "Follow next pointers from head to null"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "6 steps for 6 clues"
+[[operation]]
+name = "Count"
+does = "Traverse and count the nodes (only head is stored)"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "6 steps"
+[[operation]]
+name = "Insert at beginning"
+does = "newNode.next = head; head = newNode"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "2 pointer changes, whatever the length"
+[[operation]]
+name = "Insert at end"
+does = "Walk to the last node, link the new node after it"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "999 steps on 1,000 nodes; O(1) with a tail pointer"
+[[operation]]
+name = "Insert at position"
+does = "Walk to prev, then newNode.next = prev.next; prev.next = newNode"
+time = "O(1) at 0 / O(n) / O(n)"
+space = "O(1)"
+counted = "2 pointer changes, 0 data moved"
+[[operation]]
+name = "Delete at beginning"
+does = "head = head.next"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "1 pointer change"
+[[operation]]
+name = "Delete at end"
+does = "Walk to the second-to-last node, set its next to null"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "4 steps on 6 nodes"
+[[operation]]
+name = "Delete at position / by key"
+does = "Walk with prev and current, then prev.next = current.next"
+time = "O(1) at the head / O(n) / O(n)"
+space = "O(1)"
+counted = "5 comparisons, 1 pointer change"
+[[operation]]
+name = "Search"
+does = "Compare each node's data with the key"
+time = "O(1) / O(n) / O(n)"
+space = "O(1)"
+counted = "5 comparisons to find position 4"
+[[operation]]
+name = "Get at position"
+does = "Follow pos next pointers from head"
+time = "O(1) / O(n) / O(n)"
+space = "O(1)"
+counted = "3 steps for position 3; 999 for 999"
+[[operation]]
+name = "Reverse"
+does = "prev, current, next: turn each next pointer around"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "6 next pointers and head: 7 changes"
+
+listing_intro = """The operations every textbook chapter on linked lists shows, exactly as they appear in `SinglyLinkedList.java`. Each walks the list with a `current` pointer, or with `prev` one node behind it when the node before must change."""
+[[listing]]
+op = "Insertion at the beginning"
+method = "SinglyLinkedList#insertAtBeginning"
+note = """Two pointer changes: the new node points to the old head, then the head points to the new node. No traversal, so O(1) however long the list is. On an empty list `head` is `null`, and the same two lines still work."""
+[[listing]]
+op = "Insertion at the end"
+method = "SinglyLinkedList#insertAtEnd"
+note = """With only a head pointer, the last node must be found by walking: `while (current.next != null) current = current.next;`. That is O(n). Keeping a `tail` pointer makes it O(1); exercise two adds one."""
+[[listing]]
+op = "Insertion at a position"
+method = "SinglyLinkedList#insertAtPosition"
+note = """Walk to `prev`, the node before the position. Then the order of the two pointer changes matters: first the new node points to the rest (`newNode.next = prev.next`), and only then does `prev` point to the new node. The other order loses the rest of the list, as act four shows."""
+[[listing]]
+op = "Deletion by key"
+method = "SinglyLinkedList#deleteByKey"
+note = """`prev` follows one node behind `current`. When `current` holds the key, `prev.next = current.next` points past it, and the node is no longer reachable. Deleting the head is the special case: `head = current.next`."""
+[[listing]]
+op = "Reversal"
+method = "SinglyLinkedList#reverse"
+note = """The classic three-pointer loop. `next` saves the rest of the list before `current.next` is turned to point backwards at `prev`; then all three move one node on. At the end, `prev` is the old last node, which becomes the head."""
+
+[compare]
+intro = """How a singly linked list compares with the structures it is usually weighed against (n nodes):"""
+columns = ["Operation", "Singly linked list", "Doubly linked list", "Dynamic array"]
+rows = [
+  ["Access position i", "O(n)", "O(n)", "O(1)"],
+  ["Insert / delete at the beginning", "O(1)", "O(1)", "O(n) shifts"],
+  ["Insert at the end", "O(n), or O(1) with a tail pointer", "O(1) with a tail pointer", "O(1) amortised"],
+  ["Delete at the end", "O(n): needs the second-to-last node", "O(1): tail.prev", "O(1)"],
+  ["Insert / delete in the middle, once reached", "O(1)", "O(1)", "O(n) shifts"],
+  ["Search", "O(n)", "O(n)", "O(n); O(log n) if sorted"],
+  ["Walk backwards", "not possible", "yes", "yes"],
+  ["Extra memory per element", "one next pointer and an object header", "two pointers and a header", "spare capacity"],
+]
+
+pros = [
+  "Insertion and deletion at the beginning in O(1), and anywhere in O(1) once the node is reached.",
+  "No data ever moves, and no spare capacity is needed: the list grows one node at a time.",
+  "Simple: one pointer per node.",
+]
+cons = [
+  "No random access: position i is i steps from the head.",
+  "Deleting at the end, or deleting a node, needs the node before it, which means walking from the head.",
+  "One pointer and an object header per node: several times the memory of an int in an array.",
+  "Nodes scattered in memory are slower to walk than a consecutive array.",
+]
+
+[[mistake]]
+mistake = "Setting the two pointers of an insertion in the wrong order"
+happens = "`prev.next = newNode` first makes the rest of the list unreachable, and `newNode.next = prev.next` then points the new node at itself."
+fix = "First `newNode.next = prev.next`, then `prev.next = newNode`."
+[[mistake]]
+mistake = "Losing the head"
+happens = "Walking with `head = head.next` instead of a separate `current` pointer throws away the start of the list."
+fix = "Walk with `Node current = head;` and leave `head` alone."
+[[mistake]]
+mistake = "Forgetting the empty list and the one-node list"
+happens = "`head.next` on an empty list throws `NullPointerException`; deleting the only node must set `head` to `null`."
+fix = "Check `head == null` first (underflow), and handle `head.next == null` in deleteAtEnd."
+[[mistake]]
+mistake = "Deleting a node without the node before it"
+happens = "With only `current`, there is no way to change the previous node's `next`."
+fix = "Walk with `prev` one node behind `current`, or stop at the node before."
+
+[[exercise]]
+level = "easy"
+question = """Write `int countOccurrences(String key)` that counts the nodes holding `key`. What are its time and space complexity?"""
+answer = """```java
+int countOccurrences(String key) {
+    int c = 0;
+    Node current = head;
+    while (current != null) {
+        if (current.data.equals(key)) c++;
+        current = current.next;
+    }
+    return c;
+}
+```
+One pass over n nodes: O(n) time, O(1) extra space."""
+[[exercise]]
+level = "medium"
+question = """Add a `tail` pointer that always refers to the last node, so `insertAtEnd` takes no steps. Which other operations must now keep `tail` up to date?"""
+answer = """`insertAtEnd` becomes: if the list is empty, `head = tail = newNode`; otherwise `tail.next = newNode; tail = newNode;`, O(1). `insertAtBeginning` must set `tail` when the list was empty; `insertAtPosition` when the new node is the last; `deleteAtBeginning` when the list becomes empty; `deleteAtEnd`, `deleteAtPosition` and `deleteByKey` when they delete the last node; and `reverse`, which makes the old head the new tail. `deleteAtEnd` is still O(n): the second-to-last node must be found by walking."""
+[[exercise]]
+level = "harder"
+question = """Write `String middle()` that returns the data of the middle node in one pass, without counting first."""
+answer = """```java
+String middle() {
+    Node slow = head, fast = head;
+    while (fast != null && fast.next != null) {
+        slow = slow.next;          // one step
+        fast = fast.next.next;     // two steps
+    }
+    return slow == null ? null : slow.data;
+}
+```
+When `fast` reaches the end, `slow` has gone half as far: the middle. One pass, O(n) time, O(1) space. On the six clues it returns "the bridge", position 3."""
+
+[hero]
+caption = "each node holds its data and a next pointer; head points to the first node; the last next is null"
+picture = { type = "linked", nodes = ["oak tree", "old well", "red gate", "bridge"], pointers = [[0, "head"]], title = "the hunt, as a chain of nodes" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "The hunt in an array"
+summary = "Six clues at indexes 0 to 5; a new clue at index 1 shifts 5 clues one place right."
+detail = """Stored in an array, the six clues sit at indexes 0 to 5. The organisers want a new clue, the mill, at index 1. An array cannot open a gap, so every clue from index 1 onwards shifts one place right, starting from the end: five shifts. Every insertion near the front of an array shifts nearly everything, and the cost grows with the length of the hunt."""
+speech = """First, the hunt stored in an array. [[slnc 400]] Six clues, at indexes zero to five. [[slnc 400]] The organisers want a new clue, the mill, at index one. [[slnc 400]] An array cannot open a gap. [[slnc 300]] So five clues shift one place to the right. [[slnc 500]] Every insertion near the front shifts nearly everything."""
+console = [["6 clues at indexes 0 to 5", "muted"], ["a new clue at index 1: 5 clues shifted one place right", "bad"], ["every insertion near the front shifts nearly everything", "bad"]]
+[[act.frame]]
+caption = "To fit the mill at index 1, the clues at indexes 1 to 5 each shifted one place right"
+say = """Here is the array after the insertion. [[slnc 300]] The mill is at index one, in purple. [[slnc 400]] The five clues after it, in amber, each shifted one place to the right. [[slnc 400]] Five shifts for one new clue."""
+picture = { type = "array", cells = ["oak tree", "the mill", "old well", "red gate", "bridge", "fountain", "chest"], marks = { "1" = "new", "2" = "hi", "3" = "hi", "4" = "hi", "5" = "hi", "6" = "hi" } }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Nodes and next pointers"
+summary = "The hunt as six nodes: built with insertAtEnd in 10 steps, displayed from head to null, and counted by a 6-step traversal."
+detail = """Each clue becomes a `Node`: its `data` and a `next` pointer to the following node; the last node's `next` is `null`. The list stores only `head`, a pointer to the first node. Building the hunt with `insertAtEnd` walks to the last node every time: 0, 0, 1, 2, 3 and 4 steps, 10 in all. `display` follows the pointers from `head` to `null`. And because only `head` is stored, `count` must traverse every node: 6 steps to learn there are 6 clues."""
+speech = """Now the same hunt as a linked list. [[slnc 400]] Each clue is a node, holding its data and a next pointer. [[slnc 400]] The last next pointer is null. [[slnc 300]] The list itself remembers only the head, the first node. [[slnc 500]] Inserting at the end must walk to the last node every time: ten steps to build the hunt. [[slnc 400]] And counting the clues means walking all six nodes."""
+console = [["built with insertAtEnd: 10 steps in all, each walking to the last node", "amber"], ["head -> the oak tree -> the old well -> the red gate -> the bridge -> the fountain -> the chest -> null", "ok"], ["count() = 6: 6 steps, because only head is stored", "muted"]]
+[[act.frame]]
+caption = "Six nodes: data and a next pointer each; head points to the first, the last next is null"
+say = """Here is the list. [[slnc 300]] Head points to the oak tree. [[slnc 300]] Each node points to the next. [[slnc 300]] The chest's next pointer is null: the end. [[slnc 400]] The nodes can be anywhere in memory; the pointers put them in order."""
+picture = { type = "linked", nodes = ["oak tree", "old well", "red gate", "bridge", "fountain", "chest"], pointers = [[0, "head"]] }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Search, insertion and deletion"
+summary = "search finds the fountain in 5 comparisons; get(3) takes 3 steps; insertAtPosition and insertAtBeginning change 2 pointers each; deleteByKey, deleteAtBeginning and deleteAtEnd change 1."
+detail = """There is no jumping: `search("the fountain")` compares node after node and finds it at position 4 after 5 comparisons, and `get(3)` follows 3 next pointers. Insertion changes pointers only: `insertAtPosition(1, "the mill")` walks to the oak tree, points the mill at the old well, then points the oak tree at the mill: 2 pointer changes, nothing shifted. `insertAtBeginning("the start")` points the new node at the old head and moves `head`: 2 changes. Deletion changes one pointer: `deleteByKey("the red gate")` walks with `prev` and `current` and sets the old well's next past the red gate; `deleteAtBeginning` moves `head` on one node; `deleteAtEnd` walks 4 steps to the second-to-last node, the fountain, and sets its next to null."""
+speech = """Now the textbook operations. [[slnc 400]] Search compares node after node: five comparisons to find the fountain. [[slnc 400]] Inserting the mill at position one walks to the oak tree, then changes two pointers. [[slnc 300]] Nothing shifts. [[slnc 500]] Inserting at the beginning also changes two pointers. [[slnc 400]] Deleting the red gate points the old well past it: one pointer. [[slnc 400]] Deleting at the beginning moves the head. [[slnc 300]] And deleting at the end walks to the node before the last."""
+console = [["search(\"the fountain\") = position 4: 5 comparisons", "amber"], ["get(3) = \"the bridge\": 3 steps from the head", "amber"], ["insertAtPosition(1, \"the mill\"): 2 pointers changed, 0 clues shifted", "ok"], ["insertAtBeginning(\"the start\"): 2 pointers changed", "ok"], ["deleteByKey(\"the red gate\"): 5 comparisons, 1 pointer changed", "ok"], ["deleteAtBeginning() removed \"the start\": 1 pointer changed", "ok"], ["deleteAtEnd() removed \"the chest\": 4 steps to reach the second-to-last node", "amber"], ["head -> the oak tree -> the mill -> the old well -> the bridge -> the fountain -> null", "muted"]]
+[[act.frame]]
+caption = "insertAtPosition(1): the mill points to the old well (1), then the oak tree points to the mill (2)"
+say = """Here is the insertion. [[slnc 300]] First, the new node, the mill, points to the old well. [[slnc 400]] Then the oak tree points to the mill. [[slnc 400]] Two pointers changed, and no clue moved."""
+picture = { type = "linked", nodes = ["oak tree", "the mill", "old well", "red gate"], marks = { "1" = "new" }, pointers = [[0, "prev"], [1, "newNode"]] }
+[[act.frame]]
+caption = "deleteByKey(\"the red gate\"): the old well's next now skips to the bridge"
+say = """And the deletion. [[slnc 300]] We walk with two pointers, prev and current. [[slnc 400]] When current reaches the red gate, prev, the old well, is pointed past it, to the bridge. [[slnc 400]] One pointer changed. [[slnc 300]] The red gate can no longer be reached."""
+picture = { type = "linked", nodes = ["old well", "red gate", "bridge"], marks = { "1" = "bad" }, pointers = [[0, "prev"], [1, "current"]] }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Two pointers in the wrong order"
+summary = "prev.next = newNode first: the mill points at itself and 4 of 7 clues become unreachable; deleting from an empty list is an underflow."
+detail = """Insertion's two pointer changes must happen in the right order. Done the other way round, `prev.next = newNode` comes first: the old well now points at the mill, and nothing points at the red gate any more. Then `newNode.next = prev.next` copies that same pointer into the mill, so the mill points at itself. Walking from the head now reaches the oak tree, the old well and the mill, and then goes round in a circle: only 3 of 7 clues are reachable, and the red gate, the bridge, the fountain and the chest are lost. Deleting from an empty list is refused as an underflow."""
+speech = """What happens if the two pointers are set in the wrong order? [[slnc 400]] First, the old well is pointed at the mill. [[slnc 300]] Now nothing points to the red gate. [[slnc 400]] Then the mill copies the old well's pointer, which points at the mill itself. [[slnc 500]] The mill points at itself. [[slnc 300]] Only three clues can be reached. [[slnc 300]] The other four are lost."""
+console = [["prev.next = newNode first, then newNode.next = prev.next", "amber"], ["\"the mill\" now points at itself", "bad"], ["3 of 7 clues reachable; the other 4 are lost", "bad"], ["an empty list, deleteAtBeginning(): underflow: the list is empty", "bad"]]
+[[act.frame]]
+caption = "The mill points at itself; the red gate, bridge, fountain and chest are unreachable"
+say = """Here is the broken list. [[slnc 300]] The oak tree, the old well, and the mill, which points back at itself. [[slnc 400]] The four clues after it, in red, still exist, but no pointer leads to them."""
+picture = { type = "linked", nodes = ["oak tree", "old well", "the mill", "red gate", "bridge"], marks = { "2" = "bad", "3" = "dim", "4" = "dim" }, loops = [[2, 2, "bad"]], cut = [2], pointers = [[0, "head"]] }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "Reversal, and the bill"
+summary = "reverse turns 6 next pointers around and moves head: 7 pointer changes, no data moved; get(999) takes 999 steps and insertAtEnd on 1,000 nodes takes 999."
+detail = """Reversal is the classic three-pointer loop: `next` saves the rest of the list, `current.next` is turned to point back at `prev`, and all three move on one node. Six next pointers are turned around, then `head` moves to the old last node: 7 pointer changes, and no clue is moved. The costs show at scale. Reaching position 999 of 1,000 follows 999 pointers, where an array takes one step, and `insertAtEnd` walks 999 steps when only `head` is kept. Each node also holds a next pointer and an object header, about 24 bytes, where an `int` in an array takes 4. Java's `java.util.LinkedList` is a linked list that links both ways."""
+speech = """Now reversal. [[slnc 400]] Three pointers walk the list: previous, current, and next. [[slnc 400]] Each node's next pointer is turned around to point backwards. [[slnc 400]] Seven pointer changes, and no clue moves. [[slnc 500]] And the bill. [[slnc 300]] Reaching position nine hundred and ninety nine takes nine hundred and ninety nine steps. [[slnc 300]] An array takes one."""
+console = [["reverse(): 7 pointer changes (6 next pointers turned around, then head), no data moved", "ok"], ["head -> the chest -> the fountain -> the bridge -> the red gate -> the old well -> the oak tree -> null", "muted"], ["get(999) of 1,000: 999 steps (an array: 1 step)", "bad"], ["insertAtEnd on 1,000 with only a head: 999 steps", "bad"], ["each node also holds a next pointer and an object header: about 24 bytes, against 4 per int in an array", "muted"]]
+[[act.frame]]
+caption = "Reversal half way: the old well already points back to the oak tree; current, the red gate, is next to turn"
+say = """Here is reversal half way. [[slnc 300]] The nodes behind current already point backwards. [[slnc 400]] Next holds on to the rest of the list, so nothing is lost when current's pointer is turned."""
+picture = { type = "linked", nodes = ["oak tree", "old well", "red gate", "bridge"], marks = { "0" = "ok", "1" = "ok" }, back = [0], cut = [1], pointers = [[1, "prev"], [2, "current"], [3, "next"]] }
+
+[animation]
+subtitle = "A treasure hunt as a singly linked list: nodes and next pointers, insertion and deletion at the beginning, end and a position, deletion by key, search, the wrong pointer order, and reversal."
+
+[docs.problem]
+scenario = """The organisers of a treasure hunt keep a trail of clues, each leading to the next, and keep adding, removing and reordering clues as they plan the route."""
+naive = """Kept in an array, every new clue near the front shifts every later clue one place: five shifts for six clues, and it grows with the hunt."""
+deliver = [
+  "A `SinglyLinkedList` of `Node`s (`data`, `next`) with only `head` stored, written by hand.",
+  "The textbook operations: insertAtBeginning, insertAtEnd, insertAtPosition, deleteAtBeginning, deleteAtEnd, deleteAtPosition, deleteByKey, search, get, display, count, reverse.",
+  "Steps, comparisons and pointer changes counted; underflow reported.",
+  "The wrong-order insertion reproduced, and the lost nodes counted.",
+  "Time and space complexity of every operation, and a comparison with the doubly linked list and the dynamic array.",
+]
+
+[docs.prerequisites]
+required = ["Java basics: classes, objects, `while` loops", "What a reference to an object is"]
+not_required = ["Any previous data-structures knowledge", "C pointers (Java references play the same part)"]
+
+[docs.session]
+objectives = [
+  "Draw a singly linked list with head, nodes, next pointers and null.",
+  "Implement insertion and deletion at the beginning, the end and a position, and deletion by key.",
+  "Explain why the order of the two pointer changes in an insertion matters.",
+  "Reverse a list with prev, current and next, and state every operation's complexity.",
+]
+walkthrough = """Start with the treasure-hunt analogy and draw the nodes as boxes with arrows. Run the demo; in act two, ask why count needs a traversal. In act three, perform insertAtPosition on the board in both orders. In act four, show the self-loop. In act five, trace reverse with three fingers for prev, current and next. Finish with the comparison table and point to the doubly linked list."""
+
+[docs.explained]
+sentence = """A singly linked list is a chain of nodes, each holding data and a next pointer, reached from a head pointer: insertion and deletion change one or two pointers and move no data, but reaching position i takes i steps."""
+verdict = """Use a singly linked list when you insert and delete mostly at the beginning, as in a stack, or once you are already at the right node. For reading by position, use an array; for deleting at the end or walking backwards, a doubly linked list."""
+recognise = [
+  "A `Node` class with `data` and `next`, and a list class holding only `head`.",
+  "`while (current != null) { ...; current = current.next; }`.",
+  "`newNode.next = prev.next; prev.next = newNode;` and `prev.next = current.next;`.",
+]
+
+[spec]
+purpose = """Teach the singly linked list with the operations of a data-structures textbook, their costs, and the pointer mistakes beginners make."""
+requirements = [
+  "Written by hand: `Node` with `data` and `next`; the list holds only `head`; no Java collections.",
+  "insertAtBeginning, insertAtEnd, insertAtPosition, deleteAtBeginning, deleteAtEnd, deleteAtPosition, deleteByKey, search, get, display, count, reverse.",
+  "Steps, comparisons and pointer changes counted; underflow on deleting from an empty list.",
+  "`insertAtPositionWrongOrder` reproduces the self-loop, and `reach` proves which nodes are unreachable.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["A tail pointer (exercise two)", "Recursive versions (singly-linked-list-recursive)", "Generic element types (singly-linked-list-generic)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Singly Linked List: the pieces"
+caption = "The demo calls the textbook operations; the list holds only `head`; every other node is reached by following next pointers."
+nodes = [
+  { id = "demo", label = "Demo", sub = "SinglyLinkedListDemo, five acts", col = 0, row = 0, colour = "client" },
+  { id = "list", label = "SinglyLinkedList", sub = "head only", col = 1, row = 0, colour = "accent" },
+  { id = "n1", label = "Node", sub = "data, next", col = 2, row = 0, colour = "green" },
+  { id = "n2", label = "Node", sub = "data, next = null", col = 2, row = 1, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = "steps, comparisons, pointer changes", col = 1, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "list", label = "insertAtPosition(1, clue)" }, { from = "list", to = "n1", label = "head" }, { from = "n1", to = "n2", label = "next" }, { from = "list", to = "steps", label = "counts" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Singly Linked List: the classes"
+caption = "`SinglyLinkedList` holds `head`; each `Node` holds `data` and `next`."
+nodes = [
+  { id = "list", label = "SinglyLinkedList", sub = ["- Node head", "+ insertAtBeginning / AtEnd", "+ insertAtPosition(pos, x)", "+ deleteAtBeginning / AtEnd", "+ deleteAtPosition(pos)", "+ deleteByKey(key)", "+ search / get / count", "+ display / reverse"], col = 0, row = 0, colour = "accent" },
+  { id = "node", label = "Node", sub = ["data: String", "next: Node"], col = 1, row = 0, colour = "green" },
+  { id = "steps", label = "StepCounter", sub = ["steps, compares", "pointerChanges"], col = 0, row = 1, colour = "amber" },
+]
+edges = [ { from = "list", to = "node", label = "head" }, { from = "node", to = "node", label = "next" }, { from = "list", to = "steps", label = "has one" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Singly Linked List: insertAtPosition(pos, x)"
+caption = "Walk to prev, then the two pointer changes, in this order."
+nodes = [
+  { id = "in", label = "insertAtPosition(1, x)", sub = "position and data", col = 0, row = 0, colour = "client" },
+  { id = "walk", label = "walk to prev", sub = "pos - 1 steps", col = 1, row = 0, colour = "amber" },
+  { id = "one", label = "newNode.next = prev.next", sub = "1: point to the rest", col = 2, row = 0, colour = "green" },
+  { id = "two", label = "prev.next = newNode", sub = "2: link it in", col = 2, row = 1, colour = "green" },
+]
+edges = [ { from = "in", to = "walk", label = "" }, { from = "walk", to = "one", label = "" }, { from = "one", to = "two", label = "then" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Singly Linked List: deleteByKey(\"the red gate\")"
+caption = "prev and current walk together until current holds the key."
+participants = ["Demo", "SinglyLinkedList", "prev", "current"]
+steps = [
+  ["Demo", "SinglyLinkedList", "deleteByKey(\"the red gate\")"],
+  ["SinglyLinkedList", "current", "compare: the start, the oak tree, the mill, the old well"],
+  ["SinglyLinkedList", "current", "compare: the red gate: match"],
+  ["SinglyLinkedList", "prev", "prev.next = current.next"],
+  ["SinglyLinkedList", "Demo", "true: 5 comparisons, 1 pointer change", "reply"],
+]
+
+[poster]
+headline = [["SINGLY LINKED LIST", "text"], ["IN JAVA", "accent"]]
+before = { code = "insert into array", note = "5 clues shifted", tag = "ARRAY" }
+after = { code = "newNode.next = prev.next", note = "2 pointers, 0 shifted", tag = "LINKED" }
+taglines = [["Pointers, not shifts.", "text"], ["Cheap to change, slow to reach.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Singly Linked List"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the singly linked list, in Java. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] A singly linked list is a chain of nodes. [[slnc 300]] Each node holds its data, and a next pointer to the following node. [[slnc 400]] The list remembers only the first node, called the head. [[slnc 400]] Inserting or deleting changes a pointer or two, and no data moves. [[slnc 700]] Our example is a treasure hunt, where each clue says where the next one is. [[slnc 400]] By the end, you will know every textbook operation on a linked list, what each one costs, and the one mistake that loses half the list."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Each clue only knows where the next one is"
+picture = { type = "linked", nodes = ["start", "oak tree", "old well", "chest"], pointers = [[0, "you begin here"]] }
+narration = """Think of a treasure hunt. [[slnc 400]] You are handed the first clue. [[slnc 300]] It says: the next clue is under the oak tree. [[slnc 400]] Under the oak tree, a clue sends you to the old well. [[slnc 400]] Nobody has a map of every clue. [[slnc 300]] Each clue only knows where the next one is. [[slnc 500]] To add a clue, you rewrite one clue to point at the new spot. [[slnc 400]] But to reach the last clue, you must walk the whole trail. [[slnc 500]] That is a linked list."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["node: data and a next pointer", "head: the first node, the only one stored", "null: the next of the last node", "current, prev: the pointers used to walk"]
+narration = """The words a textbook uses. [[slnc 400]] A node holds its data, and a next pointer. [[slnc 400]] The head is the first node, and it is the only one the list stores. [[slnc 400]] Null is the next pointer of the last node, and marks the end. [[slnc 400]] And current and prev are the two pointers used to walk the list."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["insert, delete at beginning: O(1)", "insert at end, delete at end: O(n)", "at a position: O(n) to reach, O(1) to link", "search, get, count, display, reverse: O(n)", "", "extra space: O(1) for every operation"]
+narration = """Here are the costs in time and space. [[slnc 400]] Insertion and deletion at the beginning are order one. [[slnc 400]] Insertion and deletion at the end are order n, because only the head is stored. [[slnc 400]] At a position, reaching it is order n, and linking is order one. [[slnc 400]] Search, get, count, display and reverse are order n. [[slnc 500]] And every operation uses order one extra space."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Compared With Related Structures"
+body = ["access position i: list O(n), array O(1)", "insert at beginning: list O(1), array O(n)", "delete at end: singly O(n), doubly O(1)", "walk backwards: singly no, doubly yes", "", "memory: a pointer and a header per node"]
+narration = """How does it compare? [[slnc 400]] Reaching position i is order n in a list, and order one in an array. [[slnc 400]] Inserting at the beginning is order one in a list, and order n in an array. [[slnc 400]] Deleting at the end is order n in a singly linked list, and order one in a doubly linked list. [[slnc 400]] And every node carries a pointer, so a list uses more memory than an array."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["the two insertion pointers in the wrong order", "walking with head instead of current", "forgetting the empty and one-node lists", "deleting without the node before"]
+narration = """Four mistakes to watch for. [[slnc 400]] Setting the two pointers of an insertion in the wrong order, which loses the rest of the list. [[slnc 400]] Walking with the head instead of a current pointer. [[slnc 400]] Forgetting the empty list, and the list of one node. [[slnc 400]] And trying to delete a node without holding the node before it."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the singly linked list. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] A linked list changes pointers instead of moving data, and pays for it with no way to jump to a position. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Add a tail pointer, and make insertion at the end order one. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

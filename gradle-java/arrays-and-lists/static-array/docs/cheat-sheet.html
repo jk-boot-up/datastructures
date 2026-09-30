@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Static Array — Cheat Sheet</title>
+<style>
+:root{color-scheme:light dark;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+@media (prefers-color-scheme:dark){:root{--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;
+--line:#334155;--accent:#a78bfa;--code:#020617;--link:#93c5fd}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+<h1 id="static-array-cheat-sheet">Static Array — Cheat Sheet</h1>
+<p><strong>A static array stores its elements in consecutive memory locations, so arr[i] is found by one address calculation in O(1); its capacity is fixed when it is created, so insertion and deletion shift elements and a full array overflows.</strong></p>
+<p>![int arr[10] with n = 7: elements at indexes 0 to 6, three free places](images/structure.png)</p>
+<table><thead><tr><th></th><th></th></tr></thead><tbody><tr><td><strong>What it is</strong></td><td>A static array stores elements of one type in consecutive memory locations, so arr[i] is found in O(1) by base address + i x element size, while its capacity is fixed, insertion and deletion shift elements in O(n), and a full array overflows.</td></tr><tr><td><strong>Everyday picture</strong></td><td>A row of numbered lockers</td></tr><tr><td><strong>Use it when</strong></td><td>The number of elements is known in advance and does not change much; You access elements by index, and need that access to be O(1); Memory must be compact: an array stores nothing but the elements; The data is sorted and searched often: binary search needs O(1) access to the middle</td></tr><tr><td><strong>Avoid it when</strong></td><td>The number of elements grows without a known limit: use a dynamic array; You insert or delete at the front or middle often: every later element shifts; a linked list does it in O(1) once positioned; Elements are looked up by a key rather than an index: use a hash table</td></tr><tr><td><strong>Already in Java</strong></td><td>Java's own arrays (<code>int[]</code>), with <code>java.util.Arrays</code> for <code>fill</code>, <code>copyOf</code>, <code>sort</code> and <code>binarySearch</code></td></tr></tbody></table>
+<h2 id="costs">Costs</h2>
+<table><thead><tr><th>Operation</th><th>What it does</th><th>Time: best / average / worst</th><th>Extra space</th><th>Steps counted in the demo</th></tr></thead><tbody><tr><td>Traverse</td><td>Visit arr[0] to arr[n-1] once</td><td>O(n) / O(n) / O(n)</td><td>O(1)</td><td>7 reads for the week</td></tr><tr><td>Access <code>get(i)</code></td><td>Return arr[i], by address calculation</td><td>O(1) / O(1) / O(1)</td><td>O(1)</td><td>1 step, for any i and any n</td></tr><tr><td>Update <code>update(i, x)</code></td><td>Replace arr[i]</td><td>O(1) / O(1) / O(1)</td><td>O(1)</td><td>1 step</td></tr><tr><td>Insert <code>insertAt(pos, x)</code></td><td>Shift arr[pos..n-1] right, store x</td><td>O(1) at the end / O(n) / O(n) at the front</td><td>O(1)</td><td>5 shifts to insert at index 2 of 7</td></tr><tr><td>Delete <code>deleteAt(pos)</code></td><td>Shift arr[pos+1..n-1] left</td><td>O(1) at the end / O(n) / O(n) at the front</td><td>O(1)</td><td>7 shifts to delete index 0 of 8</td></tr><tr><td>Linear search</td><td>Compare with each element in turn</td><td>O(1) / O(n) / O(n)</td><td>O(1)</td><td>5 comparisons to find 24; 7 to learn 30 is absent</td></tr><tr><td>Binary search (sorted)</td><td>Compare with the middle, discard half, repeat</td><td>O(1) / O(log n) / O(log n)</td><td>O(1)</td><td>3 comparisons on the sorted week; 20 on 1,000,000</td></tr><tr><td>Find maximum</td><td>Compare each element with the largest so far</td><td>O(n) / O(n) / O(n)</td><td>O(1)</td><td>n - 1 comparisons</td></tr><tr><td>Reverse</td><td>Swap arr[i] and arr[n-1-i] moving inward</td><td>O(n) / O(n) / O(n)</td><td>O(1)</td><td>n / 2 swaps</td></tr><tr><td>Grow</td><td>Impossible in place: allocate a bigger array and copy</td><td>O(n) / O(n) / O(n)</td><td>O(n)</td><td>7 copies to grow the week to 31 places</td></tr></tbody></table>
+<h2 id="compared-with-related-structures">Compared with related structures</h2>
+<p>How a static array compares with the structures it is usually weighed against (n elements):</p>
+<table><thead><tr><th>Operation</th><th>Static array</th><th>Dynamic array</th><th>Singly linked list</th></tr></thead><tbody><tr><td>Access element i</td><td>O(1)</td><td>O(1)</td><td>O(n)</td></tr><tr><td>Insert or delete at the front</td><td>O(n) shifts</td><td>O(n) shifts</td><td>O(1)</td></tr><tr><td>Insert or delete at the end</td><td>O(1), until full</td><td>O(1) amortised</td><td>O(n), or O(1) with a tail pointer</td></tr><tr><td>Search (unsorted)</td><td>O(n)</td><td>O(n)</td><td>O(n)</td></tr><tr><td>Search (sorted)</td><td>O(log n), binary search</td><td>O(log n), binary search</td><td>O(n): no middle to jump to</td></tr><tr><td>Size</td><td>fixed at creation</td><td>grows by copying</td><td>grows one node at a time</td></tr><tr><td>Extra memory per element</td><td>none</td><td>spare capacity</td><td>one next pointer per node</td></tr><tr><td>Memory layout</td><td>consecutive</td><td>consecutive</td><td>scattered nodes</td></tr></tbody></table>
+<h2 id="watch-out-for">Watch out for</h2>
+<ul><li><strong>Counting indexes from 1</strong>: The first index is 0 and the last is n - 1.</li><li>**Looping with <code>i &lt;= n</code>**: Loop with <code>i &lt; n</code>.</li><li><strong>Shifting in the wrong direction on insertion</strong>: Insertion shifts from the end down to <code>pos</code>; deletion shifts from <code>pos</code> up to the end.</li><li><strong>Binary search on unsorted data</strong>: Sort first, or use linear search.</li><li>**<code>mid = (low + high) / 2</code>**: <code>mid = low + (high - low) / 2</code>.</li></ul>
+</main>
+<footer>Generated from <code>cheat-sheet.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

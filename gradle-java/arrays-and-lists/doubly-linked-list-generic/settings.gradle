@@ -1,0 +1,6 @@
+plugins {
+    // Downloads JDK 25 for the toolchain on a machine that does not have it.
+    id 'org.gradle.toolchains.foojay-resolver-convention' version '1.0.0'
+}
+
+rootProject.name = 'doubly-linked-list-generic'

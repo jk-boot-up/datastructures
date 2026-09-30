@@ -20,7 +20,7 @@ exists elsewhere in the repository: every implementation is written fresh.
 | `src/main/java/...` | The data structure, implemented from scratch in plain Java 25 (iteratively or recursively, generic or not, depending on the project), plus a `Demo` class whose `main` prints the five acts |
 | `src/test/java/...` | JUnit 6 tests: the operations, the edge cases (empty, one element, full, duplicates), and a test that the demo runs |
 | `ds.toml` | Everything that is not Java: the story, the acts, the diagrams, the video scenes |
-| `README.md` + `README.html` | Technologies and versions, how to run, the operations and their costs, the diagrams embedded, and learning material |
+| `README.md` + `README.html` | Technologies and versions, how to run, the operations and their costs, the diagrams (linked images), and learning material |
 | `docs/` | The explained walkthrough, problem statement, prerequisites, a one-hour session plan, the specification, architecture, class, data-flow and sequence diagrams (PNG/SVG, never Mermaid), `animation.html`, `thumbnail.png` and `youtube.md` |
 | `video/` | `scenes.py` (narration and slides) and `videokit.toml`; the rendered video, audio and subtitles are not committed |
 
@@ -131,8 +131,9 @@ follow all of it on the first try.
 - **Animations** speak amy-slow only, with the shared UX layer: Light / Dim / Dark
   themes, a step timeline, Back, Predict first, keyboard control, and no sideways
   scrolling on a phone.
-- **Diagrams** are SVG or PNG files, never Mermaid. Every generated HTML file is
-  self-contained.
+- **Diagrams** are SVG or PNG files, never Mermaid. Every generated HTML file inlines
+  its styles but links its images to the committed files; images are never embedded as
+  base64, so the repository and every push stay small.
 - **Committed**: source and documentation. **Not committed**: rendered video, audio,
   subtitles and build output (already covered by the repository `.gitignore`).
 - **Posters and thumbnails** never strike text through; contrast is carried by colour

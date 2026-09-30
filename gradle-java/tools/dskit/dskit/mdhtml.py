@@ -8,9 +8,7 @@ Every page offers Light, Dim and Dark themes: it follows the system setting
 until the reader picks one, and the choice is remembered.
 """
 
-import base64
 import html
-import mimetypes
 import re
 from pathlib import Path
 
@@ -95,13 +93,9 @@ def _href(url, base):
 
 
 def _img(alt, src, base):
-    f = (base / src)
-    if f.exists():
-        mime = mimetypes.guess_type(f.name)[0] or "image/png"
-        if f.suffix == ".svg":
-            return '<figure>%s</figure>' % f.read_text()
-        data = base64.b64encode(f.read_bytes()).decode()
-        return '<img alt="%s" src="data:%s;base64,%s">' % (html.escape(alt), mime, data)
+    # Images are linked to the committed file beside the Markdown, never
+    # inlined as base64: embedding repeats every picture in every page and
+    # bloats the repository.
     return '<img alt="%s" src="%s">' % (html.escape(alt), src)
 
 

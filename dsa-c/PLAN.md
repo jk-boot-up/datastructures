@@ -89,7 +89,7 @@ end of an array, forgetting the terminating `'\0'`, and a pointer that was never
 - **Written for beginners and for listening**; **narration voice: amy-slow**; the credit is
   "This video is presented by Jayasekhar Konduru."; the outro never names the next video;
   **animations** speak amy-slow only, with the shared UX layer; **diagrams** are PNG or SVG,
-  never Mermaid; generated HTML is self-contained; posters never strike text through.
+  never Mermaid; generated HTML inlines its styles and links (never base64-embeds) its images; posters never strike text through.
 - **Committed**: source and documentation. **Not committed**: build output, rendered video,
   audio, subtitles, generated specs and demo output.
 - **Commits** carry no co-author trailer and no assistant attribution.

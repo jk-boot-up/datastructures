@@ -1,0 +1,31 @@
+ONE. Seven separate variables.
+  mon=21 tue=23 wed=19 thu=25 fri=24 sat=22 sun=20
+  the maximum, by hand: 6 comparisons written out one by one, answer 25 C
+  "day number 3" needs a switch with 7 cases: 25 C
+
+TWO. One array: int arr[10], n = 7.
+  traverse: [21, 23, 19, 25, 24, 22, 20]
+  capacity 10, n = 7, 40 bytes in one block
+  &arr[3] - &arr[0] = 3 ints = 12 bytes: arr[3] is computed, not searched
+
+THREE. Access, update, search.
+  get(3) = 25 C (Thursday): 1 step, one address calculation
+  update(5, 26) (Saturday): 1 step
+  linear_search(24): index 4, so 5 comparisons (indexes 0 to 4)
+  linear_search(30): -1, so all 7 elements compared
+  sorted: [19, 20, 21, 23, 24, 25, 26]
+  binary_search(24) = index 4, at most 3 comparisons for 7 elements
+
+FOUR. Insertion, deletion, overflow.
+  insert_at(2, 18): 5 elements shifted right (n - pos = 7 - 2), n = 8
+  [21, 23, 18, 19, 25, 24, 26, 20]
+  delete_at(0) removed 21: 7 elements shifted left (n - pos - 1), n = 7
+  n = 10, insert_at(0, 30): overflow: the array is full
+  get(10): out of range: no element at that index
+
+FIVE. The bill.
+  binary_search on 1,000,000 sorted elements: index 666666, at most 20 comparisons
+  linear_search on 1,000,000: -1, so 1,000,000 comparisons, with O(1) extra space
+  growing 7 to 31: a new block and 7 copies; capacity 31
+  every loop here uses O(1) extra space; the static-array-recursive project writes them recursively
+  already in C: int arr[n] itself, and qsort and bsearch in <stdlib.h>

@@ -1,0 +1,9 @@
+# Generated per-project output that stays out of git (the repository-root .gitignore already
+# excludes video and audio media and build/ folders).
+__pycache__/
+*.pyc
+**/docs/audio/
+**/docs/spec.md
+**/docs/spec.html
+**/docs/demo-output.txt
+**/video/narration.md

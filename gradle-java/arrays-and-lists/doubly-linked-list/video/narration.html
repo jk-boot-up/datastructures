@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doubly Linked List — Video Narration Script</title>
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+[data-theme=dim]{color-scheme:dark;--bg:#1f2430;--fg:#d8dee9;--muted:#a3acbf;--card:#2a3140;--line:#3d4659;
+--accent:#b4a4f5;--code:#262c39;--link:#8cb4ff}
+[data-theme=dark]{color-scheme:dark;--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;--line:#334155;
+--accent:#a78bfa;--code:#020617;--link:#93c5fd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+.themes{position:fixed;top:10px;right:10px;display:flex;gap:2px;padding:3px;border:1px solid var(--line);
+border-radius:999px;background:var(--card);font-size:.8rem;z-index:10}
+.themes button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:999px;cursor:pointer;font:inherit}
+.themes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+@media print{.themes{display:none}}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("md-theme")}catch(e){}
+if(t!=="light"&&t!=="dim"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+document.documentElement.setAttribute("data-theme",t)})();</script>
+</head>
+<body>
+<div class="themes" role="group" aria-label="Theme">
+<button type="button" data-t="light">Light</button><button type="button" data-t="dim">Dim</button><button type="button" data-t="dark">Dark</button>
+</div>
+<script>(function(){var bs=document.querySelectorAll(".themes button");
+function show(t){document.documentElement.setAttribute("data-theme",t);
+bs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t===t?"true":"false")})}
+show(document.documentElement.getAttribute("data-theme"));
+bs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t);
+try{localStorage.setItem("md-theme",b.dataset.t)}catch(e){}})})})();</script>
+<main>
+<h1 id="doubly-linked-list-video-narration-script">Doubly Linked List — Video Narration Script</h1>
+<h2 id="1-doubly-linked-list">1. Doubly Linked List</h2>
+<p>Hello, and welcome. This video explains the doubly linked list, in Java. This video is presented by Jayasekhar Konduru. First, a simple definition. A doubly linked list is a chain of nodes, where every node points to the node after it, and to the node before it. The list keeps both ends, the head and the tail. So you can walk either way, and work at either end in one step. Our example is a photo viewer, with Previous and Next buttons. By the end, you will know every textbook operation on a doubly linked list, what each one costs, and the pointer that is easiest to forget.</p>
+<h2 id="2-the-everyday-idea">2. The Everyday Idea</h2>
+<p>Think of a train. Every carriage is coupled to the one in front, and the one behind. A guard can walk forwards or backwards, one carriage at a time. To take a carriage out of the middle, you uncouple it from both neighbours, and couple the neighbours to each other. Nothing else moves. That is a doubly linked list.</p>
+<h2 id="3-the-words">3. The Words</h2>
+<p>The words a textbook uses. A node holds its data, a previous pointer, and a next pointer. The previous pointer points to the node before, and is null at the head. The next pointer points to the node after, and is null at the tail. And the list keeps both ends: the head and the tail.</p>
+<h2 id="4-act-one-a-viewer-with-next-pointers-only">4. Act One — A viewer with next pointers only</h2>
+<p>First, a photo viewer with next pointers only. We are looking at the mountain, and press Previous. The viewer cannot step back. It must start again at the beach, and walk forward three steps to the forest. Deleting the photo on screen has the same problem.</p>
+<h2 id="5-a-viewer-with-next-pointers-only">5. A viewer with next pointers only</h2>
+<p>Here is the one-way album. Every arrow points forward. From the mountain, there is no arrow back.</p>
+<h2 id="6-act-two-pointers-both-ways-and-both-ends">6. Act Two — Pointers both ways, and both ends</h2>
+<p>Now the doubly linked list. Each node holds a photo, a previous pointer, and a next pointer. The list keeps both ends: the head and the tail. Inserting at the end walks nowhere, because the tail is already there. And the album can be displayed forward from the head, or backward from the tail.</p>
+<h2 id="7-pointers-both-ways-and-both-ends">7. Pointers both ways, and both ends</h2>
+<p>Here is the album. Each pair of neighbours is linked both ways. Head points at the beach, and tail at the mountain.</p>
+<h2 id="8-act-three-insertion-and-deletion-at-both-ends-and-in-the-middle">8. Act Three — Insertion and deletion at both ends and in the middle</h2>
+<p>Now the textbook operations. Inserting at the beginning or at the end sets three pointers, with no walking. Inserting at position three walks two steps, then sets four pointers. Deleting at the end goes straight through the tail. A singly linked list would have to walk the whole list. And deleting the cake points its two neighbours at each other.</p>
+<h2 id="9-insertion-and-deletion-at-both-ends-and-in-the-middle">9. Insertion and deletion at both ends and in the middle</h2>
+<p>Here is the insertion. The garden's previous points to the cake, and its next to the dog. Then the cake's next and the dog's previous point to the garden. Four pointers.</p>
+<h2 id="10-insertion-and-deletion-at-both-ends-and-in-the-middle">10. Insertion and deletion at both ends and in the middle</h2>
+<p>And the deletion. The beach's next and the garden's previous are pointed at each other. The cake is out, with two pointer changes.</p>
+<h2 id="11-act-four-the-pointer-nobody-set">11. Act Four — The pointer nobody set</h2>
+<p>What if one pointer is forgotten? We insert the garden after the beach, setting only three of the four pointers. Walking forwards, there are six photos. Walking backwards, only five. The cake still points back to the beach, and skips the garden. Forwards and backwards now disagree.</p>
+<h2 id="12-the-pointer-nobody-set">12. The pointer nobody set</h2>
+<p>Here is the broken list. Forwards, beach, garden, cake. Backwards from the cake, the arrow goes straight to the beach, skipping the garden.</p>
+<h2 id="13-act-five-reversal-and-the-bill">13. Act Five — Reversal, and the bill</h2>
+<p>Now reversal. Every node already points both ways. So each node's previous and next are simply swapped. Then the head and the tail are swapped. Twelve pointer changes, and no photo moves. And the bill: one more pointer in every node, and four pointers for every insertion in the middle.</p>
+<h2 id="14-reversal-and-the-bill">14. Reversal, and the bill</h2>
+<p>Here is the reversed album. Head now points at the mountain, and tail at the beach.</p>
+<h2 id="15-time-and-space-complexity">15. Time and Space Complexity</h2>
+<p>Here are the costs in time and space. Insertion and deletion at the beginning or the end are order one. Deleting a node you already hold is order one. At a position, reaching it is order n, and linking is order one. Search, get, count, display and reverse are order n. And every operation uses order one extra space.</p>
+<h2 id="16-compared-with-related-structures">16. Compared With Related Structures</h2>
+<p>How does it compare? Deleting at the end is order one in a doubly linked list, and order n in a singly linked list. So is deleting a node you already hold. A doubly linked list can walk backwards. The price is two pointers per node instead of one. And like every list, it cannot jump to a position the way an array can.</p>
+<h2 id="17-common-mistakes">17. Common Mistakes</h2>
+<p>Four mistakes to watch for. Forgetting one of the four pointers of an insertion. Not updating the head or the tail when working at the ends. Reversing every node, but not swapping the head and the tail. And, in reverse, following next after the swap, which now points backwards.</p>
+<h2 id="18-thanks-for-watching">18. Thanks for Watching</h2>
+<p>That's the doubly linked list. If you remember one sentence, make it this one. A second pointer in every node lets you walk both ways, and work at both ends in one step. The full source code, written notes, pictures, and an animated walkthrough are all in the repository. Here is one exercise to try. Move a node to the front in order one, the way an LRU cache does. If this helped, a like really does help other people find it. And subscribe, if you'd like the rest of the series. Thanks for watching.</p>
+</main>
+<footer>Generated from <code>narration.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

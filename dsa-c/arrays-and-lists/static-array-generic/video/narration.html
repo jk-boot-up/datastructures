@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Static Array (Generic) — Video Narration Script</title>
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+[data-theme=dim]{color-scheme:dark;--bg:#1f2430;--fg:#d8dee9;--muted:#a3acbf;--card:#2a3140;--line:#3d4659;
+--accent:#b4a4f5;--code:#262c39;--link:#8cb4ff}
+[data-theme=dark]{color-scheme:dark;--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;--line:#334155;
+--accent:#a78bfa;--code:#020617;--link:#93c5fd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+.themes{position:fixed;top:10px;right:10px;display:flex;gap:2px;padding:3px;border:1px solid var(--line);
+border-radius:999px;background:var(--card);font-size:.8rem;z-index:10}
+.themes button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:999px;cursor:pointer;font:inherit}
+.themes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+@media print{.themes{display:none}}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("md-theme")}catch(e){}
+if(t!=="light"&&t!=="dim"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+document.documentElement.setAttribute("data-theme",t)})();</script>
+</head>
+<body>
+<div class="themes" role="group" aria-label="Theme">
+<button type="button" data-t="light">Light</button><button type="button" data-t="dim">Dim</button><button type="button" data-t="dark">Dark</button>
+</div>
+<script>(function(){var bs=document.querySelectorAll(".themes button");
+function show(t){document.documentElement.setAttribute("data-theme",t);
+bs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t===t?"true":"false")})}
+show(document.documentElement.getAttribute("data-theme"));
+bs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t);
+try{localStorage.setItem("md-theme",b.dataset.t)}catch(e){}})})})();</script>
+<main>
+<h1 id="static-array-generic-video-narration-script">Static Array (Generic) — Video Narration Script</h1>
+<h2 id="1-static-array-generic">1. Static Array (Generic)</h2>
+<p>Hello, and welcome. This video explains the generic static array, in C. This video is presented by Jayasekhar Konduru. First, a simple definition. C has no type parameters. So a generic array is a block of bytes, with an element size, and comparison functions passed in. It is exactly how the standard library's quick sort works. Our example is a weather station's week, stored three different ways by the same code. By the end, you will know how to hold any type in C, how comparison functions work, and what it costs.</p>
+<h2 id="2-the-everyday-idea">2. The Everyday Idea</h2>
+<p>Picture a row of identical lockers, and a caretaker who is told only one thing: every box here is twelve centimetres wide. The caretaker finds locker three at once, three times twelve centimetres along. And can move boxes along, without knowing what is inside. To compare two boxes, the caretaker needs a helper who knows the contents. That helper is the comparison function.</p>
+<h2 id="3-the-words">3. The Words</h2>
+<p>The words. Void pointer: a pointer to memory of unknown type. Element size: how many bytes one element takes. Mem copy: copies bytes without knowing what they mean. A comparison function returns negative, zero, or positive. And type safety is what the void pointer gives up.</p>
+<h2 id="4-act-one-one-array-type-any-element-type">4. Act One — One array type, any element type</h2>
+<p>First, one array type, for any element type. The same functions hold the temperatures, as integers. They hold the day names. And they hold readings, a struct of our own. But there is a catch. The compiler cannot check the type any more. Passing a day name to the array of temperatures would compile without a warning.</p>
+<h2 id="5-one-array-type-any-element-type">5. One array type, any element type</h2>
+<p>Here are two of the arrays. The same functions, the same loops. Only the element size and the helper functions differ.</p>
+<h2 id="6-act-two-inside-bytes-and-an-element-size">6. Act Two — Inside: bytes and an element size</h2>
+<p>What does the array really hold? Bytes, and an element size. Four bytes for an integer, eight for a pointer to text, twelve for a reading. Element three of the readings starts three times twelve bytes from the beginning: byte thirty six. And copying the array of names copies the pointers, so both arrays point at the same text.</p>
+<h2 id="7-inside-bytes-and-an-element-size">7. Inside: bytes and an element size</h2>
+<p>Here are the readings. Each takes twelve bytes. Element three starts at byte thirty six: one calculation, as for any array.</p>
+<h2 id="8-act-three-searching-with-comparison-functions">8. Act Three — Searching with comparison functions</h2>
+<p>Now searching. The array cannot compare elements itself, so every search is given a comparison function. For the day names, the function uses string compare, which compares the letters. So a day name typed by the user is found. Double equals would compare the addresses, and say they are different. Binary search uses the same function to decide which half to keep: three comparisons.</p>
+<h2 id="9-searching-with-comparison-functions">9. Searching with comparison functions</h2>
+<p>Binary search on the sorted names. Sunday, then Tuesday, then Thursday. Three calls to the comparison function.</p>
+<h2 id="10-act-four-insertion-deletion-overflow">10. Act Four — Insertion, deletion, overflow</h2>
+<p>Insertion and deletion work as before, with whole elements. Inserting a reading at index two shifts five readings, twelve bytes each. Deleting index zero copies the reading out, and shifts seven. And when all ten places are used, the next insertion is an overflow.</p>
+<h2 id="11-insertion-deletion-overflow">11. Insertion, deletion, overflow</h2>
+<p>Here is the array after the insertion. The new reading, in purple, at index two. Five readings, in amber, each moved one place right.</p>
+<h2 id="12-act-five-one-algorithm-many-orders">12. Act Five — One algorithm, many orders</h2>
+<p>One algorithm, many orders. Find max is written once. Given the comparison of temperatures, it returns Thursday. Given the comparison of names, it returns Wednesday. The order lives in the function you pass in. And that is exactly how the standard library's quick sort and binary search work.</p>
+<h2 id="13-one-algorithm-many-orders">13. One algorithm, many orders</h2>
+<p>Here is find max with the temperature comparison. Thursday, at twenty five degrees.</p>
+<h2 id="14-time-and-space-complexity">14. Time and Space Complexity</h2>
+<p>Here are the costs. They are the same as the int array. Access and update are order one. Traversal, linear search, maximum and reverse are order n. Binary search is order log n. Insertion and deletion at the front are order n. Each comparison is now a function call, which costs a little time.</p>
+<h2 id="15-compared-with-related-structures">15. Compared With Related Structures</h2>
+<p>How does it compare? The int array is typed, and the compiler checks it. The generic array holds any type, and the compiler cannot check it. Java's generics hold any type and are checked, because the language has type parameters. And like every static array, the capacity is fixed.</p>
+<h2 id="16-common-mistakes">16. Common Mistakes</h2>
+<p>Four mistakes to watch for. Passing the wrong element size, such as the size of a pointer instead of the struct. In an array of pointers, forgetting to dereference once in the comparison. Returning x minus y, which can overflow. And comparing strings with double equals.</p>
+<h2 id="17-thanks-for-watching">17. Thanks for Watching</h2>
+<p>That's the generic static array in C. If you remember one sentence, make it this one. Bytes, an element size, and a comparison function let one array hold any type, at the price of type safety. The full source code, written notes, pictures, and an animated walkthrough are all in the repository. Here is one exercise to try. Sort the readings with the standard library's quick sort, and search them with its binary search. If this helped, a like really does help other people find it. And subscribe, if you'd like the rest of the series. Thanks for watching.</p>
+</main>
+<footer>Generated from <code>narration.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

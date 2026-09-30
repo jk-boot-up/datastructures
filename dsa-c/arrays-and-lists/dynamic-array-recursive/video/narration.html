@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynamic Array (Recursive) — Video Narration Script</title>
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+[data-theme=dim]{color-scheme:dark;--bg:#1f2430;--fg:#d8dee9;--muted:#a3acbf;--card:#2a3140;--line:#3d4659;
+--accent:#b4a4f5;--code:#262c39;--link:#8cb4ff}
+[data-theme=dark]{color-scheme:dark;--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;--line:#334155;
+--accent:#a78bfa;--code:#020617;--link:#93c5fd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+.themes{position:fixed;top:10px;right:10px;display:flex;gap:2px;padding:3px;border:1px solid var(--line);
+border-radius:999px;background:var(--card);font-size:.8rem;z-index:10}
+.themes button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:999px;cursor:pointer;font:inherit}
+.themes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+@media print{.themes{display:none}}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("md-theme")}catch(e){}
+if(t!=="light"&&t!=="dim"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+document.documentElement.setAttribute("data-theme",t)})();</script>
+</head>
+<body>
+<div class="themes" role="group" aria-label="Theme">
+<button type="button" data-t="light">Light</button><button type="button" data-t="dim">Dim</button><button type="button" data-t="dark">Dark</button>
+</div>
+<script>(function(){var bs=document.querySelectorAll(".themes button");
+function show(t){document.documentElement.setAttribute("data-theme",t);
+bs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t===t?"true":"false")})}
+show(document.documentElement.getAttribute("data-theme"));
+bs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t);
+try{localStorage.setItem("md-theme",b.dataset.t)}catch(e){}})})})();</script>
+<main>
+<h1 id="dynamic-array-recursive-video-narration-script">Dynamic Array (Recursive) — Video Narration Script</h1>
+<h2 id="1-dynamic-array-recursive">1. Dynamic Array (Recursive)</h2>
+<p>Hello, and welcome. This video explains the dynamic array, written recursively, in C. This video is presented by Jayasekhar Konduru. First, a simple definition. A dynamic array keeps an ordinary array inside, and moves to a bigger one when it is full. Here, every loop is written as a recursion: a function that handles one element, and calls itself for the rest. Our example is a music playlist that grows one song at a time. By the end, you will know how each loop becomes a recursion, what that costs in memory, and why an ordinary append can crash.</p>
+<h2 id="2-the-everyday-idea">2. The Everyday Idea</h2>
+<p>Think of a family moving house, with a line of helpers. The first helper carries box zero, then asks the next helper to carry the rest, and waits. The second carries box one, asks the next, and waits too. The last helper finds no boxes left, and says done. That is the base case. With four boxes, four helpers wait. With a million boxes, the corridor is not long enough. That is a stack overflow.</p>
+<h2 id="3-the-words">3. The Words</h2>
+<p>The words. The size is how many elements are in use, and the capacity is how many places there are. A resize makes a new array, and copies every element. The base case is when nothing is left to copy. And the recursion depth is the number of frames at once. A recursive resize of n elements needs n frames.</p>
+<h2 id="4-act-one-a-recursive-copy">4. Act One — A recursive copy</h2>
+<p>First, a recursive copy. The playlist is full, with four songs. To append a fifth, it must resize to eight. Copy zero copies Blue Sky, and calls copy one. Copy one copies Rain Dance, and calls copy two. And so on, until copy four finds nothing left. That is the base case. Four copies, four frames on the stack.</p>
+<h2 id="5-a-recursive-copy">5. A recursive copy</h2>
+<p>Here is the call stack at the deepest point. Four copy calls, each waiting. On top, copy four, the base case. When it returns, the others return one by one.</p>
+<h2 id="6-act-two-growing">6. Act Two — Growing</h2>
+<p>Growing. The next three songs cost one write each. The ninth song finds the array full again. The resize to sixteen copies eight songs, eight frames deep. Nine appends, two resizes, twelve copies, exactly as with loops. Recursion does not change the time. It changes the stack.</p>
+<h2 id="7-growing">7. Growing</h2>
+<p>Here is the playlist now. Nine songs in sixteen places. The second resize copied eight songs, with eight calls waiting at once.</p>
+<h2 id="8-act-three-the-middle-recursively">8. Act Three — The middle, recursively</h2>
+<p>Now the middle. Inserting an intro at the front shifts all nine songs, nine calls deep. Deleting index five shifts four songs, four calls deep. And searching for Firefly finds it at index seven, eight calls deep. Each time, the depth is the number of elements visited.</p>
+<h2 id="9-the-middle-recursively">9. The middle, recursively</h2>
+<p>Here is the insertion. Intro, in purple, at index zero. The nine songs after it, in amber, each moved by one call of shift right.</p>
+<h2 id="10-act-four-shrinking-recursively">10. Act Four — Shrinking, recursively</h2>
+<p>Shrinking uses the same recursive copy. Shrink to fit copies nine songs into exactly nine places, nine calls deep. And when deletions leave only a quarter of the places in use, the array halves itself. From thirty two places to sixteen, copying eight songs, eight calls deep.</p>
+<h2 id="11-shrinking-recursively">11. Shrinking, recursively</h2>
+<p>Here is the shrink. The old array had sixteen places. The new one has exactly nine, and every song was copied by its own call.</p>
+<h2 id="12-act-five-the-limit-of-recursion">12. Act Five — The limit of recursion</h2>
+<p>And the limit. We try to append a million songs. Long before the end, a resize has to copy more songs than the call stack has room for. The operating system stops the program, from inside an ordinary append. So the demo ran it in a separate child process. The loop version finishes. Recursion is fine when the depth is small, and dangerous when it grows with the data.</p>
+<h2 id="13-the-limit-of-recursion">13. The limit of recursion</h2>
+<p>Here is the problem. One copy call per element, all waiting. For a big resize, that is more frames than the call stack can hold.</p>
+<h2 id="14-time-and-space-complexity">14. Time and Space Complexity</h2>
+<p>Here are the costs. Get and update are order one, and not recursive. Append is order one amortised, but a resize takes order n time and order n stack. Insertion and deletion at the front take order n time and stack. So do traversal and linear search. The loop version takes the same time, with order one extra space.</p>
+<h2 id="15-recursive-or-loop">15. Recursive or Loop?</h2>
+<p>Recursive or loop? The counts are the same: twelve copies for nine appends. But recursion keeps one frame per element copied, and the loop keeps none. For a large resize, the recursion overflows the call stack, and the loop simply finishes.</p>
+<h2 id="16-common-mistakes">16. Common Mistakes</h2>
+<p>Four mistakes to watch for. A recursive copy with no base case. Forgetting that resize is recursive, so an append can overflow. Shifting from the insertion position upwards, which overwrites the data. And not clearing a deleted place, which keeps the old string alive.</p>
+<h2 id="17-thanks-for-watching">17. Thanks for Watching</h2>
+<p>That's the dynamic array, written recursively. If you remember one sentence, make it this one. A loop becomes a recursion by turning its condition into a base case, and its step into a call, but every waiting call costs a frame. The full source code, written notes, pictures, and an animated walkthrough are all in the repository. Here is one exercise to try. Write a recursive copy that halves the range, and see its depth drop to log n. If this helped, a like really does help other people find it. And subscribe, if you'd like the rest of the series. Thanks for watching.</p>
+</main>
+<footer>Generated from <code>narration.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

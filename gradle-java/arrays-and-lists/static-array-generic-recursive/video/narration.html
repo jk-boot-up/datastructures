@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Static Array (Generic, Recursive) — Video Narration Script</title>
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+[data-theme=dim]{color-scheme:dark;--bg:#1f2430;--fg:#d8dee9;--muted:#a3acbf;--card:#2a3140;--line:#3d4659;
+--accent:#b4a4f5;--code:#262c39;--link:#8cb4ff}
+[data-theme=dark]{color-scheme:dark;--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;--line:#334155;
+--accent:#a78bfa;--code:#020617;--link:#93c5fd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+.themes{position:fixed;top:10px;right:10px;display:flex;gap:2px;padding:3px;border:1px solid var(--line);
+border-radius:999px;background:var(--card);font-size:.8rem;z-index:10}
+.themes button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:999px;cursor:pointer;font:inherit}
+.themes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+@media print{.themes{display:none}}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("md-theme")}catch(e){}
+if(t!=="light"&&t!=="dim"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+document.documentElement.setAttribute("data-theme",t)})();</script>
+</head>
+<body>
+<div class="themes" role="group" aria-label="Theme">
+<button type="button" data-t="light">Light</button><button type="button" data-t="dim">Dim</button><button type="button" data-t="dark">Dark</button>
+</div>
+<script>(function(){var bs=document.querySelectorAll(".themes button");
+function show(t){document.documentElement.setAttribute("data-theme",t);
+bs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t===t?"true":"false")})}
+show(document.documentElement.getAttribute("data-theme"));
+bs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t);
+try{localStorage.setItem("md-theme",b.dataset.t)}catch(e){}})})})();</script>
+<main>
+<h1 id="static-array-generic-recursive-video-narration-script">Static Array (Generic, Recursive) — Video Narration Script</h1>
+<h2 id="1-static-array-generic-recursive">1. Static Array (Generic, Recursive)</h2>
+<p>Hello, and welcome. This video explains the generic, recursive static array, in Java. This video is presented by Jayasekhar Konduru. First, a simple definition. It is a static array written once for any element type, whose operations call themselves. Each call handles one element, compares it with equals or compare to, and passes the rest to the next call, until a base case stops it. Our example is a weather station's week, as day names, temperatures, and readings. By the end, you will know how generics and recursion work together, and what each one costs.</p>
+<h2 id="2-the-everyday-idea">2. The Everyday Idea</h2>
+<p>Think of a queue of seven people, each holding a card. You want to find a card that matches yours. The first person compares their card with yours. If it does not match, they ask the person behind them, and wait. The cards could be numbers, names, or photographs. Each person just knows how to compare two cards of that kind. When someone finds a match, or the queue runs out, the answer travels back up. Everyone waiting is the call stack.</p>
+<h2 id="3-the-words">3. The Words</h2>
+<p>The words. T is the element type, filled in each time the class is used. Equals asks whether two elements have the same contents. Compare to asks which one is larger. The base case answers without calling again. The recursive case handles one element and calls itself on the rest. And the recursion depth, the number of frames at once, is the extra memory used.</p>
+<h2 id="4-act-one-recursion-for-any-element-type">4. Act One — Recursion, for any element type</h2>
+<p>First, recursion for any element type. Recursive linear search asks one question. Is the element here equal to the key? If not, search the rest, by calling itself, and wait. Monday, no. Tuesday, no. Wednesday, no. Thursday, yes. That is a base case: the search stops. Four calls, four frames on the stack.</p>
+<h2 id="5-recursion-for-any-element-type">5. Recursion, for any element type</h2>
+<p>Here is the call stack at the moment of the match. The first call is at the bottom. Each call pushed a new frame on top. The top call found Thursday, and its answer now travels back down through every frame.</p>
+<h2 id="6-act-two-the-same-recursion-three-types">6. Act Two — The same recursion, three types</h2>
+<p>The same recursion works for every type. Traversal of the temperatures, the day names, and the readings. Each one goes seven calls deep. And a search for a new string, Fri, finds it at index four, five calls deep. It works because the search asks equals, which compares the text, not the object.</p>
+<h2 id="7-the-same-recursion-three-types">7. The same recursion, three types</h2>
+<p>Here are two of the arrays. Numbers and names. The recursive method does not care which: it goes one call per element, seven deep, in both.</p>
+<h2 id="8-act-three-compareto-recursively">8. Act Three — compareTo, recursively</h2>
+<p>Now compare to, recursively. Binary search on the sorted day names. Sunday: go right. Tuesday: go left. Thursday: found. Three calls, three deep. Find max goes down to the last element, then compares on the way back up. For readings, the hottest is Thursday. For day names, the same method gives Wednesday.</p>
+<h2 id="9-compareto-recursively">9. compareTo, recursively</h2>
+<p>Here are the three calls. Each call looks at the middle of its range, and calls itself on one half. The third call finds Thursday.</p>
+<h2 id="10-act-four-insertion-deletion-and-reversal-recursively">10. Act Four — Insertion, deletion and reversal, recursively</h2>
+<p>Insertion and deletion, recursively, on the readings. Inserting at index two shifts five readings, five calls deep. Deleting index zero shifts seven, seven calls deep. Then the freed place is set to null. And reverse swaps the ends, then reverses the middle: three swaps, three calls deep.</p>
+<h2 id="11-insertion-deletion-and-reversal-recursively">11. Insertion, deletion and reversal, recursively</h2>
+<p>Here is the array after the deletion. Seven readings shifted left, one call each. The place after them is null, so the deleted reading can be freed.</p>
+<h2 id="12-act-five-the-limit-of-recursion">12. Act Five — The limit of recursion</h2>
+<p>And the limit. Binary search on a million integers is only twenty calls deep. Linear search needs one frame per element, and the call stack runs out: a stack overflow error. So, generics change what is compared. Recursion changes how much stack is used. Neither changes the time.</p>
+<h2 id="13-the-limit-of-recursion">13. The limit of recursion</h2>
+<p>Here are the two depths. Twenty frames for binary search. A million frames for linear search, far beyond what the call stack can hold.</p>
+<h2 id="14-time-and-space-complexity">14. Time and Space Complexity</h2>
+<p>Here are the costs. Get and update are order one, and not recursive. Traversal, linear search and find max take order n time, and order n stack. Binary search takes order log n time and stack. Insertion and deletion at the front take order n time and stack. The loop versions take the same time, with order one extra space.</p>
+<h2 id="15-the-four-static-arrays">15. The Four Static Arrays</h2>
+<p>How do the four static arrays compare? The int array with loops is the fastest and the smallest. The recursive int array adds a stack frame per waiting call. The generic array with loops holds any type, through references. And this one does both. Generics change what is compared. Recursion changes how much stack is used.</p>
+<h2 id="16-common-mistakes">16. Common Mistakes</h2>
+<p>Four mistakes to watch for. Using double equals or less than on elements, instead of equals and compare to. A recursion with no base case, or no progress towards it. Leaving the deleted reference in the array. And linear recursion on large data, which overflows the stack.</p>
+<h2 id="17-thanks-for-watching">17. Thanks for Watching</h2>
+<p>That's the generic, recursive static array. If you remember one sentence, make it this one. Compare with equals and compare to, handle one element, and let the call on the rest do the remainder, until a base case. The full source code, written notes, pictures, and an animated walkthrough are all in the repository. Here is one exercise to try. Write a recursive find min, and see how the element's own compare to decides the answer. If this helped, a like really does help other people find it. And subscribe, if you'd like the rest of the series. Thanks for watching.</p>
+</main>
+<footer>Generated from <code>narration.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

@@ -1,0 +1,32 @@
+ONE. Thinking recursively.
+  the sum of the week = the first element + the sum of the rest
+  sum(0) = 21 + sum(1)
+    sum(1) = 23 + sum(2)
+      sum(2) = 19 + sum(3)
+        sum(3) = 25 + sum(4)
+          sum(4) = 24 + sum(5)
+            sum(5) = 22 + sum(6)
+              sum(6) = 20 + sum(7)
+                sum(7) = 0   <- base case: no elements left
+  sum() = 154, with 7 calls waiting on the stack at once, one per element
+
+TWO. The call stack.
+  traverse: [21, 23, 19, 25, 24, 22, 20]
+  call-stack depth 7: one frame per element, each waiting for the rest
+  find_max = index 3 (25 C): depth 6, 6 comparisons on the way back up
+
+THREE. Searching recursively.
+  linear_search(24) = index 4: 5 comparisons, one call each, depth 5
+  sorted: [19, 20, 21, 23, 24, 25, 26]
+  binary_search(24) = index 4: at most 3 calls deep, one comparison each
+
+FOUR. Insertion, deletion and reversal, recursively.
+  insert_at(2, 18): 5 shifts, one call each, depth 5; [21, 23, 18, 19, 25, 24, 22, 20]
+  delete_at(0): 7 shifts, depth 7; [23, 18, 19, 25, 24, 22, 20]
+  reverse: 3 swaps, depth 3; [20, 22, 24, 25, 19, 18, 23]
+
+FIVE. The limit of recursion.
+  binary_search on 1,000,000: index 666666, at most 20 calls deep: halving keeps the stack small
+  linear_search on 1,000,000: the child process was killed by SIGSEGV: the call stack overflowed
+  the same loop in the static-array project needs O(1) extra space and finishes
+  C cannot catch a stack overflow: the program is stopped, so this ran in a child process

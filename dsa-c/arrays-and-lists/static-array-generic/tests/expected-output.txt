@@ -1,0 +1,32 @@
+ONE. One array type, any element type.
+  ints:     [21, 23, 19, 25, 24, 22, 20]
+  names:    [Mon, Tue, Wed, Thu, Fri, Sat, Sun]
+  readings: [Mon 21 C, Tue 23 C, Wed 19 C, Thu 25 C, Fri 24 C, Sat 22 C, Sun 20 C]
+  the same functions for all three; insert_at(&temps, 0, &DAYS[0]) would compile too: void * is never checked
+
+TWO. Inside: bytes and an element size.
+  elem_size: int 4, char * 8, Reading 12 bytes
+  element 3 of the readings is at data + 3 x 12 = data + 36
+  copy_with_capacity(31): 7 elements copied; the names are pointers, so both arrays point at the same text: yes
+
+THREE. Searching with comparison functions.
+  linear_search(24, compare_int) = index 4: 5 comparisons
+  linear_search("Fri" typed by the user, compare_name) = index 4: strcmp compares the text
+  the stored "Fri" == the typed "Fri" is false: == compares addresses
+  sorted: [19, 20, 21, 23, 24, 25, 26]
+  binary_search(24) = index 4, 3 comparisons
+  sorted: [Fri, Mon, Sat, Sun, Thu, Tue, Wed]
+  binary_search("Thu") = index 4, 3 comparisons
+
+FOUR. Insertion, deletion, overflow.
+  insert_at(2, Wed* 18 C): 5 shifts of 12 bytes each, n = 8
+  delete_at(0) removed Mon 21 C: 7 shifts
+  [Tue 23 C, Wed* 18 C, Wed 19 C, Thu 25 C, Fri 24 C, Sat 22 C, Sun 20 C]
+  n = 10, insert_at(0, Thu 30 C): overflow: the array is full
+
+FIVE. One algorithm, many orders.
+  readings, find_max(compare_reading): Thu 25 C, 6 comparisons
+  day names, find_max(compare_name): Wed
+  reverse: 3 swaps of 12 bytes; [Sun 20 C, Sat 22 C, Fri 24 C, Thu 25 C, Wed 19 C, Tue 23 C, Mon 21 C]
+  no sum(): adding needs numbers, and a void * element can be anything
+  already in C: qsort and bsearch take exactly this: a void * block, an element size and a compare function

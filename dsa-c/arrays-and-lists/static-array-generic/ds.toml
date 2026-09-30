@@ -1,0 +1,435 @@
+# ds.toml: everything about this project that is not C code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "static-array-generic"
+category = "arrays-and-lists"
+title = "Static Array (Generic)"
+package = "generic_array"
+main_class = "demo"
+example = "One week of temperatures held as ints, as day names and as readings"
+tagline = "One array for any type, the C way"
+bold = "A generic static array in C is a block of bytes and an element size: element i starts at data + i x elem_size, elements are copied in and out with memcpy, and comparisons are done by a function pointer, exactly as qsort and bsearch work; every cost of the static array is unchanged, and the price is that the compiler can no longer check the element type."
+analogy_short = "A row of equal lockers that holds whatever size of box you declare"
+jdk = "`qsort` and `bsearch` in `<stdlib.h>`, which take the same three things: a `void *` block, an element size and a comparison function"
+thumb_lines = ["STATIC ARRAY", "GENERIC void *"]
+thumb_code = "data + i * elem_size"
+youtube_title = "Generic Static Array in C - void *, Element Size and Comparison Functions"
+youtube_tags = ["generic array in c", "void pointer", "function pointer", "qsort", "memcpy", "static array"]
+youtube_description = """Generic Static Array in C, explained with one week of temperatures stored three ways by the same code: as ints, as day names (char pointers), and as Reading structs of our own. We see what the array really is, a block of bytes and an element size, and compute the address of element 3 by hand: data + 3 x 12. We search with comparison functions, the way qsort and bsearch do, and see why strcmp finds a day name typed by the user while == compares addresses and fails. We insert and delete with shifts of whole elements, hit the overflow, and finish with one find_max giving the hottest reading or the last day name, depending only on the comparison function passed in. The int-only version is the Static Array project."""
+
+[readme]
+intro = """A **generic static array** in C holds elements of **any type** with one set of functions. C has no type parameters, so it does what the C standard library itself does in `qsort` and `bsearch`: the array is a block of **bytes** with an **element size**, `elem_size`, given when it is created (`sizeof(int)`, `sizeof(Reading)`). Element i starts at `data + i x elem_size`, so access is still one address calculation. Elements are copied in and out with **`memcpy`**, and anything that must compare two elements is given a **comparison function**, `int compare(const void *a, const void *b)`, which returns negative, zero or positive. The array's structure and every cost are those of the `static-array` project. What changes is who knows the type: only the comparison and print functions do. The compiler cannot check that the right type is passed through `void *`, and that loss of type safety is the price of the approach."""
+analogy = """Picture a row of identical lockers where the caretaker is told only one thing: every box stored here is 12 centimetres wide. The caretaker can find locker 3 at once, 3 x 12 centimetres from the start, and can move boxes along, without ever knowing what is inside them. To answer "is this the box of the fountain?" the caretaker needs someone who knows the contents: a helper you hand over, who compares two boxes. Hand over the wrong helper, or a box of the wrong size, and the caretaker cannot tell."""
+example = """The weather station stores its week three ways with the same functions: the temperatures as `int`s, the day names as `char *` pointers to text, and each day as a `Reading` struct with a day name and a temperature. The demo computes an element's address by hand, searches each array with its own comparison function, inserts and deletes readings, and runs the same `find_max` with two different comparison functions."""
+why = """Without a generic array, a C program needs one array implementation per element type, all with the same loops. With `void *`, an element size and comparison functions, one implementation serves every type, which is exactly why `qsort` and `bsearch` are written that way. Understanding it explains the standard library, callback functions, and why C code must be careful about types."""
+when_use = [
+  "The same structure is needed for several element types, in C.",
+  "The element types are plain data that can be copied with `memcpy`, such as numbers, structs, or pointers.",
+  "You are calling `qsort` or `bsearch` and want to know what they do inside.",
+]
+when_not = [
+  "Only one element type is ever used: the plain `static-array` version is simpler and type-checked.",
+  "Speed on large amounts of plain numbers matters most: a call through a function pointer for every comparison costs time.",
+  "The number of elements changes: use a dynamic array (`dynamic-array-generic`).",
+]
+met_before = [
+  "`qsort(base, n, size, compare)` and `bsearch(key, base, n, size, compare)` in `<stdlib.h>`.",
+  "`memcpy(dest, src, n)` in `<string.h>`.",
+  "Callbacks: any function that takes another function as a parameter.",
+]
+
+[[word]]
+term = "void *"
+meaning = "A pointer to memory of unknown type. Any object pointer converts to it; to use the memory, it must be converted back to the right type."
+[[word]]
+term = "element size"
+meaning = "`elem_size`: how many bytes one element takes, from `sizeof`. Element i starts at `data + i x elem_size`."
+[[word]]
+term = "memcpy"
+meaning = "Copies a given number of bytes from one place to another; used to move elements whose type the array does not know."
+[[word]]
+term = "comparison function"
+meaning = "`int compare(const void *a, const void *b)`: negative if a comes first, zero if equal, positive if a comes after, as `qsort` expects."
+[[word]]
+term = "function pointer"
+meaning = "A variable holding the address of a function, such as `CompareFn compare`; calling `compare(x, y)` runs whichever function was passed."
+[[word]]
+term = "type safety"
+meaning = "The compiler checking that values have the types the code expects. Through `void *`, it cannot."
+
+[[operation]]
+name = "Traverse"
+does = "Print each element with a print function"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "7 reads for the week"
+[[operation]]
+name = "Access `get(a, i, &out)`"
+does = "Copy elem_size bytes from data + i x elem_size"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "1 step"
+[[operation]]
+name = "Update `update(a, i, &x)`"
+does = "Copy elem_size bytes over element i"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "1 step"
+[[operation]]
+name = "Insert `insert_at(a, pos, &x)`"
+does = "Shift elements pos..n-1 right, from the end, then copy x in"
+time = "O(1) at the end / O(n) / O(n) at the front"
+space = "O(1)"
+counted = "5 shifts of 12 bytes to insert a reading at index 2"
+[[operation]]
+name = "Delete `delete_at(a, pos, &out)`"
+does = "Copy the element out, shift the later elements left"
+time = "O(1) at the end / O(n) / O(n) at the front"
+space = "O(1)"
+counted = "7 shifts to delete index 0 of 8"
+[[operation]]
+name = "Linear search"
+does = "Call compare(element, key) for each element in turn"
+time = "O(1) / O(n) / O(n)"
+space = "O(1)"
+counted = "5 comparisons to find 24"
+[[operation]]
+name = "Binary search (sorted)"
+does = "compare with the middle, discard half, repeat"
+time = "O(1) / O(log n) / O(log n)"
+space = "O(1)"
+counted = "3 comparisons for 24, and 3 for \"Thu\""
+[[operation]]
+name = "Find maximum"
+does = "compare each element with the largest so far"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "6 comparisons for 7 readings"
+[[operation]]
+name = "Reverse"
+does = "Swap elements from both ends inward, byte by byte"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "3 swaps of 12 bytes"
+[[operation]]
+name = "Grow `copy_with_capacity`"
+does = "A new block; every element's bytes copied"
+time = "O(n) / O(n) / O(n)"
+space = "O(n)"
+counted = "7 elements copied"
+
+listing_intro = """The generic parts, exactly as they appear in `src/generic_array.c` and `src/elements.c`. Compare them with the `static-array` project: the loops are the same; every `arr[i]` has become an address computed from `elem_size`, every assignment a `memcpy`, and every `==` or `<` a call to a comparison function."""
+[[listing]]
+op = "The address of element i"
+method = "generic_array#element_at"
+note = """The whole idea in one line. `data` is an `unsigned char *`, so adding to it counts in bytes: element i is `i x elem_size` bytes from the start. This is what the compiler does for you with `arr[i]` when it knows the type; here the code does it by hand."""
+[[listing]]
+op = "Insertion"
+method = "generic_array#insert_at"
+note = """The same shift as the int version, from the end down to `pos`, but each shift is a `memcpy` of `elem_size` bytes, because the array does not know what the bytes mean."""
+[[listing]]
+op = "Linear search with a comparison function"
+method = "generic_array#linear_search"
+note = """`compare(element_at(a, i), key) == 0` asks the function that was passed in whether the two are equal. The array never looks inside an element itself."""
+[[listing]]
+op = "Comparing day names"
+method = "elements#compare_name"
+note = """Each element of the names array is a `char *`, so `a` and `b` point at pointers: convert to `const char *const *` and dereference once to reach the text, then `strcmp` compares the characters. Comparing the pointers with `==` would only ask whether they are the same address."""
+
+[compare]
+intro = """The generic static array against the int-only static array and the generic dynamic array (n elements):"""
+columns = ["Property", "Generic static array (void *)", "Static array of int", "Generic dynamic array"]
+rows = [
+  ["Element types", "any, given its size", "int only", "any, given its size"],
+  ["Access element i", "O(1): data + i x elem_size", "O(1): arr[i]", "O(1)"],
+  ["Insert or delete at the front", "O(n) shifts of elem_size bytes", "O(n) shifts", "O(n) shifts"],
+  ["Comparing elements", "a function pointer per comparison", "== and < directly", "a function pointer"],
+  ["Type checked by the compiler", "no: void *", "yes", "no: void *"],
+  ["Size", "fixed at creation", "fixed at creation", "grows by copying"],
+]
+
+pros = [
+  "One implementation for every element type, as `qsort` and `bsearch` do it.",
+  "O(1) access and every other cost of the static array.",
+  "Each type brings its own order through the comparison function passed in.",
+]
+cons = [
+  "No type safety: the compiler cannot catch a wrong type passed through `void *`.",
+  "A function call for every comparison, and `memcpy` for every move: slower than working on `int`s directly.",
+  "Casting inside comparison functions is easy to get wrong, especially for arrays of pointers.",
+  "The capacity is still fixed; a full array overflows.",
+]
+
+[[mistake]]
+mistake = "The wrong element size"
+happens = "`create(&a, 10, sizeof(Reading *))` instead of `sizeof(Reading)` makes every element 8 bytes: structs are cut short and neighbours overwrite each other."
+fix = "Pass `sizeof` of the element type itself."
+[[mistake]]
+mistake = "One dereference too few in a comparison of pointers"
+happens = "In an array of `char *`, treating `a` as the text (`strcmp(a, b)`) compares the bytes of the pointers, not the strings."
+fix = "Convert to `const char *const *` and dereference once: `strcmp(*(const char *const *) a, *(const char *const *) b)`."
+[[mistake]]
+mistake = "Returning x - y from a comparison"
+happens = "For large values of opposite sign, `x - y` overflows `int` and the sign is wrong."
+fix = "Return `(x > y) - (x < y)`."
+[[mistake]]
+mistake = "Comparing strings with `==`"
+happens = "`==` compares addresses, so equal text stored in two places is reported as different."
+fix = "Use `strcmp`, through the comparison function."
+
+[[exercise]]
+level = "easy"
+question = """Write `int count_equal(GenericArray *a, const void *key, CompareFn compare)`, which counts the elements equal to `key`. Why does it need the comparison function?"""
+answer = """```c
+int count_equal(GenericArray *a, const void *key, CompareFn compare) {
+    int count = 0;
+    for (int i = 0; i < a->n; i++) {
+        if (compare(element_at(a, i), key) == 0) count++;
+    }
+    return count;
+}
+```
+The array does not know what its bytes mean, so only the comparison function can say whether two elements are equal. O(n) time, O(1) space."""
+[[exercise]]
+level = "medium"
+question = """Write `int compare_reading_by_day(const void *a, const void *b)` that orders readings by day name. What does `find_max` then return on the week, and did you change `generic_array.c`?"""
+answer = """```c
+int compare_reading_by_day(const void *a, const void *b) {
+    const Reading *x = a, *y = b;
+    return strcmp(x->day, y->day);
+}
+```
+`find_max(&week, compare_reading_by_day)` returns the reading whose day name is last alphabetically, "Wed" (19 C). `generic_array.c` is unchanged: the order lives entirely in the function passed in."""
+[[exercise]]
+level = "harder"
+question = """Sort the readings by temperature with the standard library's `qsort`, then find 24 C with `bsearch`. What do `qsort` and `bsearch` need that `GenericArray` already has?"""
+answer = """```c
+qsort(week.data, week.n, week.elem_size, compare_reading);
+Reading key = {"", 24};
+Reading *hit = bsearch(&key, week.data, week.n, week.elem_size, compare_reading);
+```
+Both take the same three things `GenericArray` keeps: the block (`data`), the number of elements and the element size, plus a comparison function. After sorting, `hit` points at "Fri 24 C". O(n log n) to sort, O(log n) to search."""
+
+[hero]
+caption = "A GenericArray of Readings: 12 bytes each, element i at data + i x 12"
+picture = { type = "array", cells = ["Mon 21", "Tue 23", "Wed 19", "Thu 25", "Fri 24", "Sat 22", "Sun 20", "", "", ""], size = 7, pointers = [[3, "data + 36"], [7, "n = 7"]], title = "readings, elem_size = 12, capacity 10" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "One array type, any element type"
+summary = "The same functions hold ints, day names and Reading structs; passing the wrong type would compile, because void * is never checked."
+detail = """One `GenericArray` type and one set of functions are used three times: for the temperatures as `int`s, for the day names as `char *`, and for `Reading` structs of our own. Traversal prints all three, each through its own print function. There is a catch that Java's generics do not have: `insert_at(&temps, 0, &DAYS[0])` would compile without a warning, because every pointer converts to `void *`. The array would then store the first 4 bytes of a pointer as if they were a temperature."""
+speech = """First, one array type, for any element type. [[slnc 400]] The same functions hold the temperatures, as integers. [[slnc 300]] They hold the day names. [[slnc 300]] And they hold readings, a struct of our own. [[slnc 500]] But there is a catch. [[slnc 300]] The compiler cannot check the type any more. [[slnc 400]] Passing a day name to the array of temperatures would compile without a warning."""
+console = [["ints:     [21, 23, 19, 25, 24, 22, 20]", "ok"], ["names:    [Mon, Tue, Wed, Thu, Fri, Sat, Sun]", "ok"], ["readings: [Mon 21 C, Tue 23 C, Wed 19 C, Thu 25 C, Fri 24 C, Sat 22 C, Sun 20 C]", "ok"], ["the same functions for all three; insert_at(&temps, 0, &DAYS[0]) would compile too: void * is never checked", "bad"]]
+[[act.frame]]
+caption = "Three arrays, one set of functions: ints and day names"
+say = """Here are two of the arrays. [[slnc 300]] The same functions, the same loops. [[slnc 400]] Only the element size and the helper functions differ."""
+picture = { type = "group", items = [ { type = "array", cells = [21, 23, 19, 25, 24, 22, 20], title = "ints, elem_size 4" }, { type = "array", cells = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], title = "char *, elem_size 8" } ], vertical = true }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Inside: bytes and an element size"
+summary = "Sizes are 4, 8 and 12 bytes; element 3 of the readings is at data + 36; copying the names copies pointers, so both arrays share the text."
+detail = """The array knows only the element size: 4 bytes for an `int`, 8 for a `char *` on a 64-bit machine, 12 for a `Reading`. Element 3 of the readings is at `data + 3 x 12 = data + 36`: the address calculation that `arr[3]` does automatically, done here by hand. Copying an array copies bytes. For the names, those bytes are pointers, so after `copy_with_capacity` both arrays point at the very same text: 7 elements copied, and no string was duplicated."""
+speech = """What does the array really hold? [[slnc 400]] Bytes, and an element size. [[slnc 400]] Four bytes for an integer, eight for a pointer to text, twelve for a reading. [[slnc 500]] Element three of the readings starts three times twelve bytes from the beginning: byte thirty six. [[slnc 500]] And copying the array of names copies the pointers, so both arrays point at the same text."""
+console = [["elem_size: int 4, char * 8, Reading 12 bytes", "muted"], ["element 3 of the readings is at data + 3 x 12 = data + 36", "amber"], ["copy_with_capacity(31): 7 elements copied; the names are pointers, so both arrays point at the same text: yes", "ok"]]
+[[act.frame]]
+caption = "Element 3 starts at byte 36: 3 elements of 12 bytes from the start"
+say = """Here are the readings. [[slnc 300]] Each takes twelve bytes. [[slnc 300]] Element three starts at byte thirty six: one calculation, as for any array."""
+picture = { type = "array", cells = ["Mon 21", "Tue 23", "Wed 19", "Thu 25", "Fri 24", "Sat 22", "Sun 20"], marks = { "3" = "hi" }, pointers = [[0, "data"], [3, "data + 36"]] }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Searching with comparison functions"
+summary = "Linear search finds 24 with compare_int in 5 comparisons; compare_name finds a day name typed by the user because strcmp compares text, while == compares addresses; binary search takes 3 comparisons for 24 and for \"Thu\"."
+detail = """Every search is given a comparison function. `linear_search(&temps, &key, compare_int)` finds 24 at index 4 after 5 comparisons. For the names, the key is "Fri" typed by the user: the same letters, stored somewhere else. `compare_name` uses `strcmp`, which compares the characters, and finds it at index 4. Comparing the two pointers with `==` says false, because they are different addresses. Binary search needs an order, which the comparison function also gives: 3 comparisons for 24 among the sorted temperatures, and 3 for "Thu" among the sorted names."""
+speech = """Now searching. [[slnc 400]] The array cannot compare elements itself, so every search is given a comparison function. [[slnc 500]] For the day names, the function uses string compare, which compares the letters. [[slnc 400]] So a day name typed by the user is found. [[slnc 400]] Double equals would compare the addresses, and say they are different. [[slnc 500]] Binary search uses the same function to decide which half to keep: three comparisons."""
+console = [["linear_search(24, compare_int) = index 4: 5 comparisons", "amber"], ["linear_search(\"Fri\" typed by the user, compare_name) = index 4: strcmp compares the text", "ok"], ["the stored \"Fri\" == the typed \"Fri\" is false: == compares addresses", "bad"], ["binary_search(24) = index 4, 3 comparisons", "ok"], ["binary_search(\"Thu\") = index 4, 3 comparisons", "ok"]]
+[[act.frame]]
+caption = "Binary search on the sorted names: Sun (go right), Tue (go left), Thu"
+say = """Binary search on the sorted names. [[slnc 300]] Sunday, then Tuesday, then Thursday. [[slnc 300]] Three calls to the comparison function."""
+picture = { type = "array", cells = ["Fri", "Mon", "Sat", "Sun", "Thu", "Tue", "Wed"], marks = { "0" = "dim", "1" = "dim", "2" = "dim", "3" = "hi", "5" = "hi", "4" = "ok", "6" = "dim" }, pointers = [[3, "1st"], [5, "2nd"], [4, "3rd"]] }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Insertion, deletion, overflow"
+summary = "Inserting a reading at index 2 is 5 shifts of 12 bytes; deleting index 0 is 7 shifts; at 10 of 10 the next insertion is an overflow."
+detail = """Insertion and deletion are the loops of the int version, moving whole elements with `memcpy`. A corrected reading, "Wed* 18 C", goes in at index 2: five shifts of 12 bytes each. Deleting index 0 copies "Mon 21 C" out to the caller and shifts the seven later readings left. Three more readings fill the array to 10 of 10, and the next insertion is refused as an overflow."""
+speech = """Insertion and deletion work as before, with whole elements. [[slnc 400]] Inserting a reading at index two shifts five readings, twelve bytes each. [[slnc 400]] Deleting index zero copies the reading out, and shifts seven. [[slnc 500]] And when all ten places are used, the next insertion is an overflow."""
+console = [["insert_at(2, Wed* 18 C): 5 shifts of 12 bytes each, n = 8", "amber"], ["delete_at(0) removed Mon 21 C: 7 shifts", "amber"], ["[Tue 23 C, Wed* 18 C, Wed 19 C, Thu 25 C, Fri 24 C, Sat 22 C, Sun 20 C]", "muted"], ["n = 10, insert_at(0, Thu 30 C): overflow: the array is full", "bad"]]
+[[act.frame]]
+caption = "insert_at(2): the readings from index 2 on each shifted 12 bytes right"
+say = """Here is the array after the insertion. [[slnc 300]] The new reading, in purple, at index two. [[slnc 300]] Five readings, in amber, each moved one place right."""
+picture = { type = "array", cells = ["Mon 21", "Tue 23", "Wed* 18", "Wed 19", "Thu 25", "Fri 24", "Sat 22", "Sun 20", "", ""], size = 8, marks = { "2" = "new", "3" = "hi", "4" = "hi", "5" = "hi", "6" = "hi", "7" = "hi" } }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "One algorithm, many orders"
+summary = "find_max with compare_reading gives Thu 25 C; with compare_name it gives Wed; reverse swaps 3 elements byte by byte; qsort and bsearch work the same way."
+detail = """`find_max` is written once. Given `compare_reading`, which compares temperatures, it returns "Thu 25 C" after 6 comparisons. Given `compare_name`, which compares text, the same function returns "Wed". `reverse` swaps whole elements byte by byte, 3 swaps of 12 bytes. There is no `sum`, because adding needs numbers and a `void *` element can be anything. The C standard library's `qsort` and `bsearch` take exactly what this array keeps: the block, the count, the element size and a comparison function."""
+speech = """One algorithm, many orders. [[slnc 400]] Find max is written once. [[slnc 300]] Given the comparison of temperatures, it returns Thursday. [[slnc 400]] Given the comparison of names, it returns Wednesday. [[slnc 500]] The order lives in the function you pass in. [[slnc 400]] And that is exactly how the standard library's quick sort and binary search work."""
+console = [["readings, find_max(compare_reading): Thu 25 C, 6 comparisons", "ok"], ["day names, find_max(compare_name): Wed", "ok"], ["reverse: 3 swaps of 12 bytes; [Sun 20 C, Sat 22 C, Fri 24 C, Thu 25 C, Wed 19 C, Tue 23 C, Mon 21 C]", "muted"], ["no sum(): adding needs numbers, and a void * element can be anything", "amber"], ["already in C: qsort and bsearch take exactly this: a void * block, an element size and a compare function", "muted"]]
+[[act.frame]]
+caption = "find_max with compare_reading: Thu 25 C is the largest"
+say = """Here is find max with the temperature comparison. [[slnc 300]] Thursday, at twenty five degrees."""
+picture = { type = "array", cells = ["Mon 21", "Tue 23", "Wed 19", "Thu 25", "Fri 24", "Sat 22", "Sun 20"], marks = { "3" = "ok" }, pointers = [[3, "max"]] }
+
+[animation]
+subtitle = "One week held as ints, day names and Reading structs by one generic array: bytes and an element size, comparison functions, the same shifts, and one find_max for many orders."
+
+[docs.problem]
+scenario = """A weather station stores the same week as temperatures, as day names and as readings, and needs the same array operations on each, in C."""
+naive = """Three copies of the array code, one per element type, all with identical loops."""
+deliver = [
+  "A `GenericArray` written by hand: a block of bytes, an element size and a count, with traverse, get, update, insert_at, delete_at, linear_search, binary_search, find_max, reverse and copy_with_capacity.",
+  "Elements moved with `memcpy`; comparisons through `CompareFn` function pointers.",
+  "The same array used with `int`, `char *` and a `Reading` struct.",
+  "Time and space complexity of every operation, and a comparison with the int array and the generic dynamic array.",
+]
+
+[docs.prerequisites]
+required = ["The static-array project", "C basics: structs, pointers and `sizeof`"]
+not_required = ["Previous experience of function pointers"]
+
+[docs.session]
+objectives = [
+  "Store any element type in a byte block with an element size.",
+  "Compute an element's address as data + i x elem_size.",
+  "Write comparison functions, including one for an array of pointers.",
+  "Explain what is lost: type checking.",
+]
+walkthrough = """Start from the int static array and ask how to store day names without copying the code. Introduce `void *`, `sizeof` and `memcpy`. Run the demo; in act two, compute data + 36 on the board. In act three, write compare_name together and show `==` failing. Finish by calling qsort and bsearch on the same block."""
+
+[docs.explained]
+sentence = """A generic static array in C is a byte block with an element size: element i is at data + i x elem_size, elements move with memcpy, and comparisons go through a function pointer, as in qsort and bsearch."""
+verdict = """Use this technique when C code must hold several types with one implementation, and whenever you call qsort or bsearch; keep the plain typed version when only one type is needed, because the compiler can then check it."""
+recognise = [
+  "A struct with `void *` or `unsigned char *data` and a `size_t elem_size`.",
+  "`memcpy(dest, src, elem_size)` where an assignment would be.",
+  "A parameter of type `int (*compare)(const void *, const void *)`.",
+]
+
+[spec]
+purpose = """Teach the C way of generic containers on the static array: bytes, element size, memcpy and comparison functions."""
+requirements = [
+  "Written by hand on a `malloc`ed byte block; no libraries.",
+  "Fixed capacity; overflow, underflow and out-of-range reported by status codes.",
+  "traverse, get, update, insert_at, delete_at, linear_search, binary_search, find_max, reverse, copy_with_capacity.",
+  "Used with int, char * and a Reading struct in the demo.",
+  "The demo prints five acts whose lines the tests assert.",
+]
+nongoals = ["The int-only version (static-array)", "Recursive versions (static-array-generic-recursive)", "Growing automatically (dynamic-array-generic)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Static Array (Generic): the pieces"
+caption = "The demo calls the array's functions with element pointers and comparison functions; only the helpers in elements.c know what the bytes mean."
+nodes = [
+  { id = "demo", label = "Demo", sub = "demo.c, five acts", col = 0, row = 0, colour = "client" },
+  { id = "arr", label = "GenericArray", sub = "data, elem_size, n", col = 1, row = 0, colour = "accent" },
+  { id = "bytes", label = "byte block", sub = "capacity x elem_size", col = 2, row = 0, colour = "green" },
+  { id = "fns", label = "elements.c", sub = "compare_int, compare_name, compare_reading", col = 1, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "arr", label = "insert_at(&a, 2, &reading)" }, { from = "arr", to = "bytes", label = "memcpy" }, { from = "arr", to = "fns", label = "compare(x, y)" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Static Array (Generic): the types and functions"
+caption = "`GenericArray` knows only bytes; `CompareFn` and `PrintFn` are the function-pointer types; `Reading` is one element type."
+nodes = [
+  { id = "arr", label = "GenericArray", sub = ["unsigned char *data", "size_t elem_size", "int capacity, n", "insert_at / delete_at", "linear_search / binary_search", "find_max / reverse"], col = 0, row = 0, colour = "accent" },
+  { id = "fn", label = "CompareFn", sub = ["int (*)(const void *,", "        const void *)"], col = 1, row = 0, colour = "green" },
+  { id = "rd", label = "Reading", sub = ["char day[8]", "int celsius"], col = 1, row = 1, colour = "client" },
+]
+edges = [ { from = "arr", to = "fn", label = "calls" }, { from = "fn", to = "rd", label = "knows" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Static Array (Generic): comparing two elements"
+caption = "The array passes addresses; the comparison function converts them to the real type."
+nodes = [
+  { id = "arr", label = "linear_search", sub = "element_at(a, i), key", col = 0, row = 0, colour = "accent" },
+  { id = "cmp", label = "compare_name(a, b)", sub = "const void *", col = 1, row = 0, colour = "amber" },
+  { id = "cast", label = "*(const char *const *) a", sub = "back to the text", col = 2, row = 0, colour = "green" },
+  { id = "sc", label = "strcmp", sub = "negative, zero, positive", col = 2, row = 1, colour = "client" },
+]
+edges = [ { from = "arr", to = "cmp", label = "" }, { from = "cmp", to = "cast", label = "" }, { from = "cast", to = "sc", label = "" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Static Array (Generic): binary_search(\"Thu\")"
+caption = "Three calls to the comparison function on the sorted names."
+participants = ["Demo", "binary_search", "compare_name"]
+steps = [
+  ["Demo", "binary_search", "binary_search(&names, &thu, compare_name)"],
+  ["binary_search", "compare_name", "Sun vs Thu: negative, go right"],
+  ["binary_search", "compare_name", "Tue vs Thu: positive, go left"],
+  ["binary_search", "compare_name", "Thu vs Thu: zero"],
+  ["binary_search", "Demo", "index 4, 3 comparisons", "reply"],
+]
+
+[poster]
+headline = [["STATIC ARRAY", "text"], ["GENERIC IN C", "accent"]]
+before = { code = "int arr[MAX]", note = "one type only", tag = "ONE TYPE" }
+after = { code = "data + i * elem_size", note = "any type, as qsort does", tag = "ANY TYPE" }
+taglines = [["Bytes, a size, and a compare function.", "text"], ["Type safety is the price.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Static Array (Generic)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the generic static array, in C. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] C has no type parameters. [[slnc 300]] So a generic array is a block of bytes, with an element size, and comparison functions passed in. [[slnc 400]] It is exactly how the standard library's quick sort works. [[slnc 700]] Our example is a weather station's week, stored three different ways by the same code. [[slnc 400]] By the end, you will know how to hold any type in C, how comparison functions work, and what it costs."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "The caretaker knows only the box size; a helper compares the contents"
+picture = { type = "array", cells = ["box", "box", "box", "box", ""], size = 4, pointers = [[3, "3 x 12 cm"]], title = "lockers for boxes 12 cm wide" }
+narration = """Picture a row of identical lockers, and a caretaker who is told only one thing: every box here is twelve centimetres wide. [[slnc 400]] The caretaker finds locker three at once, three times twelve centimetres along. [[slnc 400]] And can move boxes along, without knowing what is inside. [[slnc 500]] To compare two boxes, the caretaker needs a helper who knows the contents. [[slnc 400]] That helper is the comparison function."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["void *: a pointer to memory of unknown type", "elem_size: bytes per element, from sizeof", "memcpy: copy bytes without knowing their type", "compare(a, b): negative, zero or positive", "", "type safety: what void * gives up"]
+narration = """The words. [[slnc 400]] Void pointer: a pointer to memory of unknown type. [[slnc 400]] Element size: how many bytes one element takes. [[slnc 400]] Mem copy: copies bytes without knowing what they mean. [[slnc 400]] A comparison function returns negative, zero, or positive. [[slnc 500]] And type safety is what the void pointer gives up."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["access, update: O(1)", "traverse, linear search, max, reverse: O(n)", "binary search (sorted): O(log n)", "insert, delete: O(n) at the front", "", "the same as the int array, plus a call per comparison"]
+narration = """Here are the costs. [[slnc 400]] They are the same as the int array. [[slnc 400]] Access and update are order one. [[slnc 400]] Traversal, linear search, maximum and reverse are order n. [[slnc 400]] Binary search is order log n. [[slnc 400]] Insertion and deletion at the front are order n. [[slnc 500]] Each comparison is now a function call, which costs a little time."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Compared With Related Structures"
+body = ["int array: typed, checked, direct ==", "generic array: any type, no checks", "Java generics: any type, checked by the compiler", "", "static: fixed; dynamic generic: grows"]
+narration = """How does it compare? [[slnc 400]] The int array is typed, and the compiler checks it. [[slnc 400]] The generic array holds any type, and the compiler cannot check it. [[slnc 400]] Java's generics hold any type and are checked, because the language has type parameters. [[slnc 400]] And like every static array, the capacity is fixed."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["the wrong element size", "one dereference too few for pointers", "returning x - y from a comparison", "comparing strings with =="]
+narration = """Four mistakes to watch for. [[slnc 400]] Passing the wrong element size, such as the size of a pointer instead of the struct. [[slnc 400]] In an array of pointers, forgetting to dereference once in the comparison. [[slnc 400]] Returning x minus y, which can overflow. [[slnc 400]] And comparing strings with double equals."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the generic static array in C. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] Bytes, an element size, and a comparison function let one array hold any type, at the price of type safety. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Sort the readings with the standard library's quick sort, and search them with its binary search. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

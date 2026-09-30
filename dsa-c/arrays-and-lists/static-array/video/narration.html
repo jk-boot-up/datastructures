@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Static Array — Video Narration Script</title>
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+[data-theme=dim]{color-scheme:dark;--bg:#1f2430;--fg:#d8dee9;--muted:#a3acbf;--card:#2a3140;--line:#3d4659;
+--accent:#b4a4f5;--code:#262c39;--link:#8cb4ff}
+[data-theme=dark]{color-scheme:dark;--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;--line:#334155;
+--accent:#a78bfa;--code:#020617;--link:#93c5fd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+.themes{position:fixed;top:10px;right:10px;display:flex;gap:2px;padding:3px;border:1px solid var(--line);
+border-radius:999px;background:var(--card);font-size:.8rem;z-index:10}
+.themes button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:999px;cursor:pointer;font:inherit}
+.themes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+@media print{.themes{display:none}}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("md-theme")}catch(e){}
+if(t!=="light"&&t!=="dim"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+document.documentElement.setAttribute("data-theme",t)})();</script>
+</head>
+<body>
+<div class="themes" role="group" aria-label="Theme">
+<button type="button" data-t="light">Light</button><button type="button" data-t="dim">Dim</button><button type="button" data-t="dark">Dark</button>
+</div>
+<script>(function(){var bs=document.querySelectorAll(".themes button");
+function show(t){document.documentElement.setAttribute("data-theme",t);
+bs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t===t?"true":"false")})}
+show(document.documentElement.getAttribute("data-theme"));
+bs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t);
+try{localStorage.setItem("md-theme",b.dataset.t)}catch(e){}})})})();</script>
+<main>
+<h1 id="static-array-video-narration-script">Static Array — Video Narration Script</h1>
+<h2 id="1-static-array">1. Static Array</h2>
+<p>Hello, and welcome. This video explains the static array, in C. This video is presented by Jayasekhar Konduru. First, a simple definition. A static array stores elements of the same type in consecutive memory locations. Each element has an index, starting from zero. Because the elements are consecutive, the address of any element is calculated in one step. And the capacity is fixed when the array is created. Our example is a weather station, storing one temperature a day. By the end, you will know every textbook array operation, what each one costs in time and in space, and how the array compares with a dynamic array and a linked list.</p>
+<h2 id="2-the-everyday-idea">2. The Everyday Idea</h2>
+<p>Think of a row of numbered lockers in a school corridor. Locker zero, locker one, locker two, all the same size and all touching. If someone says, open locker three, you do not search. You walk straight to it. But to fit a new locker into the middle, every locker after it would have to move. And when the corridor is full, there is no room for another. That is an array.</p>
+<h2 id="3-the-words">3. The Words</h2>
+<p>The words a textbook uses. An index is an element's position, from zero. The base address is where element zero starts in memory. The capacity is the number of places, fixed when the array is created. And n is the number of elements actually stored. Inserting into a full array is an overflow. Deleting from an empty one is an underflow.</p>
+<h2 id="4-act-one-seven-separate-variables">4. Act One — Seven separate variables</h2>
+<p>First, the week without an array. Seven separate variables, one for each day. To find the maximum, we must write six comparisons, one after another, by hand. And to ask for day number three, we need a switch with seven branches. Nothing connects the seven variables.</p>
+<h2 id="5-seven-separate-variables">5. Seven separate variables</h2>
+<p>Here are the seven variables. Each has its own name, and there is no index. Without an index, a loop cannot visit them, so every question names all seven days.</p>
+<h2 id="6-act-two-one-array-int-arr-10-n-7">6. Act Two — One array: int arr[10], n = 7</h2>
+<p>Now the same week in one array. We reserve ten places, side by side in memory, and store the seven days in the first seven. So the capacity is ten, and n, the number of elements, is seven. Each element takes four bytes. So the address of element three is the base address, plus three times four.</p>
+<h2 id="7-one-array-int-arr-10-n-7">7. One array: int arr[10], n = 7</h2>
+<p>Here is the array. The small numbers above are the indexes, from zero to nine. The first seven hold the week. The last three, dashed, are free. n, the number of elements, points at the first free place.</p>
+<h2 id="8-one-array-int-arr-10-n-7">8. One array: int arr[10], n = 7</h2>
+<p>How does the computer find element three? It takes the base address, where element zero starts, and adds three times four bytes. One calculation. Element three, or element three million, costs the same single step. That is order one access.</p>
+<h2 id="9-act-three-access-update-search">9. Act Three — Access, update, search</h2>
+<p>Now we count. Get element three: one step. Update element five to twenty six: one step. Searching for a value is different. Linear search compares with each element in turn. It finds twenty four after five comparisons, and needs all seven to learn that thirty is not there. On a sorted array, binary search finds twenty four in three.</p>
+<h2 id="10-access-update-search">10. Access, update, search</h2>
+<p>Linear search for twenty four. Index zero, no. One, no. Two, no. Three, no. Index four matches. Five comparisons.</p>
+<h2 id="11-access-update-search">11. Access, update, search</h2>
+<p>Binary search, on the sorted week. The middle element is twenty three: too small, so the left half is discarded. The middle of what is left is twenty five: too big. Then twenty four. Three comparisons. Each comparison halves the range, so a million elements need only twenty.</p>
+<h2 id="12-act-four-insertion-deletion-overflow">12. Act Four — Insertion, deletion, overflow</h2>
+<p>Now insertion and deletion. A late reading, eighteen, must go at index two. The elements from index two onwards shift one place right, starting from the end. Five shifts. Deleting the element at index zero shifts seven elements left. And when all ten places are full, the next insertion is an overflow.</p>
+<h2 id="13-insertion-deletion-overflow">13. Insertion, deletion, overflow</h2>
+<p>Here is the array after the insertion. Eighteen, in purple, is at index two. The five elements after it, in amber, each shifted one place to the right, starting from the end. Five shifts for one insertion.</p>
+<h2 id="14-insertion-deletion-overflow">14. Insertion, deletion, overflow</h2>
+<p>Now the array is full. Ten elements, in ten places. There is no eleventh place, so the next insertion is refused. That is an overflow. A static array cannot grow.</p>
+<h2 id="15-act-five-the-bill">15. Act Five — The bill</h2>
+<p>And the bill. On a million sorted elements, binary search needs twenty comparisons. Linear search needs a million. Both are loops, so both use only a few extra variables: order one extra space. And the capacity never changes. To grow from seven to thirty one places, we allocate a new array and copy every element.</p>
+<h2 id="16-the-bill">16. The bill</h2>
+<p>Here is the grow. The old array of seven, and a new array of thirty one. The seven elements are copied across, in purple. The old array is discarded. Growing a static array always costs one copy per element.</p>
+<h2 id="17-time-and-space-complexity">17. Time and Space Complexity</h2>
+<p>Here are the costs in time and space. Access and update are order one. Traversal, linear search, finding the maximum, and reversal are order n. Binary search on a sorted array is order log n. Insertion and deletion are order n at the front, because of the shifts, and order one at the end. And every operation here is a loop, so the extra space is order one.</p>
+<h2 id="18-compared-with-related-structures">18. Compared With Related Structures</h2>
+<p>How does the static array compare? Access by index is order one in an array, and order n in a linked list. Insertion at the front is order n in an array, and order one in a linked list. A static array's size is fixed, while a dynamic array grows by copying. And only an array can binary search, because only an array can jump to its middle.</p>
+<h2 id="19-common-mistakes">19. Common Mistakes</h2>
+<p>Five mistakes to watch for. Counting indexes from one. Looping while i is less than or equal to n, which goes one past the last element. Shifting in the wrong direction on insertion, which overwrites the data. Binary search on unsorted data. And computing the middle as low plus high over two, which can overflow.</p>
+<h2 id="20-thanks-for-watching">20. Thanks for Watching</h2>
+<p>That's the static array. If you remember one sentence, make it this one. An array reaches any element in one step because its elements are consecutive, and pays for it with a capacity that never changes. The full source code, written notes, pictures, and an animated walkthrough are all in the repository. Here is one exercise to try. Insert twenty two into the sorted week so that it stays sorted, and count the shifts. If this helped, a like really does help other people find it. And subscribe, if you'd like the rest of the series. Thanks for watching.</p>
+</main>
+<footer>Generated from <code>narration.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

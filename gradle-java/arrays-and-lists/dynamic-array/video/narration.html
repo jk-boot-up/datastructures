@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynamic Array — Video Narration Script</title>
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+[data-theme=dim]{color-scheme:dark;--bg:#1f2430;--fg:#d8dee9;--muted:#a3acbf;--card:#2a3140;--line:#3d4659;
+--accent:#b4a4f5;--code:#262c39;--link:#8cb4ff}
+[data-theme=dark]{color-scheme:dark;--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;--line:#334155;
+--accent:#a78bfa;--code:#020617;--link:#93c5fd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+.themes{position:fixed;top:10px;right:10px;display:flex;gap:2px;padding:3px;border:1px solid var(--line);
+border-radius:999px;background:var(--card);font-size:.8rem;z-index:10}
+.themes button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:999px;cursor:pointer;font:inherit}
+.themes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+@media print{.themes{display:none}}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("md-theme")}catch(e){}
+if(t!=="light"&&t!=="dim"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+document.documentElement.setAttribute("data-theme",t)})();</script>
+</head>
+<body>
+<div class="themes" role="group" aria-label="Theme">
+<button type="button" data-t="light">Light</button><button type="button" data-t="dim">Dim</button><button type="button" data-t="dark">Dark</button>
+</div>
+<script>(function(){var bs=document.querySelectorAll(".themes button");
+function show(t){document.documentElement.setAttribute("data-theme",t);
+bs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t===t?"true":"false")})}
+show(document.documentElement.getAttribute("data-theme"));
+bs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t);
+try{localStorage.setItem("md-theme",b.dataset.t)}catch(e){}})})})();</script>
+<main>
+<h1 id="dynamic-array-video-narration-script">Dynamic Array — Video Narration Script</h1>
+<h2 id="1-dynamic-array">1. Dynamic Array</h2>
+<p>Hello, and welcome. This video explains the dynamic array, in Java. This video is presented by Jayasekhar Konduru. First, a simple definition. A dynamic array is an array that grows by itself. Inside, it keeps an ordinary array with some spare places. When it runs out of room, it shifts everything into a new array, twice as big. Our example is a music playlist that grows, one song at a time. By the end, you will know the difference between size and capacity, why doubling is so much cheaper than growing by one, and what the spare room costs.</p>
+<h2 id="2-the-everyday-idea">2. The Everyday Idea</h2>
+<p>Think of a family moving house. They buy a house with a few spare bedrooms. Each new child takes a spare room, and nothing else changes. When every room is full, they move to a house twice the size, carrying everything across in one big move. Moving is hard work. But the new house is so much bigger that they will not move again for a long time. That is a dynamic array.</p>
+<h2 id="3-two-numbers-to-keep-apart">3. Two Numbers To Keep Apart</h2>
+<p>Two numbers, and it is important to keep them apart. The size is how many songs are stored. The capacity is how many places the array inside has, used or not. The difference is the spare room. And a resize means a new, bigger array, with every element copied across.</p>
+<h2 id="4-act-one-a-playlist-in-a-fixed-array">4. Act One — A playlist in a fixed array</h2>
+<p>First, the playlist in a fixed array of four places. Four songs fill it. The fifth song fails, with an index out of bounds exception. The obvious fix is a new array, one place bigger, for every song. But each time, every song already there must be copied across. For a thousand songs, that is almost half a million copies.</p>
+<h2 id="5-a-playlist-in-a-fixed-array">5. A playlist in a fixed array</h2>
+<p>Here is the full array. Four places, numbered zero to three, and four songs. The fifth song would need index four, which does not exist. So the program stops.</p>
+<h2 id="6-a-playlist-in-a-fixed-array">6. A playlist in a fixed array</h2>
+<p>Growing by one place each time means copying everything, every time. The fifth song copies four. The sixth copies five. The seventh copies six. The copies grow with the array, and a thousand songs cost four hundred and ninety nine thousand, four hundred and ninety four of them.</p>
+<h2 id="7-act-two-size-and-capacity">7. Act Two — Size and capacity</h2>
+<p>Now the dynamic array. Inside, it keeps an ordinary array, with room to spare. It remembers two numbers. The capacity: how many places it has. And the size: how many are in use. With three songs, the capacity is four and the size is three.</p>
+<h2 id="8-size-and-capacity">8. Size and capacity</h2>
+<p>Here it is. Four places inside, and three songs. The dashed place is spare. It is not part of the array yet. The size, three, points at it: that is where the next song will go.</p>
+<h2 id="9-size-and-capacity">9. Size and capacity</h2>
+<p>Adding Sunrise writes it into index three, and the size becomes four. One step. No copying. But now the size equals the capacity. There are no spare places left.</p>
+<h2 id="10-act-three-full-double-it">10. Act Three — Full? Double it</h2>
+<p>Now the fifth song, with the array full. The dynamic array makes a new array, twice as big: eight places. It copies the four songs across, and then writes the new one. The next three songs cost one step each. The ninth song finds it full again, and it doubles to sixteen, copying eight.</p>
+<h2 id="11-full-double-it">11. Full? Double it</h2>
+<p>Here is the resize. The old array of four, and the new array of eight. The four songs are copied across, in purple. Paper Moon goes into index four. And now there are three spare places, so the next three songs cost one step each.</p>
+<h2 id="12-full-double-it">12. Full? Double it</h2>
+<p>Why is doubling so much cheaper? Because each resize buys as much room as everything copied so far. Four copies buy four free appends. Eight copies buy eight. For a thousand songs, the copies add up to one thousand and twenty. About one per song. Growing by one place cost almost five hundred times as much.</p>
+<h2 id="13-act-four-the-middle-and-the-spare-places">13. Act Four — The middle, and the spare places</h2>
+<p>Now the middle of the array. Inserting an intro at the front shifts all nine songs one place to the right. Deleting index five shifts the four songs after it one place to the left. Now the capacity is sixteen, and the size is nine. Seven spare places.</p>
+<h2 id="14-the-middle-and-the-spare-places">14. The middle, and the spare places</h2>
+<p>To put the intro in index zero, every song must shift one place to the right, starting from the last. Nine shifts. The dynamic array made adding at the end cheap, but the front is still expensive.</p>
+<h2 id="15-the-middle-and-the-spare-places">15. The middle, and the spare places</h2>
+<p>After deleting one song, nine remain, in an array of sixteen places. The seven dashed places are spare. Asking for index nine is refused, because the array only holds nine songs, numbered zero to eight. Capacity is room. Size is what is stored.</p>
+<h2 id="16-act-five-the-bill">16. Act Five — The bill</h2>
+<p>And the bill. Doubling leaves room to spare. At five hundred and thirteen songs, the array has one thousand and twenty four places. Five hundred and eleven are empty. And most appends take one step, but the one that resizes copies everything. At five hundred and twelve songs, one append copies all five hundred and twelve. Deleting gives memory back. When only a quarter of the places are in use, the capacity is halved.</p>
+<h2 id="17-the-bill">17. The bill</h2>
+<p>Here is the memory cost, drawn small. Five songs, just after a resize to eight places: three are spare. At five hundred and thirteen songs, it is five hundred and eleven. Doubling trades memory for speed.</p>
+<h2 id="18-time-and-space-complexity">18. Time and Space Complexity</h2>
+<p>Here are the costs in time and space. Append is order one amortised. That means one step on average, counting the rare resize, which costs order n. Get and update are order one. Insert and delete at a position are order n at the front, because of the shifts, and order one at the end. Linear search is order n. Every operation uses order one extra space, except a resize, which needs a whole new array.</p>
+<h2 id="19-common-mistakes">19. Common Mistakes</h2>
+<p>Four mistakes to watch for. Growing by a fixed amount, such as one place: the copies pile up. Always grow by a factor. Treating the capacity as the size: spare places are not elements. Forgetting to clear a deleted place, so its memory is never freed. And deleting from the front in a loop, which shifts every other element each time.</p>
+<h2 id="20-when-to-use-it">20. When To Use It</h2>
+<p>So, when should you use a dynamic array? Almost always, as your default choice. It is fast to read by position, cheap to add to at the end, and compact. Avoid it when you work at the front or the middle a lot, or when no single append may ever pause. And you have used it already. Java's array list is exactly this, growing by half each time instead of doubling.</p>
+<h2 id="21-thanks-for-watching">21. Thanks for Watching</h2>
+<p>That's the dynamic array. If you remember one sentence, make it this one. When the array is full, double it, and adding stays one step on average. The full source code, written notes, pictures, and an animated walkthrough are all in the repository. Here is one exercise to try. Change the growth to one and a half times, and count the copies for a thousand songs. If this helped, a like really does help other people find it. And subscribe, if you'd like the rest of the series. Thanks for watching.</p>
+</main>
+<footer>Generated from <code>narration.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

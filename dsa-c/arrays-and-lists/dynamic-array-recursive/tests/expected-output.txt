@@ -1,0 +1,30 @@
+ONE. A recursive copy.
+  capacity 4, size 4: full
+  append("Paper Moon") must resize to 8, copying recursively:
+    copy_from(0): new_arr[0] = Blue Sky, then copy_from(1)
+      copy_from(1): new_arr[1] = Rain Dance, then copy_from(2)
+        copy_from(2): new_arr[2] = Night Drive, then copy_from(3)
+          copy_from(3): new_arr[3] = Sunrise, then copy_from(4)
+            copy_from(4): no elements left   <- base case
+  4 copies, one call each, depth 4, then 1 write; capacity 8
+
+TWO. Growing.
+  append("Last Train"): capacity 16, 8 copies at depth 8
+  9 songs appended, 2 resizes, 12 copies in total
+  traverse: [Blue Sky, Rain Dance, Night Drive, Sunrise, Paper Moon, Wild Honey, Echoes, Firefly, Last Train]
+  that traversal was 9 calls deep
+
+THREE. The middle, recursively.
+  insert_at(0, "Intro"): 9 shifts, depth 9
+  delete_at(5) removed "Paper Moon": 4 shifts, depth 4
+  linear_search("Firefly") = index 7: 8 comparisons, depth 8
+
+FOUR. Shrinking, recursively.
+  capacity 16, size 9
+  shrink_to_fit(): capacity 9, 9 copies at depth 9
+  17 songs in 32 places, delete_at_end down to 8: capacity 16 (a resize copying 8 songs, depth 8)
+
+FIVE. The limit of recursion.
+  1,000,000 appends: the child process was killed by SIGSEGV inside a resize, long before the end
+  a recursive copy needs one frame per element, so a large resize overflows the call stack
+  the dynamic-array project copies with a loop, in O(1) extra space, and finishes

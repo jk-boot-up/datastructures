@@ -1,0 +1,28 @@
+ONE. Recursion, for any element type.
+  linear_search(0): Mon is not Thu -> linear_search(1)
+    linear_search(1): Tue is not Thu -> linear_search(2)
+      linear_search(2): Wed is not Thu -> linear_search(3)
+        linear_search(3): Thu equals Thu -> found, index 3   <- base case
+  linear_search("Thu") = index 3: 4 comparisons, one call each, depth 4
+
+TWO. The same recursion, three types.
+  ints:     [21, 23, 19, 25, 24, 22, 20]
+  names:    [Mon, Tue, Wed, Thu, Fri, Sat, Sun]
+  readings: [Mon 21 C, Tue 23 C, Wed 19 C, Thu 25 C, Fri 24 C, Sat 22 C, Sun 20 C]
+  each traversal is 7 calls deep, whatever the element type
+
+THREE. Comparison functions, recursively.
+  sorted: [Fri, Mon, Sat, Sun, Thu, Tue, Wed]
+  binary_search("Thu") = index 4: 3 comparisons, one call each, depth 3
+  find_max(compare_reading) = Thu 25 C: 6 comparisons on the way back up, depth 6
+  find_max(compare_name) = Wed: the same function, alphabetical order
+
+FOUR. Insertion, deletion and reversal, recursively.
+  insert_at(2, Wed* 18 C): 5 shifts, depth 5
+  delete_at(0) removed Mon 21 C: 7 shifts, depth 7
+  reverse: 3 swaps, depth 3; [Sun 20 C, Sat 22 C, Fri 24 C, Thu 25 C, Wed 19 C, Wed* 18 C, Tue 23 C]
+
+FIVE. The limit of recursion.
+  binary_search on 1,000,000 ints: index 666666, 20 comparisons, depth 20
+  linear_search on 1,000,000: the child process was killed by SIGSEGV: the call stack overflowed
+  void * changes what is stored; recursion changes how much stack is used; neither changes the time

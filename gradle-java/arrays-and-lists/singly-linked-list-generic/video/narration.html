@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Singly Linked List (Generic) — Video Narration Script</title>
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+[data-theme=dim]{color-scheme:dark;--bg:#1f2430;--fg:#d8dee9;--muted:#a3acbf;--card:#2a3140;--line:#3d4659;
+--accent:#b4a4f5;--code:#262c39;--link:#8cb4ff}
+[data-theme=dark]{color-scheme:dark;--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;--line:#334155;
+--accent:#a78bfa;--code:#020617;--link:#93c5fd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+.themes{position:fixed;top:10px;right:10px;display:flex;gap:2px;padding:3px;border:1px solid var(--line);
+border-radius:999px;background:var(--card);font-size:.8rem;z-index:10}
+.themes button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:999px;cursor:pointer;font:inherit}
+.themes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+@media print{.themes{display:none}}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("md-theme")}catch(e){}
+if(t!=="light"&&t!=="dim"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+document.documentElement.setAttribute("data-theme",t)})();</script>
+</head>
+<body>
+<div class="themes" role="group" aria-label="Theme">
+<button type="button" data-t="light">Light</button><button type="button" data-t="dim">Dim</button><button type="button" data-t="dark">Dark</button>
+</div>
+<script>(function(){var bs=document.querySelectorAll(".themes button");
+function show(t){document.documentElement.setAttribute("data-theme",t);
+bs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t===t?"true":"false")})}
+show(document.documentElement.getAttribute("data-theme"));
+bs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t);
+try{localStorage.setItem("md-theme",b.dataset.t)}catch(e){}})})})();</script>
+<main>
+<h1 id="singly-linked-list-generic-video-narration-script">Singly Linked List (Generic) — Video Narration Script</h1>
+<h2 id="1-singly-linked-list-generic">1. Singly Linked List (Generic)</h2>
+<p>Hello, and welcome. This video explains the generic singly linked list, in Java. This video is presented by Jayasekhar Konduru. First, a simple definition. It is a chain of nodes, written once for any type of data. Each node holds a reference to its data, and a pointer to the next node. Our example is a treasure hunt, held as place names, as distances, and as clues. By the end, you will know how to write a generic node and list, what a node really holds, and why elements are matched with equals.</p>
+<h2 id="2-the-everyday-idea">2. The Everyday Idea</h2>
+<p>Think of the treasure trail again. Each signpost holds a slip saying where this stop's prize is kept, and points to the next signpost. The trail does not care whether the prizes are coins, books, or maps. The signposts work the same for all of them. That is a generic linked list.</p>
+<h2 id="3-the-words">3. The Words</h2>
+<p>The words. T is the element type, filled in at each use. A node of T holds data of type T, and a next pointer. The data is a reference: the node points at the object. And equals compares contents, not references.</p>
+<h2 id="4-act-one-one-class-any-element-type">4. Act One — One class, any element type</h2>
+<p>First, one class for any type. The same linked list holds the place names, as strings. It holds the distances, as integers. And it holds clues, a type of our own. The compiler checks each one. Putting a word into the list of distances does not compile.</p>
+<h2 id="5-one-class-any-element-type">5. One class, any element type</h2>
+<p>Here are two of the lists. Distances, and place names. The same nodes, the same next pointers, different data.</p>
+<h2 id="6-act-two-node-t-data-is-a-reference">6. Act Two — Node&lt;T&gt;: data is a reference</h2>
+<p>What does a node hold? Two references. One to the clue, which lives elsewhere in memory. And one to the next node. The node does not contain a copy of the clue. It points at it. Counting is still six steps along the next pointers.</p>
+<h2 id="7-node-t-data-is-a-reference">7. Node&lt;T&gt;: data is a reference</h2>
+<p>Here is one node. Its data arrow goes to the clue. Its next arrow goes to the next node.</p>
+<h2 id="8-act-three-search-and-deletion-with-equals">8. Act Three — Search and deletion with equals</h2>
+<p>Now search. We make a new clue: the fountain, fifty metres. Search compares with equals, and a record's equals compares its fields. So it is found, at position four. But it is a different object: double equals would have missed it. Insertion and deletion change pointers exactly as before.</p>
+<h2 id="9-search-and-deletion-with-equals">9. Search and deletion with equals</h2>
+<p>Here is the search. Four clues that are not equal. The fifth, the fountain at fifty metres, is equal. Five comparisons.</p>
+<h2 id="10-act-four-deleting-at-both-ends">10. Act Four — Deleting at both ends</h2>
+<p>Deleting at both ends. Deleting at the beginning moves the head: one pointer. Deleting at the end walks to the node before the last: three steps. Nothing refers to the removed nodes now, so Java can free them. And deleting from an empty list is an underflow.</p>
+<h2 id="11-deleting-at-both-ends">11. Deleting at both ends</h2>
+<p>Here is the list now. The mill is at the head, and the fountain's next is null.</p>
+<h2 id="12-act-five-the-same-algorithm-for-every-type">12. Act Five — The same algorithm for every type</h2>
+<p>One algorithm for every type. Reverse turns every next pointer around. On the distances, seven pointer changes. On the place names, the very same seven. Generics change the type of the data. They do not change the algorithm, or its cost.</p>
+<h2 id="13-the-same-algorithm-for-every-type">13. The same algorithm for every type</h2>
+<p>Here are the reversed distances. The last became the first, and no number moved.</p>
+<h2 id="14-time-and-space-complexity">14. Time and Space Complexity</h2>
+<p>Here are the costs. Insertion and deletion at the beginning are order one. At the end, order n. At a position, order n to reach it, and order one to link. Search, get, count, display and reverse are order n. Exactly the same as the string-only list.</p>
+<h2 id="15-compared-with-related-structures">15. Compared With Related Structures</h2>
+<p>How does it compare? The string-only list has the same costs, for one type. The generic dynamic array reaches any position in one step, but needs a cast inside. The generic list needs no cast at all. And Java's own linked list is generic in the same way, linked in both directions.</p>
+<h2 id="16-common-mistakes">16. Common Mistakes</h2>
+<p>Four mistakes to watch for. Matching with double equals. Using the raw types without angle brackets. Setting the insertion pointers in the wrong order. And changing an object after inserting it, forgetting that the list shares it.</p>
+<h2 id="17-thanks-for-watching">17. Thanks for Watching</h2>
+<p>That's the generic singly linked list. If you remember one sentence, make it this one. A node of T refers to its data and to the next node, and elements are matched with equals. The full source code, written notes, pictures, and an animated walkthrough are all in the repository. Here is one exercise to try. Total the distances of the clues, and see why a linked list is walked, never indexed. If this helped, a like really does help other people find it. And subscribe, if you'd like the rest of the series. Thanks for watching.</p>
+</main>
+<footer>Generated from <code>narration.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

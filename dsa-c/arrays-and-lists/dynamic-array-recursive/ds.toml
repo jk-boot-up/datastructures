@@ -1,0 +1,433 @@
+# ds.toml: everything about this project that is not C code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "dynamic-array-recursive"
+category = "arrays-and-lists"
+title = "Dynamic Array (Recursive)"
+package = "dynamic_array"
+main_class = "demo"
+example = "A growing music playlist, with every loop written as a recursion"
+tagline = "A growing array, one element per call"
+bold = "The recursive dynamic array doubles when full and halves when a quarter full, like any dynamic array, but copies, shifts, traverses and searches recursively: the time is unchanged, and the extra space is one call-stack frame per element, so a large resize can overflow the stack."
+analogy_short = "Moving house one box at a time, each helper waiting for the next"
+jdk = "Nothing: C's `ArrayList` grows with a loop (`Arrays.copyOf`)"
+thumb_lines = ["DYNAMIC ARRAY", "RECURSIVE"]
+thumb_code = "copy_from(i + 1)"
+youtube_title = "Dynamic Array in C, Recursively - Recursive Resize and the Call Stack"
+youtube_tags = ["dynamic array", "recursion", "resize", "call stack", "stack overflow", "amortized"]
+youtube_description = """Dynamic Array in C, written recursively, explained with a music playlist that grows one song at a time. We trace a recursive resize call by call: copy_from(0) copies Blue Sky and calls copy_from(1), down to the base case copy_from(4), four copies at depth 4. We grow the playlist to 9 songs with 2 resizes and 12 copies, traverse it at depth 9, insert at the front with 9 recursive shifts, delete from the middle with 4, and search recursively. We shrink to fit with 9 copies at depth 9 and see the capacity halve when deletions leave it a quarter full. We finish at the limit: appending a million songs overflows the call stack inside a resize, and the child process running it is stopped, because a recursive copy needs one frame per element. The loop version is in the Dynamic Array project."""
+
+[readme]
+intro = """A **dynamic array** keeps a static array inside, with a **size** (elements in use) and a **capacity** (places available): appending writes into the next spare place, a full array is **resized** to twice the capacity, and a quarter-full array is halved. This project is the `dynamic-array` project with every loop written as a **recursion**: traversal, linear search, the shifts of insertion and deletion, and the **copy inside a resize**. Each recursive function handles one element and calls itself for the rest, stopping at a **base case**. The time of every operation is unchanged. The extra space is not: each call still waiting keeps a **frame** on the **call stack**, so a resize of n elements needs n frames, and a large enough resize overflows the stack."""
+analogy = """Picture a family moving house, carrying one box at a time down a line of helpers. The first helper carries box 0 and then asks the next helper to carry the rest, and waits there until the whole move is finished. The second helper carries box 1, asks the next, and waits too. The last helper finds no boxes left and says "done", and only then can everyone go home. With four boxes, four helpers wait at once. With a million boxes, you would need a million helpers standing in the corridor at the same time, and the corridor is not that long: that is a stack overflow."""
+example = """The playlist from the `dynamic-array` project starts with room for four songs. The demo traces the recursive copy when the fifth song arrives, grows the playlist to nine songs, inserts an intro at the front, deletes a song from the middle, searches, shrinks, and finally tries to append a million songs."""
+why = """Writing the loops of a dynamic array as recursions shows two things. First, how a loop becomes a recursion: the loop variable becomes a parameter, the loop condition becomes the base case, and `i++` becomes the call with `i + 1`. Second, why real code does not do this for linear passes: the resize, an operation the programmer never calls directly, suddenly needs as many stack frames as there are elements, and an ordinary `append` can crash the program."""
+when_use = [
+  "Learning how each loop of a dynamic array becomes a recursion, with its base case.",
+  "Small arrays, where the depth stays far below the call-stack limit.",
+]
+when_not = [
+  "Any array that may grow large: a recursive resize of a few tens of thousands of elements can overflow the call stack. Use the loops of `dynamic-array`.",
+  "Performance-sensitive code: each call costs a frame, a jump and a return.",
+]
+met_before = [
+  "The `dynamic-array` project: the same structure with loops.",
+  "The `static-array-recursive` project: the same recursive shifts and search on a fixed array.",
+  "`ArrayList.add`, which resizes with a loop inside `Arrays.copyOf`.",
+]
+
+[[word]]
+term = "size and capacity"
+meaning = "The number of elements in use, and the number of places in the array inside."
+[[word]]
+term = "resize"
+meaning = "A new array of a different capacity, with every element copied across; here the copy is recursive."
+[[word]]
+term = "base case"
+meaning = "The call that returns without calling again: `i == size`, nothing left to copy, visit or compare."
+[[word]]
+term = "call stack and frame"
+meaning = "One frame per call that has not yet returned, holding its parameters, such as `i`."
+[[word]]
+term = "recursion depth"
+meaning = "The most frames at once: 4 for a resize of 4 elements, n for a resize of n."
+[[word]]
+term = "amortised O(1)"
+meaning = "The average time per append, counting the rare resize: unchanged by writing the copy recursively."
+
+[[operation]]
+name = "Traverse"
+does = "Visit arr[i], then traverse from i + 1"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 9 for 9 songs"
+[[operation]]
+name = "Access `get(i)` / update"
+does = "One address calculation (not recursive)"
+time = "O(1) / O(1) / O(1)"
+recursive_space = "O(1)"
+space = "O(1)"
+counted = "1 step"
+[[operation]]
+name = "Insert at end `append(x)`"
+does = "Write arr[size]; recursive resize first when full"
+time = "O(1) / O(1) amortised / O(n) when it resizes"
+recursive_space = "O(1), or O(n) during a resize"
+space = "O(1), plus the new array"
+counted = "4 copies at depth 4; 8 at depth 8"
+[[operation]]
+name = "Resize (inside append)"
+does = "copy_from(i): new_arr[i] = arr[i], then copy_from(i + 1)"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1), plus the new array"
+counted = "12 copies over 9 appends"
+[[operation]]
+name = "Insert `insert_at(pos, x)`"
+does = "shift_right from the last element down to pos"
+time = "O(1) at the end / O(n) / O(n) at the front"
+recursive_space = "O(n - pos)"
+space = "O(1)"
+counted = "9 shifts at depth 9"
+[[operation]]
+name = "Delete `delete_at(pos)`"
+does = "shift_left from pos, clear the freed place"
+time = "O(1) at the end / O(n) / O(n) at the front"
+recursive_space = "O(n - pos)"
+space = "O(1)"
+counted = "4 shifts at depth 4"
+[[operation]]
+name = "Delete at end `delete_at_end()`"
+does = "Clear arr[size-1]; halve (recursive copy) when a quarter full"
+time = "O(1) / O(1) amortised / O(n) when it shrinks"
+recursive_space = "O(1), or O(n) during a shrink"
+space = "O(1)"
+counted = "8 copies at depth 8 from 32 to 16"
+[[operation]]
+name = "Linear search"
+does = "arr[i].equals(key)? If not, search from i + 1"
+time = "O(1) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "8 comparisons at depth 8"
+[[operation]]
+name = "Shrink to fit"
+does = "Resize to exactly size places"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1), plus the new array"
+counted = "9 copies at depth 9"
+
+listing_intro = """Each loop of the `dynamic-array` project, written as a recursion. In each one, look for the base case, which returns without calling again, and for the call that moves one step towards it."""
+[[listing]]
+op = "Resize with a recursive copy"
+method = "dynamic_array#resize,copy_from"
+note = """`copy_from(i)` copies element i, then calls itself for i + 1; the base case is `i == size`, nothing left to copy. The loop `for (i = 0; i < size; i++)` has become the parameter `i`, the base case `i == size`, and the call with `i + 1`. Every frame waits until the last element is copied, so a resize of n elements is n frames deep."""
+[[listing]]
+op = "Insertion at the end"
+method = "dynamic_array#append"
+note = """Not recursive itself, but when the array is full it calls `resize`, and with it the recursive copy. That is why an ordinary append can overflow the call stack once the array is large, and the program is stopped."""
+[[listing]]
+op = "Insertion at a position"
+method = "dynamic_array#insert_at,shift_right"
+note = """`shift_right(i, pos)` moves `arr[i]` one place right and recurses on `i - 1`, starting at the last element so nothing is overwritten; it stops when `i < pos`."""
+[[listing]]
+op = "Linear search"
+method = "dynamic_array#linear_search,linear_search_from"
+note = """Two base cases: no elements left (-1) and a match (i). Otherwise the rest of the array is searched by the next call."""
+
+[compare]
+intro = """The recursive dynamic array against the loop version and the related structures (n elements):"""
+columns = ["Operation", "Recursive dynamic array", "Dynamic array (loops)", "Recursive static array"]
+rows = [
+  ["Access element i", "O(1)", "O(1)", "O(1)"],
+  ["Append", "O(1) amortised; a resize O(n) time and O(n) stack", "O(1) amortised; a resize O(n) time, O(1) extra", "overflow when full"],
+  ["Insert or delete at the front", "O(n) time and stack", "O(n) time, O(1) extra", "O(n) time and stack"],
+  ["Linear search", "O(n) time and stack", "O(n) time, O(1) extra", "O(n) time and stack"],
+  ["A million elements", "stack overflow inside a resize", "fine", "stack overflow in a linear recursion"],
+]
+
+pros = [
+  "Each operation reads like its definition, with a visible base case.",
+  "Shows exactly how a loop becomes a recursion: the variable, the condition and the step.",
+  "Access, update and appends between resizes are unaffected.",
+]
+cons = [
+  "Every linear pass, including the hidden copy inside a resize, needs O(n) stack.",
+  "An ordinary append can overflow the call stack once the array is large, and C cannot catch it.",
+  "Slower than loops: a call and a return per element.",
+]
+
+[[mistake]]
+mistake = "A resize copy with no base case"
+happens = "copy_from(i) keeps calling copy_from(i + 1) past the elements, reading memory that is not the array."
+fix = "Stop at `i == size`, the number of elements, not the new capacity."
+[[mistake]]
+mistake = "Forgetting that resize is recursive"
+happens = "An append that looks O(1) crashes the program with a stack overflow on a large array."
+fix = "Keep hidden, linear work such as copying as a loop."
+[[mistake]]
+mistake = "Shifting from pos upwards on insertion"
+happens = "Each element overwrites the next before it moves, copying one value everywhere."
+fix = "Start shift_right at the last element and move down to pos."
+[[mistake]]
+mistake = "Forgetting to free the old array after the recursive copy"
+happens = "Every resize leaks the old block."
+fix = "`free` the old array once the copy has returned, as `resize` does."
+
+[[exercise]]
+level = "easy"
+question = """Write a recursive `int count(const DynamicArray *a, const char *key, int i)` returning how many elements from index i on are equal to `key`. What is its base case, and its extra space?"""
+answer = """```c
+int count(const DynamicArray *a, const char *key, int i) {
+    if (i == a->size) return 0;                           /* base case */
+    return (strcmp(a->arr[i], key) == 0) + count(a, key, i + 1);
+}
+```
+The base case is `i == size`. O(n) time and O(n) stack: one frame per element."""
+[[exercise]]
+level = "medium"
+question = """Rewrite the recursive `copy_from(i)` as a loop. Which part of the recursion became the loop condition, and which became `i++`?"""
+answer = """```c
+for (int i = 0; i < a->size; i++) {
+    new_arr[i] = a->arr[i];
+}
+```
+The base case `i == size` became the loop condition `i < size` (its opposite: keep going while the base case is not reached), and the call `copy_from(i + 1)` became `i++`. The loop needs O(1) extra space."""
+[[exercise]]
+level = "harder"
+question = """Write a recursive copy that needs only O(log n) stack: copy the left half and the right half of a range by calling itself on each. Why is the depth logarithmic although every element is still copied?"""
+answer = """```c
+void copy_range(const DynamicArray *a, const char **new_arr, int low, int high) {
+    if (low > high) return;                               /* empty range */
+    int mid = low + (high - low) / 2;
+    new_arr[mid] = a->arr[mid];
+    copy_range(a, new_arr, low, mid - 1);
+    copy_range(a, new_arr, mid + 1, high);
+}
+```
+Called as `copy_range(a, new_arr, 0, a->size - 1)`. Each call halves the range, and only one chain of calls is waiting at a time, so the depth is about log2(n): 20 for a million elements. The time is still O(n), because every element is copied once."""
+
+[hero]
+caption = "A recursive resize from 4 to 8: copy_from(0) waits for copy_from(1) ... down to the base case copy_from(4)"
+picture = { type = "stack", cells = ["copy_from(0): Blue Sky", "copy_from(1): Rain Dance", "copy_from(2): Night Drive", "copy_from(3): Sunrise", "copy_from(4): base case"], width = 280, marks = { "4" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "A recursive copy"
+summary = "The fifth song needs a resize to 8: copy_from(0) copies Blue Sky and calls copy_from(1), down to the base case copy_from(4); 4 copies at depth 4."
+detail = """With four songs the playlist is full, so appending "Paper Moon" first resizes it to eight places. The copy is recursive: `copy_from(0)` copies Blue Sky into the new array and calls `copy_from(1)`, which copies Rain Dance and calls `copy_from(2)`, and so on. `copy_from(4)` finds no elements left and returns: that is the base case. Then the four waiting calls return one by one, the new array replaces the old, and the song is written. Four copies, with four frames on the call stack at the deepest point."""
+speech = """First, a recursive copy. [[slnc 400]] The playlist is full, with four songs. [[slnc 300]] To append a fifth, it must resize to eight. [[slnc 500]] Copy zero copies Blue Sky, and calls copy one. [[slnc 300]] Copy one copies Rain Dance, and calls copy two. [[slnc 400]] And so on, until copy four finds nothing left. [[slnc 300]] That is the base case. [[slnc 400]] Four copies, four frames on the stack."""
+console = [["capacity 4, size 4: full", "muted"], ["copy_from(0): new_arr[0] = Blue Sky, then copy_from(1)", "muted"], ["  ... Rain Dance, Night Drive, Sunrise", "muted"], ["copy_from(4): no elements left   <- base case", "ok"], ["4 copies, one call each, depth 4, then 1 write; capacity 8", "amber"]]
+[[act.frame]]
+caption = "Four copy calls waiting on the stack, and the base case on top"
+say = """Here is the call stack at the deepest point. [[slnc 300]] Four copy calls, each waiting. [[slnc 300]] On top, copy four, the base case. [[slnc 400]] When it returns, the others return one by one."""
+picture = { type = "stack", cells = ["copy_from(0): Blue Sky", "copy_from(1): Rain Dance", "copy_from(2): Night Drive", "copy_from(3): Sunrise", "copy_from(4): base case"], width = 280, marks = { "4" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Growing"
+summary = "The ninth song resizes to 16 with 8 copies at depth 8; 9 appends make 2 resizes and 12 copies; traversal is 9 calls deep."
+detail = """The next three songs fill the spare places with one write each. The ninth song finds the array full again, and the resize to 16 copies 8 songs, 8 frames deep. Nine appends, two resizes, twelve copies: exactly the same counts as the loop version, because recursion does not change the time. Traversing the nine songs recursively goes 9 calls deep."""
+speech = """Growing. [[slnc 400]] The next three songs cost one write each. [[slnc 400]] The ninth song finds the array full again. [[slnc 300]] The resize to sixteen copies eight songs, eight frames deep. [[slnc 500]] Nine appends, two resizes, twelve copies, exactly as with loops. [[slnc 400]] Recursion does not change the time. [[slnc 300]] It changes the stack."""
+console = [["append(\"Last Train\"): capacity 16, 8 copies at depth 8", "amber"], ["9 songs appended, 2 resizes, 12 copies in total", "ok"], ["traverse: [Blue Sky, ... Last Train], depth 9", "muted"]]
+[[act.frame]]
+caption = "After the second resize: 9 songs in 16 places"
+say = """Here is the playlist now. [[slnc 300]] Nine songs in sixteen places. [[slnc 400]] The second resize copied eight songs, with eight calls waiting at once."""
+picture = { type = "array", cells = ["Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Paper Moon", "Wild Honey", "Echoes", "Firefly", "Last Train", "", "", ""], size = 9, marks = { "8" = "new" }, note = "capacity 16 (first 12 shown), size 9" }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "The middle, recursively"
+summary = "insert_at(0, \"Intro\") shifts 9 songs at depth 9; delete_at(5) shifts 4 at depth 4; linear_search(\"Firefly\") finds index 7 at depth 8."
+detail = """Inserting "Intro" at the front calls `shift_right` from the last song down to index 0: 9 shifts, 9 frames. Deleting index 5, "Paper Moon", calls `shift_left` from index 5: 4 shifts, 4 frames, and the freed place is cleared. A recursive linear search for "Firefly" asks `equals` at indexes 0 to 7 and finds it at index 7: 8 comparisons, 8 frames. In every case the depth equals the number of elements visited."""
+speech = """Now the middle. [[slnc 400]] Inserting an intro at the front shifts all nine songs, nine calls deep. [[slnc 400]] Deleting index five shifts four songs, four calls deep. [[slnc 400]] And searching for Firefly finds it at index seven, eight calls deep. [[slnc 500]] Each time, the depth is the number of elements visited."""
+console = [["insert_at(0, \"Intro\"): 9 shifts, depth 9", "amber"], ["delete_at(5) removed \"Paper Moon\": 4 shifts, depth 4", "amber"], ["linear_search(\"Firefly\") = index 7: 8 comparisons, depth 8", "ok"]]
+[[act.frame]]
+caption = "insert_at(0, \"Intro\"): shift_right moved all 9 songs, one call each"
+say = """Here is the insertion. [[slnc 300]] Intro, in purple, at index zero. [[slnc 300]] The nine songs after it, in amber, each moved by one call of shift right."""
+picture = { type = "array", cells = ["Intro", "Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Paper Moon", "Wild Honey", "Echoes", "Firefly", "Last Train"], marks = { "0" = "new", "1" = "hi", "2" = "hi", "3" = "hi", "4" = "hi", "5" = "hi", "6" = "hi", "7" = "hi", "8" = "hi", "9" = "hi" } }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Shrinking, recursively"
+summary = "shrink_to_fit copies 9 songs at depth 9 into exactly 9 places; deleting 17 songs down to 8 halves 32 places to 16 with 8 copies at depth 8."
+detail = """With 9 songs in 16 places, `shrink_to_fit` resizes to exactly 9 places: a recursive copy of 9 songs, 9 frames deep. Shrinking also happens by itself: an array of 17 songs has 32 places, and deleting from the end down to 8 songs, a quarter of 32, halves the capacity to 16 with a recursive copy of 8 songs."""
+speech = """Shrinking uses the same recursive copy. [[slnc 400]] Shrink to fit copies nine songs into exactly nine places, nine calls deep. [[slnc 500]] And when deletions leave only a quarter of the places in use, the array halves itself. [[slnc 300]] From thirty two places to sixteen, copying eight songs, eight calls deep."""
+console = [["capacity 16, size 9", "muted"], ["shrink_to_fit(): capacity 9, 9 copies at depth 9", "ok"], ["17 songs in 32 places, delete_at_end down to 8: capacity 16 (a resize copying 8 songs, depth 8)", "ok"]]
+[[act.frame]]
+caption = "shrink_to_fit: 16 places become 9, copied recursively"
+say = """Here is the shrink. [[slnc 300]] The old array had sixteen places. [[slnc 300]] The new one has exactly nine, and every song was copied by its own call."""
+picture = { type = "group", items = [ { type = "array", cells = ["Intro", "Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Wild Honey", "Echoes", "Firefly", "Last Train", "", ""], size = 9, title = "old: 16 places (11 shown)" }, { type = "array", cells = ["Intro", "Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Wild Honey", "Echoes", "Firefly", "Last Train"], marks = { "0" = "new", "1" = "new", "2" = "new", "3" = "new", "4" = "new", "5" = "new", "6" = "new", "7" = "new", "8" = "new" }, title = "new: 9 places" } ], gap = 40 }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The limit of recursion"
+summary = "Appending 1,000,000 songs overflows the call stack inside a resize, long before the end; the child process running it is stopped by SIGSEGV; the loop version finishes."
+detail = """Appending a million songs works until a resize has to copy more elements than the call stack has room for frames. Then the recursive copy overflows the call stack, from inside an `append`, and the operating system stops the program with `SIGSEGV`; C cannot catch that, so the demo runs the appends in a child process and reports how it ended. This happens an operation that looks O(1) to its caller. The `dynamic-array` project copies with a loop in O(1) extra space and finishes. This is the lesson of the project: recursion is fine when the depth is small, but a linear recursion hidden inside a routine operation becomes a crash as soon as the data grows."""
+speech = """And the limit. [[slnc 400]] We try to append a million songs. [[slnc 400]] Long before the end, a resize has to copy more songs than the call stack has room for. [[slnc 400]] The operating system stops the program, from inside an ordinary append. [[slnc 300]] So the demo ran it in a separate child process. [[slnc 500]] The loop version finishes. [[slnc 400]] Recursion is fine when the depth is small, and dangerous when it grows with the data."""
+console = [["1,000,000 appends: the child process was killed by SIGSEGV inside a resize, long before the end", "bad"], ["a recursive copy needs one frame per element, so a large resize overflows the call stack", "amber"], ["the dynamic-array project copies with a loop, in O(1) extra space, and finishes", "muted"]]
+[[act.frame]]
+caption = "A large resize needs one frame per element: the call stack runs out"
+say = """Here is the problem. [[slnc 300]] One copy call per element, all waiting. [[slnc 400]] For a big resize, that is more frames than the call stack can hold."""
+picture = { type = "stack", cells = ["append(...)", "resize(...)", "copy_from(0)", "copy_from(1)", "...", "SIGSEGV"], width = 260, marks = { "5" = "bad" }, top_label = "overflow" }
+
+[animation]
+subtitle = "A playlist that grows, with every loop written as a recursion: a recursive resize, shifts and search, recursive shrinking, and a stack overflow inside an ordinary append."
+
+[docs.problem]
+scenario = """A music app's playlist grows one song at a time; the textbook dynamic-array operations are to be written recursively, and the cost of that shown."""
+naive = """Turning every loop into a recursion without noticing that the copy inside a resize is one of them: the hidden recursion grows with the array and eventually overflows the call stack."""
+deliver = [
+  "A `RecursiveDynamicArray` of strings with recursive traverse, copy (inside resize), shift_right, shift_left and linear_search, each with a base case.",
+  "Doubling when full and halving when a quarter full; the demo works the copies and the recursion depth out from what the operations did.",
+  "A real stack overflow inside an append on a million songs.",
+  "Time and stack space of every operation, compared with the loop version.",
+]
+
+[docs.prerequisites]
+required = ["The dynamic-array project (size, capacity, doubling)", "The static-array-recursive project, or recursion basics"]
+not_required = ["Big-O notation (START-HERE.md introduces it by counting steps)"]
+
+[docs.session]
+objectives = [
+  "Turn each loop of a dynamic array into a recursion with a base case.",
+  "Trace a recursive resize and draw its call stack.",
+  "Explain why the time is unchanged but the extra space becomes O(n).",
+  "Explain why an append can overflow the stack.",
+]
+walkthrough = """Start with the moving-helpers analogy. Put the loop `for (i = 0; i < size; i++) new_arr[i] = arr[i];` beside `copy_from(i)` and match the parts. Run the demo; in act one, draw the stack of copy calls. In act two, point out that the counts equal the loop version's. In act five, show the stack overflow and ask where the recursion was hidden."""
+
+[docs.explained]
+sentence = """The recursive dynamic array grows and shrinks like any dynamic array, but copies, shifts, traverses and searches by calling itself on the rest, so each operation keeps its time and gains O(n) stack, and a large resize overflows."""
+verdict = """Write these recursions to learn how loops and recursion correspond; keep the loops for real code. A dynamic array's linear passes, and above all the copy inside a resize, are exactly the kind of recursion that grows with the data and should be a loop."""
+recognise = [
+  "`copy_from(i + 1)` inside `copy`, with `if (i == size) return;` at the top.",
+  "A public operation such as `append` whose hidden helper is recursive.",
+]
+
+[spec]
+purpose = """Teach how the loops of a dynamic array become recursions, and why a linear recursion inside a resize is dangerous."""
+requirements = [
+  "Written by hand with `malloc` and `free`: no libraries.",
+  "Doubling when full, halving when a quarter full, shrink_to_fit; every copy recursive.",
+  "Recursive traverse, shift_right, shift_left and linear_search; get and update O(1).",
+  "Pure textbook code with nothing added for measuring; a real stack overflow demonstrated in a child process.",
+  "The demo prints five acts whose numbers the tests assert.",
+]
+nongoals = ["The loop version (dynamic-array)", "Generic element types (dynamic-array-generic-recursive)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Dynamic Array (Recursive): the pieces"
+caption = "The demo appends songs; a full array calls resize, which starts the recursive copy."
+nodes = [
+  { id = "demo", label = "Demo", sub = "RecursiveDynamicArrayDemo", col = 0, row = 0, colour = "client" },
+  { id = "arr", label = "RecursiveDynamicArray", sub = "append, insert_at, delete_at, linear_search", col = 1, row = 0, colour = "accent" },
+  { id = "resize", label = "resize(new_capacity)", sub = "malloc(new_capacity places)", col = 2, row = 0, colour = "amber" },
+  { id = "copy", label = "copy_from(i)", sub = "calls copy_from(i + 1)", col = 2, row = 1, colour = "red" },
+]
+edges = [ { from = "demo", to = "arr", label = "append(song)" }, { from = "arr", to = "resize", label = "when full" }, { from = "resize", to = "copy", label = "copy_from(0)" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Dynamic Array (Recursive): the classes"
+caption = "Public operations on the left; the private recursive helpers they call are listed with a minus sign."
+nodes = [
+  { id = "arr", label = "DynamicArray", sub = ["const char **arr", "int size, capacity", "+ traverse / get / update", "+ append / insert_at", "+ delete_at_end / delete_at", "+ linear_search / shrink_to_fit", "- resize / copy_from(i)", "- shift_right / shift_left"], col = 0, row = 0, colour = "accent" },
+]
+edges = []
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Dynamic Array (Recursive): one copy call"
+caption = "The loop's condition became the base case; the loop's i++ became the call on i + 1."
+nodes = [
+  { id = "call", label = "copy_from(i)", sub = "i = 0 at first", col = 0, row = 0, colour = "client" },
+  { id = "base", label = "i == size?", sub = "yes: return (base case)", col = 1, row = 0, colour = "green" },
+  { id = "work", label = "new_arr[i] = arr[i]", sub = "one copy", col = 2, row = 0, colour = "accent" },
+  { id = "rec", label = "copy_from(i + 1)", sub = "this frame waits", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "call", to = "base", label = "" }, { from = "base", to = "work", label = "no" }, { from = "work", to = "rec", label = "" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Dynamic Array (Recursive): appending the fifth song"
+caption = "The append triggers a resize, whose copy goes four calls deep."
+participants = ["Demo", "append", "copy_from(0)", "copy(1..3)", "copy_from(4)"]
+steps = [
+  ["Demo", "append", "append(\"Paper Moon\")"],
+  ["append", "copy_from(0)", "full: resize(8)"],
+  ["copy_from(0)", "copy(1..3)", "Blue Sky copied"],
+  ["copy(1..3)", "copy_from(4)", "3 more copied"],
+  ["copy_from(4)", "copy(1..3)", "base case", "reply"],
+  ["copy_from(0)", "append", "done: 4 copies, depth 4", "reply"],
+  ["append", "Demo", "arr[4] = \"Paper Moon\"", "reply"],
+]
+
+[poster]
+headline = [["DYNAMIC ARRAY", "text"], ["RECURSIVE", "accent"]]
+before = { code = "for (i...) copy", note = "O(1) extra space", tag = "LOOP" }
+after = { code = "copy_from(i + 1)", note = "O(n) stack per resize", tag = "RECURSION" }
+taglines = [["The same array, one call per element.", "text"], ["A hidden recursion can overflow.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Dynamic Array (Recursive)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the dynamic array, written recursively, in C. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] A dynamic array keeps an ordinary array inside, and moves to a bigger one when it is full. [[slnc 400]] Here, every loop is written as a recursion: a function that handles one element, and calls itself for the rest. [[slnc 700]] Our example is a music playlist that grows one song at a time. [[slnc 400]] By the end, you will know how each loop becomes a recursion, what that costs in memory, and why an ordinary append can crash."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Each helper carries one box, then waits for the rest of the move"
+picture = { type = "array", cells = ["box 0", "box 1", "box 2", "box 3", "done"], marks = { "4" = "ok" }, pointers = [[0, "helper 1"], [4, "base case"]], title = "a move, one box per helper" }
+narration = """Think of a family moving house, with a line of helpers. [[slnc 400]] The first helper carries box zero, then asks the next helper to carry the rest, and waits. [[slnc 400]] The second carries box one, asks the next, and waits too. [[slnc 500]] The last helper finds no boxes left, and says done. [[slnc 300]] That is the base case. [[slnc 500]] With four boxes, four helpers wait. [[slnc 300]] With a million boxes, the corridor is not long enough. [[slnc 400]] That is a stack overflow."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["size, capacity: in use, and available", "resize: a new array, every element copied", "base case: i == size, nothing left", "recursion depth: frames at once", "", "a resize of n elements: n frames"]
+narration = """The words. [[slnc 400]] The size is how many elements are in use, and the capacity is how many places there are. [[slnc 400]] A resize makes a new array, and copies every element. [[slnc 400]] The base case is when nothing is left to copy. [[slnc 400]] And the recursion depth is the number of frames at once. [[slnc 500]] A recursive resize of n elements needs n frames."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["get, update: O(1), not recursive", "append: O(1) amortised; a resize O(n) time and stack", "insert, delete: O(n) time and stack at the front", "traverse, linear search: O(n) time and stack", "", "the loop version: the same time, O(1) extra space"]
+narration = """Here are the costs. [[slnc 400]] Get and update are order one, and not recursive. [[slnc 400]] Append is order one amortised, but a resize takes order n time and order n stack. [[slnc 400]] Insertion and deletion at the front take order n time and stack. [[slnc 400]] So do traversal and linear search. [[slnc 500]] The loop version takes the same time, with order one extra space."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Recursive or Loop?"
+body = ["the same counts: 12 copies for 9 appends", "recursion: one frame per element copied", "loop: O(1) extra space", "", "a large resize: recursion overflows, the loop finishes"]
+narration = """Recursive or loop? [[slnc 400]] The counts are the same: twelve copies for nine appends. [[slnc 400]] But recursion keeps one frame per element copied, and the loop keeps none. [[slnc 500]] For a large resize, the recursion overflows the call stack, and the loop simply finishes."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["a copy with no base case", "forgetting that resize is recursive", "shifting from pos upwards", "not clearing a deleted place"]
+narration = """Four mistakes to watch for. [[slnc 400]] A recursive copy with no base case. [[slnc 400]] Forgetting that resize is recursive, so an append can overflow. [[slnc 400]] Shifting from the insertion position upwards, which overwrites the data. [[slnc 400]] And not clearing a deleted place, which keeps the old string alive."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the dynamic array, written recursively. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] A loop becomes a recursion by turning its condition into a base case, and its step into a call, but every waiting call costs a frame. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Write a recursive copy that halves the range, and see its depth drop to log n. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

@@ -1,0 +1,423 @@
+# ds.toml: everything about this project that is not C code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "dynamic-array-generic"
+category = "arrays-and-lists"
+title = "Dynamic Array (Generic)"
+package = "generic_dynamic_array"
+main_class = "demo"
+example = "A playlist of Song structs, beside the same code holding titles and play counts"
+tagline = "A growable array for any type, the C way"
+bold = "A generic dynamic array in C is a block of bytes with an element size, a size and a capacity: appending copies elem_size bytes into the next place, a full block is replaced by one twice as big with every element's bytes copied across, and comparisons go through a function pointer; the costs are those of any dynamic array."
+analogy_short = "Moving house with boxes of any size, as long as they are all the same size"
+jdk = "`realloc` in `<stdlib.h>`, which grows any block of bytes by copying it"
+thumb_lines = ["DYNAMIC ARRAY", "GENERIC void *"]
+thumb_code = "memcpy(data + size * elem_size, ...)"
+youtube_title = "Generic Dynamic Array in C - A Growable Array for Any Type"
+youtube_tags = ["dynamic array in c", "generic array", "void pointer", "memcpy", "realloc", "amortized"]
+youtube_description = """Generic Dynamic Array in C, explained with a playlist of Song structs, beside the same code holding titles and play counts. We see what the array holds: a block of bytes, an element size of 8, 4 or 20 bytes, a size and a capacity. We append until the block is full and watch a resize copy 4 songs, 80 bytes, into a block twice as big. We insert at the front with 9 shifts, delete from the middle with 4, and find a song by title and length with a comparison function, while a song of a different length is not found. We shrink to fit, and finish with the bill: 1,020 elements copied for 1,000 appends, and the capacity halving when a quarter full. The char * version is the Dynamic Array project."""
+
+[readme]
+intro = """A **generic dynamic array** is the `dynamic-array` project written once for **any element type**, the way C's standard library handles any type. The array is a block of bytes with an **element size**, `elem_size`, a **size** (elements in use) and a **capacity** (places in the block). Element i starts at `data + i x elem_size`. Appending copies `elem_size` bytes into the next place with **`memcpy`**; when the block is full, a new block of twice the capacity is allocated, every element's bytes are copied across, and the old block is freed. When deletions leave it a quarter full, it is halved. Searching takes a **comparison function**. Every cost is that of the `dynamic-array` project; what changes is that the array knows only sizes, never types."""
+analogy = """Picture moving house with boxes: the removals firm does not need to know what is in the boxes, only that every box is the same size, 20 centimetres, say. When the van is full, the firm brings one twice as big and carries every box across. To find "the box with the Echoes record", the firm asks you, the person who knows what is inside, to check each box."""
+example = """The music app's playlist holds `Song` structs, each a title and a length in seconds, 20 bytes per song. The same code also holds the titles as `char *` pointers and the play counts as `int`s. The demo grows the playlist until it resizes, inserts an intro, deletes a song, searches with a comparison function, deletes from the end, shrinks to fit, and measures a thousand appends."""
+why = """A playlist of songs, a list of titles and a list of play counts should not need three copies of the dynamic-array code. With a byte block, an element size and comparison functions, one implementation serves every type. It is how C code builds growable containers, and it is what `realloc` makes cheap to write."""
+when_use = [
+  "A growing list of values of one type, in C, where the type varies from use to use.",
+  "Mostly appending at the end and reading by index.",
+]
+when_not = [
+  "Only one element type is ever needed: the typed version is simpler and checked by the compiler.",
+  "Frequent insertion and deletion at the front: every element shifts; use a linked list or a deque.",
+]
+met_before = [
+  "`realloc` growing a buffer in any C program.",
+  "Java's `ArrayList<E>` and C++'s `std::vector<T>`, the typed equivalents in other languages.",
+]
+
+[[word]]
+term = "elem_size"
+meaning = "Bytes per element, from `sizeof`: 20 for a `Song`, 4 for an `int`, 8 for a pointer on a 64-bit machine."
+[[word]]
+term = "size and capacity"
+meaning = "Elements in use, and places in the block."
+[[word]]
+term = "resize"
+meaning = "A new block of a different capacity, with every element's bytes copied across and the old block freed."
+[[word]]
+term = "memcpy"
+meaning = "Copies a number of bytes from one place to another, whatever they mean."
+[[word]]
+term = "comparison function"
+meaning = "`int compare(const void *a, const void *b)`: zero when the two elements are equal."
+[[word]]
+term = "amortised O(1)"
+meaning = "The average cost of an append, counting the rare resize: about one copy per append."
+
+[[operation]]
+name = "Traverse"
+does = "Print each element with a print function"
+time = "O(n) / O(n) / O(n)"
+space = "O(1)"
+counted = "one call per element"
+[[operation]]
+name = "Access / update"
+does = "memcpy elem_size bytes at data + i x elem_size"
+time = "O(1) / O(1) / O(1)"
+space = "O(1)"
+counted = "1 step"
+[[operation]]
+name = "Insert at end `append`"
+does = "memcpy into place size; double first when full"
+time = "O(1) / O(1) amortised / O(n) when it resizes"
+space = "O(1) amortised; O(n) for the new block during a resize"
+counted = "1,020 elements copied over 1,000 appends"
+[[operation]]
+name = "Resize (inside append)"
+does = "A new block of twice the capacity, every element's bytes copied"
+time = "O(n) / O(n) / O(n), but rare"
+space = "O(n)"
+counted = "4 songs, 80 bytes, at the 5th song"
+[[operation]]
+name = "Insert `insert_at`"
+does = "Shift elements pos..size-1 right, memcpy the new one in"
+time = "O(1) at the end / O(n) / O(n) at the front"
+space = "O(1), plus a resize when full"
+counted = "9 shifts at the front of 9 songs"
+[[operation]]
+name = "Delete at end `delete_at_end`"
+does = "Copy the last element out; halve when a quarter full"
+time = "O(1) / O(1) amortised / O(n) when it shrinks"
+space = "O(1) amortised"
+counted = "0 shifts"
+[[operation]]
+name = "Delete `delete_at`"
+does = "Copy the element out, shift the later ones left"
+time = "O(1) at the end / O(n) / O(n) at the front"
+space = "O(1)"
+counted = "4 shifts to delete index 5 of 10"
+[[operation]]
+name = "Linear search"
+does = "compare(element i, key) for each i in turn"
+time = "O(1) / O(n) / O(n)"
+space = "O(1)"
+counted = "7 comparisons to find Echoes"
+[[operation]]
+name = "Shrink to fit"
+does = "Resize to exactly size places"
+time = "O(n) / O(n) / O(n)"
+space = "O(n)"
+counted = "8 songs copied"
+
+listing_intro = """The generic parts, exactly as they appear in `src/generic_dynamic_array.c`. Compare them with the `dynamic-array` project: the growing and shrinking logic is the same; each assignment has become a `memcpy` of `elem_size` bytes."""
+[[listing]]
+op = "Resize: copying bytes"
+method = "generic_dynamic_array#resize"
+note = """A new block of `new_capacity x elem_size` bytes, each element's bytes copied with `memcpy`, and the old block freed. The array never knows whether it is copying songs, numbers or pointers."""
+[[listing]]
+op = "Insertion at the end"
+method = "generic_dynamic_array#append"
+note = """If `size == capacity` the block is full, so it is replaced by one twice as big first; then `elem_size` bytes are copied into place `size`. Most appends are one `memcpy`; the rare one that resizes costs O(n)."""
+[[listing]]
+op = "Linear search with a comparison function"
+method = "generic_dynamic_array#linear_search"
+note = """`compare(element_at(a, i), key) == 0` asks the function passed in whether two elements are equal. `compare_song` compares the title with `strcmp` and then the length, so a song of the same title but a different length is a different song."""
+
+[compare]
+intro = """The generic dynamic array against its neighbours (n elements):"""
+columns = ["Property", "Generic dynamic array", "Dynamic array of char *", "Generic static array"]
+rows = [
+  ["Element types", "any, given its size", "char * only", "any, given its size"],
+  ["Access element i", "O(1)", "O(1)", "O(1)"],
+  ["Append", "O(1) amortised", "O(1) amortised", "overflow when full"],
+  ["Insert or delete at the front", "O(n) shifts", "O(n) shifts", "O(n) shifts"],
+  ["Moves elements with", "memcpy of elem_size bytes", "pointer assignment", "memcpy"],
+  ["Type checked by the compiler", "no: void *", "yes", "no: void *"],
+]
+
+pros = [
+  "One implementation for every element type.",
+  "O(1) access, O(1) amortised appends, and it shrinks again when mostly deleted.",
+  "Structs are stored inside the block itself: no separate allocation per element.",
+]
+cons = [
+  "No type checking through `void *`.",
+  "A resize still pauses for O(n) copies, and needs the old and new blocks at once.",
+  "Insertion and deletion at the front shift every element.",
+]
+
+[[mistake]]
+mistake = "The wrong element size"
+happens = "Elements overlap or are cut short, and neighbours overwrite each other."
+fix = "Pass `sizeof` of the element type itself: `create(&a, sizeof(Song))`."
+[[mistake]]
+mistake = "Keeping a pointer into the block across an append"
+happens = "A resize moves every element to a new block and frees the old one: the pointer now points at freed memory."
+fix = "Keep indexes, not pointers, or fetch the address again after every append."
+[[mistake]]
+mistake = "Forgetting to free the old block in a resize"
+happens = "Every resize leaks the old block."
+fix = "`free` it after copying, as `resize` does, or use `realloc`, which does both."
+[[mistake]]
+mistake = "Growing by a fixed amount"
+happens = "Appending near the limit copies everything each time: about n squared over 2 copies."
+fix = "Grow by a factor: double, or one and a half."
+
+[[exercise]]
+level = "easy"
+question = """Write `int contains(const GenericDynamicArray *a, const void *key, CompareFn compare)` using `linear_search`. What does it return for `Song {"Echoes", 201}` on the demo's playlist, and why?"""
+answer = """```c
+int contains(const GenericDynamicArray *a, const void *key, CompareFn compare) {
+    return linear_search(a, key, compare) >= 0;
+}
+```
+It returns 1: `compare_song` compares title and length, and a song with that title and length is in the playlist. O(n) time, O(1) space."""
+[[exercise]]
+level = "medium"
+question = """Write `int delete_by_key(GenericDynamicArray *a, const void *key, CompareFn compare)`, deleting the first element equal to `key`. What does it cost?"""
+answer = """```c
+int delete_by_key(GenericDynamicArray *a, const void *key, CompareFn compare) {
+    int i = linear_search(a, key, compare);
+    if (i < 0) return 0;
+    unsigned char gone[64];                 /* room for one element; assumes elem_size <= 64 */
+    delete_at(a, i, gone);
+    return 1;
+}
+```
+One comparison per element examined, plus one shift per element after the one deleted: one pass, O(n). A general version would `malloc(a->elem_size)` for the deleted element instead of a fixed buffer."""
+[[exercise]]
+level = "harder"
+question = """Rewrite `resize` using `realloc`. What can `realloc` do that the copying loop cannot, and what must you be careful of when it fails?"""
+answer = """```c
+static Status resize(GenericDynamicArray *a, int new_capacity) {
+    unsigned char *bigger = realloc(a->data, (size_t) new_capacity * a->elem_size);
+    if (bigger == NULL) return STATUS_NO_MEMORY;   /* a->data is still valid */
+    a->data = bigger;
+    a->capacity = new_capacity;
+    return STATUS_OK;
+}
+```
+`realloc` may grow the block in place when the memory after it is free, copying nothing. If it fails it returns `NULL` and leaves the old block alone, so the result must go into a new variable: `a->data = realloc(a->data, ...)` would lose the only pointer to the old block."""
+
+[hero]
+caption = "A GenericDynamicArray of Songs: 20 bytes each, size 5, capacity 8"
+picture = { type = "array", cells = ["Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Paper Moon", "", "", ""], size = 5, pointers = [[5, "size = 5"]], title = "songs, elem_size 20, capacity 8" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "One array type, any element type"
+summary = "The same code holds char * titles, int play counts and Song structs, with element sizes of 8, 4 and 20 bytes."
+detail = """Three playlists use one array type: titles as `char *` pointers (8 bytes each on a 64-bit machine), play counts as `int`s (4 bytes), and `Song` structs (a 16-character title and a length: 20 bytes). The array knows only the element size. Each starts with capacity 4 and holds 3 elements."""
+speech = """First, one array type for any element type. [[slnc 400]] The same code holds song titles, play counts, and whole songs. [[slnc 400]] It knows only how many bytes one element takes. [[slnc 300]] Eight for a pointer, four for an integer, twenty for a song."""
+console = [["titles (char *): [Blue Sky, Rain Dance, Night Drive]", "ok"], ["plays (int):     [10, 20, 30]", "ok"], ["songs (Song):    [Blue Sky (3:34), Rain Dance (3:07), Night Drive (4:03)]", "ok"], ["elem_size 8, 4 and 20 bytes; capacity 4, size 3 each", "muted"]]
+[[act.frame]]
+caption = "Three arrays, one type: only the element size differs"
+say = """Here are two of them. [[slnc 300]] Titles and play counts. [[slnc 300]] The same code, four places each, three in use."""
+picture = { type = "group", items = [ { type = "array", cells = ["Blue Sky", "Rain Dance", "Night Drive", ""], size = 3, title = "char *, 8 bytes each" }, { type = "array", cells = [10, 20, 30, ""], size = 3, title = "int, 4 bytes each" } ], vertical = true }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "Full? Double it, copying bytes"
+summary = "Appending Paper Moon to a full block of 4 songs makes a block of 8 and copies 4 songs, 80 bytes; 9 songs end at capacity 16."
+detail = """After the fourth song the block is full, so appending "Paper Moon" allocates a block for 8 songs and copies the 4 songs across, 4 x 20 = 80 bytes, before copying the new song in and freeing the old block. Four more songs follow; the ninth doubles the capacity again to 16."""
+speech = """Now the playlist fills up. [[slnc 400]] Appending a fifth song needs a bigger block: room for eight songs. [[slnc 400]] Four songs are copied across, eighty bytes. [[slnc 400]] The old block is freed. [[slnc 500]] Nine songs end in a block of sixteen places."""
+console = [["append(Paper Moon): full, new block of 8 songs, 4 songs copied (80 bytes)", "amber"], ["9 songs appended, capacity 16", "ok"]]
+[[act.frame]]
+caption = "The resize: a block of 8, the 4 songs' bytes copied, then Paper Moon"
+say = """Here is the resize. [[slnc 300]] The old block of four, and the new block of eight. [[slnc 300]] Four songs copied, and the new one written."""
+picture = { type = "group", items = [ { type = "array", cells = ["Blue Sky", "Rain Dance", "Night Drive", "Sunrise"], title = "old: 4 places, full" }, { type = "array", cells = ["Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Paper Moon", "", "", ""], size = 5, marks = { "0" = "new", "1" = "new", "2" = "new", "3" = "new", "4" = "hi" }, title = "new: 4 copied, 1 written" } ], vertical = true }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "The middle, and comparison functions"
+summary = "insert_at(0, Intro) shifts 9 songs; delete_at(5) shifts 4; compare_song finds Echoes (3:21) at index 6 after 7 comparisons, but not Echoes (3:20)."
+detail = """Inserting an intro at the front shifts all 9 songs one place right, 20 bytes each; deleting "Paper Moon" at index 5 shifts the 4 after it left. Searching needs a comparison function: `compare_song` compares the title with `strcmp` and then the length. Echoes at 3:21 is found at index 6 after 7 comparisons; Echoes at 3:20 is not found, because to this comparison function it is a different song."""
+speech = """Now the middle. [[slnc 400]] Inserting an intro shifts nine songs. [[slnc 300]] Deleting at index five shifts four. [[slnc 500]] To search, the array needs a comparison function. [[slnc 400]] Ours compares the title, then the length. [[slnc 400]] Echoes, three minutes twenty one, is found at index six. [[slnc 300]] Echoes, three minutes twenty, is not: a different song."""
+console = [["insert_at(0, Intro (0:42)): 9 songs shifted right", "amber"], ["delete_at(5) removed Paper Moon: 4 songs shifted left", "amber"], ["linear_search(Echoes (3:21), compare_song) = index 6 after 7 comparisons: title and length compared", "ok"], ["linear_search(Echoes (3:20)) = -1: a different length is a different song", "bad"]]
+[[act.frame]]
+caption = "linear_search with compare_song: indexes 0 to 5 differ, index 6 matches"
+say = """Here is the search. [[slnc 300]] Six songs that do not match. [[slnc 300]] The seventh, Echoes, matches in title and length."""
+picture = { type = "array", cells = ["Intro", "Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Wild Honey", "Echoes", "Firefly", "Last Train"], marks = { "0" = "dim", "1" = "dim", "2" = "dim", "3" = "dim", "4" = "dim", "5" = "dim", "6" = "ok" }, pointers = [[6, "compare == 0"]] }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Deleting, and giving memory back"
+summary = "16 places, 9 in use; delete_at_end copies the last song out to the caller; shrink_to_fit copies 8 songs into exactly 8 places."
+detail = """With 9 songs in 16 places, 7 are spare. `delete_at_end` copies "Last Train" out to the caller's variable, since the array's own bytes may be reused or freed. `shrink_to_fit` then resizes to exactly 8 places, copying 8 songs and freeing the larger block."""
+speech = """Deleting copies the song out to you, because the array's own memory may be reused. [[slnc 400]] Then shrink to fit copies eight songs into a block of exactly eight places, and frees the big one."""
+console = [["capacity 16, size 9: 7 places spare", "muted"], ["delete_at_end() removed Last Train; its bytes were copied out to the caller", "amber"], ["shrink_to_fit(): capacity 8, 8 songs copied", "ok"]]
+[[act.frame]]
+caption = "After shrink_to_fit: eight songs in exactly eight places"
+say = """Here is the result. [[slnc 300]] Eight songs, eight places, no spare room."""
+picture = { type = "array", cells = ["Intro", "Blue Sky", "Rain Dance", "Night Drive", "Sunrise", "Wild Honey", "Echoes", "Firefly"], marks = { "0" = "new", "1" = "new", "2" = "new", "3" = "new", "4" = "new", "5" = "new", "6" = "new", "7" = "new" } }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The bill"
+summary = "1,000 appends copy 1,020 elements, about one each; deleting down to 256 of 1,024 halves the capacity; the costs equal the char * version's."
+detail = """A thousand appends of ints copy 4 + 8 + ... + 512 = 1,020 elements in total, about one per append: O(1) amortised, as in the `char *` version. Deleting from the end down to 256, a quarter of 1,024, halves the capacity to 512. `void *` changes the element type, not the algorithm or its costs; `realloc` does the grow-and-copy for any block of bytes."""
+speech = """And the bill. [[slnc 400]] A thousand appends copy one thousand and twenty elements. [[slnc 300]] About one per append. [[slnc 400]] Deleting down to a quarter halves the capacity. [[slnc 500]] Every cost is the same as before. [[slnc 400]] The void pointer changes the type, not the algorithm."""
+console = [["1,000 appends of ints: 1,020 elements copied, about 1 per append", "ok"], ["delete_at_end down to 256 of capacity 1024: capacity halves to 512", "ok"], ["the same costs as the char * dynamic array: void * changes the type, not the algorithm", "muted"], ["already in C: realloc does the grow-and-copy for any block of bytes", "muted"]]
+[[act.frame]]
+caption = "Elements copied at each resize: 4, 8, 16 ... 512, about one per append"
+say = """Here are the copies at each resize. [[slnc 300]] Four, eight, sixteen, doubling each time, up to five hundred and twelve."""
+picture = { type = "grid", rows = [[4, 8, 16, 32, 64, 128, 256, 512]], col_labels = ["5th", "9th", "17th", "33rd", "65th", "129th", "257th", "513th"], cell_w = 80, cell_h = 52, note = "elements copied at each resize: 1,020 in total" }
+
+[animation]
+subtitle = "A playlist of Song structs in a generic C dynamic array: a byte block and an element size, resizes that copy bytes, comparison functions, and memory given back."
+
+[docs.problem]
+scenario = """A music app keeps growing lists of songs, titles and play counts, in C, and wants one dynamic array for all of them."""
+naive = """A separate copy of the dynamic-array code per element type."""
+deliver = [
+  "A `GenericDynamicArray` written by hand: a byte block, `elem_size`, `size` and `capacity`, with append, insert_at, delete_at_end, delete_at, linear_search, get, update, traverse and shrink_to_fit.",
+  "Doubling when full and halving when a quarter full; the demo counts copies from outside, from capacity changes.",
+  "Comparison and print functions for the element types.",
+  "Time and space complexity of every operation, compared with the char * version and the generic static array.",
+]
+
+[docs.prerequisites]
+required = ["The dynamic-array and static-array-generic projects", "C basics: structs, pointers, `sizeof`, `malloc` and `free`"]
+not_required = ["Previous experience of `realloc`"]
+
+[docs.session]
+objectives = [
+  "Build a growable byte block with an element size.",
+  "Explain why a resize copies bytes and invalidates pointers into the old block.",
+  "Search with a comparison function.",
+  "State that every cost equals the char * dynamic array's.",
+]
+walkthrough = """Start from the char * dynamic array and ask how to hold whole songs. Introduce elem_size and memcpy. Run the demo; in act two, compute 4 x 20 = 80 bytes. In act three, write compare_song together. Finish by rewriting resize with realloc (exercise three)."""
+
+[docs.explained]
+sentence = """A generic dynamic array in C is a growable byte block with an element size: it doubles when full by copying every element's bytes, halves when a quarter full, and compares through a function pointer."""
+verdict = """This is how C code builds growable containers for any type; use it when several types need the same structure, and the typed version when only one does."""
+recognise = [
+  "A struct with `unsigned char *data`, `size_t elem_size`, `size` and `capacity`.",
+  "`memcpy(data + size * elem_size, elem, elem_size)` in an append.",
+  "A resize that allocates, copies and frees, or calls `realloc`.",
+]
+
+[spec]
+purpose = """Teach generic containers in C on the dynamic array."""
+requirements = [
+  "Written by hand with `malloc`, `memcpy` and `free`; no libraries.",
+  "Doubling, halving at a quarter, shrink_to_fit.",
+  "append, insert_at, delete_at_end, delete_at, linear_search (comparison function), get, update, traverse (print function).",
+  "The demo's output is kept in tests/expected-output.txt and checked by make test.",
+]
+nongoals = ["The char * version (dynamic-array)", "Recursive versions (dynamic-array-generic-recursive)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Dynamic Array (Generic): the pieces"
+caption = "The demo appends Songs; the array copies their bytes and grows its block when full."
+nodes = [
+  { id = "demo", label = "Demo", sub = "demo.c, five acts", col = 0, row = 0, colour = "client" },
+  { id = "arr", label = "GenericDynamicArray", sub = "data, elem_size, size, capacity", col = 1, row = 0, colour = "accent" },
+  { id = "block", label = "byte block", sub = "capacity x elem_size", col = 2, row = 0, colour = "green" },
+  { id = "bigger", label = "a new block, twice as big", sub = "made when full", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "arr", label = "append(&a, &song)" }, { from = "arr", to = "block", label = "memcpy" }, { from = "arr", to = "bigger", label = "resize", dashed = true } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Dynamic Array (Generic): the types and functions"
+caption = "`GenericDynamicArray` knows only bytes; `Song` is one element type."
+nodes = [
+  { id = "arr", label = "GenericDynamicArray", sub = ["unsigned char *data", "size_t elem_size", "int size, capacity", "append / insert_at", "delete_at_end / delete_at", "linear_search / shrink_to_fit"], col = 0, row = 0, colour = "accent" },
+  { id = "song", label = "Song", sub = ["char title[16]", "int seconds"], col = 1, row = 0, colour = "client" },
+]
+edges = [ { from = "arr", to = "song", label = "holds bytes of" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Dynamic Array (Generic): what one append does"
+caption = "Copy into a spare place, or resize first."
+nodes = [
+  { id = "in", label = "append(&a, &song)", sub = "", col = 0, row = 0, colour = "client" },
+  { id = "full", label = "size == capacity?", sub = "is it full?", col = 1, row = 0, colour = "amber" },
+  { id = "copy", label = "memcpy into place size", sub = "elem_size bytes", col = 2, row = 0, colour = "green" },
+  { id = "resize", label = "new block of 2 x capacity", sub = "copy every element, free the old", col = 1, row = 1, colour = "red" },
+]
+edges = [ { from = "in", to = "full", label = "" }, { from = "full", to = "copy", label = "no" }, { from = "full", to = "resize", label = "yes" }, { from = "resize", to = "copy", label = "then" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Dynamic Array (Generic): appending the fifth song"
+caption = "The block is full, so the append allocates, copies 80 bytes, frees, then copies the new song in."
+participants = ["Demo", "append", "old block", "new block"]
+steps = [
+  ["Demo", "append", "append(&playlist, &paper_moon)"],
+  ["append", "new block", "malloc(8 x 20 bytes)"],
+  ["old block", "new block", "memcpy 4 songs, 80 bytes"],
+  ["append", "old block", "free"],
+  ["append", "new block", "memcpy Paper Moon into place 4"],
+  ["append", "Demo", "size 5", "reply"],
+]
+
+[poster]
+headline = [["DYNAMIC ARRAY", "text"], ["GENERIC IN C", "accent"]]
+before = { code = "const char **arr", note = "one type only", tag = "ONE TYPE" }
+after = { code = "data + i * elem_size", note = "any type, growable", tag = "ANY TYPE" }
+taglines = [["A growable block of bytes.", "text"], ["Double when full, halve at a quarter.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Dynamic Array (Generic)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the generic dynamic array, in C. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] It is an array that grows by itself, written once for any type of element. [[slnc 400]] It is a block of bytes with an element size, and when it is full, it moves into a block twice as big. [[slnc 700]] Our example is a music playlist of songs. [[slnc 400]] By the end, you will know how C builds a growable container for any type, and what it costs."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "The removals firm knows only the box size, never the contents"
+picture = { type = "group", items = [ { type = "array", cells = ["box", "box", "box", "box"], title = "van: full" }, { type = "array", cells = ["box", "box", "box", "box", "", "", "", ""], size = 4, marks = { "0" = "new", "1" = "new", "2" = "new", "3" = "new" }, title = "a van twice as big" } ], vertical = true }
+narration = """Picture moving house with boxes. [[slnc 400]] The removals firm does not need to know what is in the boxes, only that every box is the same size. [[slnc 500]] When the van is full, they bring one twice as big, and carry every box across. [[slnc 500]] To find a particular box, they ask you, because you know what is inside. [[slnc 400]] That is a generic dynamic array."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["elem_size: bytes per element", "size and capacity: in use, and available", "resize: a new block, every element's bytes copied", "memcpy: copy bytes without knowing their type", "", "compare(a, b): the function that knows the type"]
+narration = """The words. [[slnc 400]] The element size is how many bytes one element takes. [[slnc 400]] Size is how many are in use, and capacity how many fit. [[slnc 400]] A resize makes a new block, and copies every element's bytes. [[slnc 400]] Mem copy copies bytes without knowing their type. [[slnc 400]] And the comparison function is the one piece that knows the type."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["append: O(1) amortised, O(n) on a resize", "get, update: O(1)", "insert_at, delete_at: O(n) at the front", "linear search: O(n)", "", "the same as the char * version"]
+narration = """Here are the costs. [[slnc 400]] Append is order one amortised, and order n when it resizes. [[slnc 400]] Get and update are order one. [[slnc 400]] Insert and delete at the front are order n. [[slnc 400]] Linear search is order n. [[slnc 500]] Every one is the same as the version for text only."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "Compared With Related Structures"
+body = ["char * version: the same costs, one type, type checked", "generic static array: any type, fixed capacity", "", "realloc: the grow-and-copy, done for you"]
+narration = """How does it compare? [[slnc 400]] The version for text has the same costs, for one type, checked by the compiler. [[slnc 400]] The generic static array holds any type, but cannot grow. [[slnc 400]] And real C code often lets realloc do the growing and copying."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["the wrong element size", "a pointer into the block kept across an append", "forgetting to free the old block", "growing by a fixed amount"]
+narration = """Four mistakes to watch for. [[slnc 400]] Passing the wrong element size. [[slnc 400]] Keeping a pointer into the block across an append: a resize moves everything. [[slnc 400]] Forgetting to free the old block. [[slnc 400]] And growing by a fixed amount instead of doubling."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the generic dynamic array in C. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] A growable block of bytes with an element size holds any type, doubling when full and halving at a quarter. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Rewrite the resize with realloc, and handle its failure safely. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

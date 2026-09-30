@@ -1,0 +1,138 @@
+# ds.toml: everything about this project that is not C code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+#
+# Write for a complete beginner (PLAN.md section 2): picture first, words
+# second, code last; count steps before naming a cost; explain every new word
+# where it first appears; use the numbers the demo actually prints.
+#
+# Pictures (hero, and every act frame) use tools/dskit/dskit/structure.py:
+#   { type = "array", cells = [...], size = 3, marks = { "2" = "hi" }, pointers = [[3, "size"]] }
+#   types: array, stack, linked, tree, graph, buckets, grid, plane, group
+#   marks: hi (just changed), ok, bad, new, cold, dim
+
+[project]
+slug = "__SLUG__"
+category = "__CATEGORY__"
+title = "__TITLE__"
+package = "__PACKAGE__"              # the structure's files: src/__PACKAGE__.c and .h
+main_class = "__MAIN__"                 # the demo: src/demo.c
+example = "__EXAMPLE__"               # the worked example, as in the catalogue
+tagline = "TODO five-word idea"        # thumbnail and index
+bold = "TODO the lesson in one bold sentence."
+analogy_short = "TODO the everyday picture in a few words"
+jdk = "TODO what the C standard library already offers (qsort, bsearch, ...), or 'nothing in the C standard library'"
+thumb_lines = ["TODO"]                 # thumbnail headline, upper case, 1-2 lines
+thumb_code = "TODO()"                  # a short code fragment for the thumbnail
+youtube_title = "TODO (under 60 characters)"
+youtube_tags = ["TODO"]
+youtube_description = """TODO 90-130 words. Open with the name: "__TITLE__ in C, explained
+with ...". Then the example, what the video shows, and the cost."""
+
+[readme]
+intro = """TODO what it is, in plain words."""
+analogy = """TODO the everyday analogy, used consistently."""
+example = """TODO the worked example."""
+why = """TODO the problem it solves, and what goes wrong without it."""
+when_use = ["TODO"]
+when_not = ["TODO"]
+met_before = ["TODO"]
+
+[[word]]
+term = "TODO"
+meaning = "TODO"
+
+[[operation]]
+name = "TODO"
+does = "TODO"
+counted = "TODO steps, in words a beginner can check"
+big_o = "TODO O(1)"
+
+[[mistake]]
+mistake = "TODO"
+happens = "TODO"
+fix = "TODO"
+
+[[exercise]]
+level = "easy"
+question = """TODO"""
+answer = """TODO"""
+
+[hero]
+caption = "TODO"
+picture = { type = "array", cells = [1, 2, 3] }
+
+# One [[act]] per act the demo prints (five), in order. Each act has a console
+# slide (its speech) and one or more frames: a picture and what is said over it.
+[[act]]
+title = "TODO"
+summary = "TODO one line for the README"
+detail = """TODO a paragraph for the explained document"""
+speech = """TODO the act's opening narration, with [[slnc N]] pauses"""
+console = [["TODO a line the demo printed", "ok"]]    # ok | bad | amber | muted
+
+[[act.frame]]
+caption = "TODO"
+say = """TODO what the narrator says over this picture"""
+picture = { type = "array", cells = [1, 2, 3], marks = { "0" = "hi" } }
+
+[animation]
+subtitle = "TODO one sentence under the heading"
+
+[docs.problem]
+scenario = """TODO"""
+naive = """TODO"""
+deliver = ["TODO"]
+
+[docs.prerequisites]
+required = ["C basics: variables, loops, functions, structs and pointers"]
+not_required = ["Any previous data-structures knowledge"]
+
+[docs.session]
+objectives = ["TODO"]
+walkthrough = """TODO"""
+
+[docs.explained]
+sentence = """TODO"""
+verdict = """TODO"""
+recognise = ["TODO"]
+
+[spec]
+purpose = """TODO"""
+requirements = ["TODO"]
+nongoals = ["TODO"]
+
+# Diagrams (tools/dskit/dskit/diagrams.py): architecture-diagram, class-diagram,
+# data-flow-diagram, sequence-diagram. kinds: flow, class, sequence.
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "TODO"
+caption = "TODO"
+nodes = [{ id = "a", label = "TODO", sub = "TODO", col = 0, row = 0, colour = "client" }]
+edges = []
+
+[poster]
+headline = [["TODO", "text"]]
+taglines = [["TODO", "gold"]]
+
+# Video scenes, about 16. kind = "acts" expands to every act's console and frame slides.
+# kinds: poster, bullets (body = list), console / code (body = string), quote,
+# structure (picture = {...}), outro (body = list).
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "__TITLE__"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the __TITLE__, in C. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] TODO"""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository."]
+narration = """TODO one sentence to remember. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""

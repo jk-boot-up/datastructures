@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynamic Array (Generic) — Video Narration Script</title>
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+[data-theme=dim]{color-scheme:dark;--bg:#1f2430;--fg:#d8dee9;--muted:#a3acbf;--card:#2a3140;--line:#3d4659;
+--accent:#b4a4f5;--code:#262c39;--link:#8cb4ff}
+[data-theme=dark]{color-scheme:dark;--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;--line:#334155;
+--accent:#a78bfa;--code:#020617;--link:#93c5fd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+.themes{position:fixed;top:10px;right:10px;display:flex;gap:2px;padding:3px;border:1px solid var(--line);
+border-radius:999px;background:var(--card);font-size:.8rem;z-index:10}
+.themes button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:999px;cursor:pointer;font:inherit}
+.themes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+@media print{.themes{display:none}}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("md-theme")}catch(e){}
+if(t!=="light"&&t!=="dim"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+document.documentElement.setAttribute("data-theme",t)})();</script>
+</head>
+<body>
+<div class="themes" role="group" aria-label="Theme">
+<button type="button" data-t="light">Light</button><button type="button" data-t="dim">Dim</button><button type="button" data-t="dark">Dark</button>
+</div>
+<script>(function(){var bs=document.querySelectorAll(".themes button");
+function show(t){document.documentElement.setAttribute("data-theme",t);
+bs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t===t?"true":"false")})}
+show(document.documentElement.getAttribute("data-theme"));
+bs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t);
+try{localStorage.setItem("md-theme",b.dataset.t)}catch(e){}})})})();</script>
+<main>
+<h1 id="dynamic-array-generic-video-narration-script">Dynamic Array (Generic) — Video Narration Script</h1>
+<h2 id="1-dynamic-array-generic">1. Dynamic Array (Generic)</h2>
+<p>Hello, and welcome. This video explains the generic dynamic array, in Java. This video is presented by Jayasekhar Konduru. First, a simple definition. A generic dynamic array is an array that grows by itself, written once for any type of element. It stores references to objects, and doubles its room when it is full. Our example is a music playlist of songs. By the end, you will know how Java's array list is built, what a resize really copies, and why deleted places must be cleared.</p>
+<h2 id="2-the-everyday-idea">2. The Everyday Idea</h2>
+<p>Think of moving house, but with a warehouse. Your furniture stays in the warehouse, and you keep a list of where each piece is. When the list runs out of lines, you copy it onto a sheet twice as long. Only the addresses are copied. The furniture never moves. And the list does not care whether the addresses point at chairs, or books, or bicycles.</p>
+<h2 id="3-the-words">3. The Words</h2>
+<p>The words. T is the element type, filled in each time the class is used. Size is how many elements are in use, and capacity is how many places there are. Each place holds a reference, the address of an object. A resize copies the references, not the objects. And equals compares contents.</p>
+<h2 id="4-act-one-one-class-any-element-type">4. Act One — One class, any element type</h2>
+<p>First, one class for any type. The same dynamic array holds song titles, as strings. It holds play counts, as integers. And it holds songs, a type of our own. Inside each is an ordinary array of four places. It is created as an array of object, because Java cannot create an array of T directly.</p>
+<h2 id="5-one-class-any-element-type">5. One class, any element type</h2>
+<p>Here are two of them. Titles and play counts. The same class, the same code, four places each, three in use.</p>
+<h2 id="6-act-two-full-double-it-copying-references">6. Act Two — Full? Double it, copying references</h2>
+<p>Now the playlist fills up. Appending a fifth song needs a resize: a new array of eight places. Four references are copied across. Not four songs: four addresses. The song at index zero is still the very same object. Nine songs take two resizes, exactly as before.</p>
+<h2 id="7-full-double-it-copying-references">7. Full? Double it, copying references</h2>
+<p>Here is the resize. The old array of four, and the new array of eight. Each place holds an arrow to a song. The arrows are copied, and the songs stay put.</p>
+<h2 id="8-act-three-the-middle-and-equals">8. Act Three — The middle, and equals</h2>
+<p>Now the middle. Inserting an intro at the front shifts nine songs. Deleting index five shifts four. Then we make a new song called Echoes, with the same length, and search for it. Search uses equals, and a record's equals compares the title and the length. So it is found, at index six, although it is a different object.</p>
+<h2 id="9-the-middle-and-equals">9. The middle, and equals</h2>
+<p>Here is the search. Six songs compared, and not equal. The seventh, Echoes, is equal: same title, same length. Seven comparisons.</p>
+<h2 id="10-act-four-deleting-clears-references">10. Act Four — Deleting clears references</h2>
+<p>Deleting is where references matter most. Deleting the last song sets its place to null. If the array kept the reference, the song could never be freed from memory. That is a memory leak. Then shrink to fit copies eight references into exactly eight places.</p>
+<h2 id="11-deleting-clears-references">11. Deleting clears references</h2>
+<p>Here is the array after the deletion. Eight songs. The place that held Last Train is now null, like every spare place.</p>
+<h2 id="12-act-five-the-bill">12. Act Five — The bill</h2>
+<p>And the bill. A thousand appends copy one thousand and twenty references. About one per append. Deleting down to a quarter halves the capacity. Every cost is the same as the string-only version. Generics change the type, not the algorithm. And this is how Java's array list is built.</p>
+<h2 id="13-the-bill">13. The bill</h2>
+<p>Here are the copies at each resize. Four, eight, sixteen, doubling each time, up to five hundred and twelve. One thousand and twenty in all, for a thousand appends.</p>
+<h2 id="14-time-and-space-complexity">14. Time and Space Complexity</h2>
+<p>Here are the costs in time and space. Append is order one amortised, and order n when it resizes. Get and update are order one. Insert and delete at the front are order n. Linear search is order n. Every one of them is the same as the string-only version.</p>
+<h2 id="15-compared-with-related-structures">15. Compared With Related Structures</h2>
+<p>How does it compare? The string-only dynamic array has the same costs, but holds one type. The generic static array holds any type, but cannot grow. A plain int array stores values, not references, so it uses less memory. And Java's own array list is exactly this structure.</p>
+<h2 id="16-common-mistakes">16. Common Mistakes</h2>
+<p>Four mistakes to watch for. Writing new T array, which does not compile. Searching with double equals, which misses equal objects. Not clearing freed places, which leaks memory. And growing by a fixed amount instead of doubling.</p>
+<h2 id="17-thanks-for-watching">17. Thanks for Watching</h2>
+<p>That's the generic dynamic array. If you remember one sentence, make it this one. Store references in an array of object, double it when full, and clear every place you free. The full source code, written notes, pictures, and an animated walkthrough are all in the repository. Here is one exercise to try. Write delete by key, using linear search and delete at. If this helped, a like really does help other people find it. And subscribe, if you'd like the rest of the series. Thanks for watching.</p>
+</main>
+<footer>Generated from <code>narration.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

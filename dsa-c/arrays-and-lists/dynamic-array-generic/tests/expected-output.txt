@@ -1,0 +1,26 @@
+ONE. One array type, any element type.
+  titles (char *): [Blue Sky, Rain Dance, Night Drive]
+  plays (int):     [10, 20, 30]
+  songs (Song):    [Blue Sky (3:34), Rain Dance (3:07), Night Drive (4:03)]
+  elem_size 8, 4 and 20 bytes; capacity 4, size 3 each
+
+TWO. Full? Double it, copying bytes.
+  append(Paper Moon): full, new block of 8 songs, 4 songs copied (80 bytes)
+  9 songs appended, capacity 16
+
+THREE. The middle, and comparison functions.
+  insert_at(0, Intro (0:42)): 9 songs shifted right
+  delete_at(5) removed Paper Moon: 4 songs shifted left
+  linear_search(Echoes (3:21), compare_song) = index 6 after 7 comparisons: title and length compared
+  linear_search(Echoes (3:20)) = -1: a different length is a different song
+
+FOUR. Deleting, and giving memory back.
+  capacity 16, size 9: 7 places spare
+  delete_at_end() removed Last Train; its bytes were copied out to the caller
+  shrink_to_fit(): capacity 8, 8 songs copied
+
+FIVE. The bill.
+  1,000 appends of ints: 1,020 elements copied, about 1 per append
+  delete_at_end down to 256 of capacity 1024: capacity halves to 512
+  the same costs as the char * dynamic array: void * changes the type, not the algorithm
+  already in C: realloc does the grow-and-copy for any block of bytes

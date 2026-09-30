@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skip List — Video Narration Script</title>
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+[data-theme=dim]{color-scheme:dark;--bg:#1f2430;--fg:#d8dee9;--muted:#a3acbf;--card:#2a3140;--line:#3d4659;
+--accent:#b4a4f5;--code:#262c39;--link:#8cb4ff}
+[data-theme=dark]{color-scheme:dark;--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;--line:#334155;
+--accent:#a78bfa;--code:#020617;--link:#93c5fd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+.themes{position:fixed;top:10px;right:10px;display:flex;gap:2px;padding:3px;border:1px solid var(--line);
+border-radius:999px;background:var(--card);font-size:.8rem;z-index:10}
+.themes button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:999px;cursor:pointer;font:inherit}
+.themes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+@media print{.themes{display:none}}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("md-theme")}catch(e){}
+if(t!=="light"&&t!=="dim"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+document.documentElement.setAttribute("data-theme",t)})();</script>
+</head>
+<body>
+<div class="themes" role="group" aria-label="Theme">
+<button type="button" data-t="light">Light</button><button type="button" data-t="dim">Dim</button><button type="button" data-t="dark">Dark</button>
+</div>
+<script>(function(){var bs=document.querySelectorAll(".themes button");
+function show(t){document.documentElement.setAttribute("data-theme",t);
+bs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t===t?"true":"false")})}
+show(document.documentElement.getAttribute("data-theme"));
+bs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t);
+try{localStorage.setItem("md-theme",b.dataset.t)}catch(e){}})})})();</script>
+<main>
+<h1 id="skip-list-video-narration-script">Skip List — Video Narration Script</h1>
+<h2 id="1-skip-list">1. Skip List</h2>
+<p>Hello, and welcome. This video explains the skip list, in Java. This video is presented by Jayasekhar Konduru. First, a simple definition. A skip list is a sorted linked list with express lanes. Some values also stand on higher levels, which skip over the ones in between. A search rides the express as far as it can, then changes down. And a coin toss decides which values get the express stops. Our example is a train line, with a stopping service and express services. By the end, you will know how to search, add and remove, why coins make it fast, and why fast only on average.</p>
+<h2 id="2-the-everyday-idea">2. The Everyday Idea</h2>
+<p>Think of a railway line with two kinds of train. The stopping train calls at every station. The express calls only at a few. To reach a small station near the end, you ride the express as far as it goes without overshooting. Then you change to the stopping train, for the last few stops. That is a skip list.</p>
+<h2 id="3-words-first">3. Words First</h2>
+<p>A few words, before we start. A level is one lane of arrows. Level one calls everywhere; higher levels skip. A station's height is how many levels it stands on. The head is a dummy start, on every level. And a coin toss decides how tall each new station is.</p>
+<h2 id="4-act-one-a-stopping-service-only">4. Act One — A stopping service only</h2>
+<p>First, a line with a stopping service only. Sixteen stations, in order, and every train calls at every one. To find Marden, at kilometre fifty seven, we start at the beginning, and follow one arrow at a time. Thirteen hops. A linked list has no middle to jump to.</p>
+<h2 id="5-a-stopping-service-only">5. A stopping service only</h2>
+<p>Here is the stopping line. One level, every station. The amber arrows are the search for Marden. It passes every station before it, one hop at a time. Thirteen hops.</p>
+<h2 id="6-act-two-express-lanes">6. Act Two — Express lanes</h2>
+<p>Now we add express lanes. Every second station also stands on level two. Every fourth, on level three. And every eighth, on level four. Each station keeps one forward arrow for every level it stands on. And a head, at the start, stands on every level, so every search can begin at the top.</p>
+<h2 id="7-express-lanes">7. Express lanes</h2>
+<p>Here are the four levels. The bottom row is the stopping service, every station. Each row above skips more. The top row, level four, calls only at Hailey and Pinner. The column of H boxes on the left is the head, standing on every level.</p>
+<h2 id="8-act-three-ride-the-express-then-change">8. Act Three — Ride the express, then change</h2>
+<p>Now we search for Marden again. Start at the top, on level four, and ride to Hailey. The next stop, Pinner, would go too far, so we drop to level three, and ride to Lydd. Then down, and down again, until the next station is Marden. Three hops, instead of thirteen.</p>
+<h2 id="9-ride-the-express-then-change">9. Ride the express, then change</h2>
+<p>Here is the search, in amber. Level four, from the head to Hailey. Level three, from Hailey to Lydd. Then down to level one, and one step onto Marden. Three hops. Ride the express as far as it goes, then change down.</p>
+<h2 id="10-ride-the-express-then-change">10. Ride the express, then change</h2>
+<p>Now remove Hailey. Hailey stood on four levels, so it is unlinked four times. On each level, the station before Hailey now points straight past it. Four arrows changed, and the express lanes are still in order.</p>
+<h2 id="11-act-four-an-unlucky-coin">11. Act Four — An unlucky coin</h2>
+<p>Now an unlucky coin. We build the same sixteen stations, with a coin that always lands tails. Every station gets height one. There is no express at all. Finding Marden takes thirteen hops again. A skip list is fast on average, not in every case.</p>
+<h2 id="12-an-unlucky-coin">12. An unlucky coin</h2>
+<p>Here is the unlucky line. Only the bottom row exists. Every search walks, one station at a time, just like the stopping service. The express lanes are a gift of the coin, not a promise.</p>
+<h2 id="13-act-five-the-bill-at-a-thousand-stations">13. Act Five — The bill, at a thousand stations</h2>
+<p>And the bill, at a thousand stations. The fair coin builds eleven levels. A search takes nine point seven hops on average. The stopping service would take five hundred. The price is memory: about two arrows per station, instead of one. And the speed is an average, not a promise.</p>
+<h2 id="14-the-bill-at-a-thousand-stations">14. The bill, at a thousand stations</h2>
+<p>Here is where the arrows go. Every station has one. About half have a second. A quarter have a third. Add them up and you get about two arrows per station. That is the price of searching in ten hops instead of five hundred.</p>
+<h2 id="15-what-each-operation-costs">15. What Each Operation Costs</h2>
+<p>Let's put the costs side by side. A search takes about log two of n hops, on average. Log two of n just means how many times you can halve n: about ten for a thousand. Inserting is a search, plus two arrows per level. Removing is a search, plus one arrow per level. And the memory is about two arrows per value. Order log n, expected. Order n, with bad luck.</p>
+<h2 id="16-common-mistakes">16. Common Mistakes</h2>
+<p>Four mistakes to watch for. Not recording the last station before the target on every level, so the insert links in the wrong place. Setting the arrows in the wrong order, which loses the rest of a level. Using an unseeded coin in tests, so the counts change every run. And letting the height grow without a cap.</p>
+<h2 id="17-when-to-use-it">17. When To Use It</h2>
+<p>So, when should you use a skip list? When you need ordered data, with fast search and change, and simple code. And when many threads change it at once, which is why Java's concurrent skip list map exists. Avoid it when you need a guaranteed worst case, or when the data never changes.</p>
+<h2 id="18-thanks-for-watching">18. Thanks for Watching</h2>
+<p>That's the skip list. If you remember one sentence, make it this one. Ride the express as far as it goes, then change down, and let coins decide where the express stops. The full source code, written notes, pictures, and an animated walkthrough are all in the repository. Here is one exercise to try. Trace the search for Kelby on the regular line, and count the hops. If this helped, a like really does help other people find it. And subscribe, if you'd like the rest of the series. Thanks for watching.</p>
+</main>
+<footer>Generated from <code>narration.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

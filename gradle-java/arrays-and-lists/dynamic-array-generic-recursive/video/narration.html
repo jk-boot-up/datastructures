@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dynamic Array (Generic, Recursive) — Video Narration Script</title>
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+[data-theme=dim]{color-scheme:dark;--bg:#1f2430;--fg:#d8dee9;--muted:#a3acbf;--card:#2a3140;--line:#3d4659;
+--accent:#b4a4f5;--code:#262c39;--link:#8cb4ff}
+[data-theme=dark]{color-scheme:dark;--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;--line:#334155;
+--accent:#a78bfa;--code:#020617;--link:#93c5fd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+.themes{position:fixed;top:10px;right:10px;display:flex;gap:2px;padding:3px;border:1px solid var(--line);
+border-radius:999px;background:var(--card);font-size:.8rem;z-index:10}
+.themes button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:999px;cursor:pointer;font:inherit}
+.themes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+@media print{.themes{display:none}}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("md-theme")}catch(e){}
+if(t!=="light"&&t!=="dim"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+document.documentElement.setAttribute("data-theme",t)})();</script>
+</head>
+<body>
+<div class="themes" role="group" aria-label="Theme">
+<button type="button" data-t="light">Light</button><button type="button" data-t="dim">Dim</button><button type="button" data-t="dark">Dark</button>
+</div>
+<script>(function(){var bs=document.querySelectorAll(".themes button");
+function show(t){document.documentElement.setAttribute("data-theme",t);
+bs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t===t?"true":"false")})}
+show(document.documentElement.getAttribute("data-theme"));
+bs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t);
+try{localStorage.setItem("md-theme",b.dataset.t)}catch(e){}})})})();</script>
+<main>
+<h1 id="dynamic-array-generic-recursive-video-narration-script">Dynamic Array (Generic, Recursive) — Video Narration Script</h1>
+<h2 id="1-dynamic-array-generic-recursive">1. Dynamic Array (Generic, Recursive)</h2>
+<p>Hello, and welcome. This video explains the generic, recursive dynamic array, in Java. This video is presented by Jayasekhar Konduru. First, a simple definition. It is an array that grows by itself, written once for any type, whose loops are all written as recursions. It stores references, compares with equals, and copies one reference per call when it resizes. Our example is a playlist of songs. By the end, you will know how generics and recursion work together, and why an append can overflow the stack.</p>
+<h2 id="2-the-everyday-idea">2. The Everyday Idea</h2>
+<p>Think of a list of warehouse addresses, being copied onto a longer sheet by a line of helpers. The first helper copies line zero, then asks the next helper to copy the rest, and waits. Each helper copies one address, and waits. The furniture never moves, only the addresses. When no lines are left, everyone can go home. A million lines would need a million helpers in the corridor.</p>
+<h2 id="3-the-words">3. The Words</h2>
+<p>The words. T is the element type. Each place holds a reference, and a resize copies the reference, not the object. Equals compares contents. The base case is when nothing is left. And the recursion depth is the number of frames at once.</p>
+<h2 id="4-act-one-a-recursive-copy-of-references">4. Act One — A recursive copy of references</h2>
+<p>First, a recursive copy of references. The playlist is full with four songs. To append a fifth, it resizes. Copy zero copies the reference to Blue Sky, and calls copy one. And so on, until copy four finds nothing left, the base case. Four frames deep. The songs themselves never move.</p>
+<h2 id="5-a-recursive-copy-of-references">5. A recursive copy of references</h2>
+<p>Here is the call stack. Four copy calls, each holding one reference. On top, the base case.</p>
+<h2 id="6-act-two-growing-and-any-type">6. Act Two — Growing, and any type</h2>
+<p>Growing. Nine songs take two resizes, and twelve references copied. The deepest copy is eight frames. And the same class holds play counts, as integers. Traversing five of them goes five calls deep.</p>
+<h2 id="7-growing-and-any-type">7. Growing, and any type</h2>
+<p>Here is the playlist, nine songs in sixteen places.</p>
+<h2 id="8-act-three-the-middle-and-equals-recursively">8. Act Three — The middle, and equals, recursively</h2>
+<p>Now the middle. Inserting an intro shifts nine songs, nine calls deep. Deleting at index five shifts four, four calls deep. Then a recursive search for a new song called Echoes. Each call asks equals. The seventh call matches, at index six, seven frames deep.</p>
+<h2 id="9-the-middle-and-equals-recursively">9. The middle, and equals, recursively</h2>
+<p>Here is the search. Six calls, six songs that are not equal. The seventh call finds Echoes.</p>
+<h2 id="10-act-four-shrinking-recursively">10. Act Four — Shrinking, recursively</h2>
+<p>Shrinking uses the same recursion. Deleting the last song sets its place to null. Then shrink to fit copies eight references, eight calls deep, into exactly eight places.</p>
+<h2 id="11-shrinking-recursively">11. Shrinking, recursively</h2>
+<p>Here is the result. Eight songs, eight places, no spare room.</p>
+<h2 id="12-act-five-the-limit-of-recursion">12. Act Five — The limit of recursion</h2>
+<p>And the limit. A million appends. Long before the end, a resize must copy more references than the call stack can hold frames for. A stack overflow error, from inside an ordinary append. Generics change what is stored. Recursion changes how much stack is used.</p>
+<h2 id="13-the-limit-of-recursion">13. The limit of recursion</h2>
+<p>One frame per reference. For a large resize, far too many.</p>
+<h2 id="14-time-and-space-complexity">14. Time and Space Complexity</h2>
+<p>Here are the costs. Get and update are order one. Append is order one amortised, but a resize takes order n time and stack. Insertion and deletion at the front take order n time and stack, and so does linear search. The loop version takes the same time, with order one extra space.</p>
+<h2 id="15-the-four-dynamic-arrays">15. The Four Dynamic Arrays</h2>
+<p>The four dynamic arrays. The string version with loops. The string version with recursion. The generic version with loops, which is Java's array list. And this one, generic and recursive. On a million appends, only the loop versions finish.</p>
+<h2 id="16-common-mistakes">16. Common Mistakes</h2>
+<p>Four mistakes to watch for. Writing new T array. Searching with double equals. A recursive copy inside resize, which overflows on large lists. And not clearing freed places.</p>
+<h2 id="17-thanks-for-watching">17. Thanks for Watching</h2>
+<p>That's the generic, recursive dynamic array. If you remember one sentence, make it this one. Generics decide what is stored, and recursion decides how much stack is used, one frame per element. The full source code, written notes, pictures, and an animated walkthrough are all in the repository. Here is one exercise to try. Rewrite the copy so it halves the range, and watch the depth drop to log n. If this helped, a like really does help other people find it. And subscribe, if you'd like the rest of the series. Thanks for watching.</p>
+</main>
+<footer>Generated from <code>narration.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

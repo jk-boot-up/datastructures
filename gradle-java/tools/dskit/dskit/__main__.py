@@ -9,6 +9,7 @@
     dskit.sh index                regenerate index.md / index.html
     dskit.sh next                 the next catalogue entry with no project yet
     dskit.sh html                 PLAN, START-HERE and index as HTML
+    dskit.sh html-all [path]      every .md under the course (or under path) as themed HTML
 
 Output is one line per step; full tool output goes to <project>/build/dskit.log.
 """
@@ -142,10 +143,8 @@ def run(log, *cmd, cwd=None):
 
 
 def html_twins(p):
-    mdhtml.page(p / "README.md")
-    for name in ("cheat-sheet.md", "exercises.md", "%s-explained.md" % p.name, "spec.md"):
-        if (p / "docs" / name).exists():
-            mdhtml.page(p / "docs" / name)
+    """Every .md in the project gets its themed .html twin."""
+    return mdhtml.all_pages(p)
 
 
 def build(slug, media=True):
@@ -164,8 +163,11 @@ def build(slug, media=True):
             print("  video     video, audio, subtitles, narration.md, youtube.md, spec")
             run(log, VIDEOKIT, "animation", slug)
             print("  animation narration clips, player and UX layer")
-        html_twins(p)
-        print("  html      README.html and docs HTML twins")
+        n = html_twins(p)
+        for name in ("PLAN.md", "START-HERE.md", "PROGRESS.md"):
+            if (ROOT / name).exists():
+                mdhtml.page(ROOT / name)
+        print("  html      %d Markdown files, each with a themed HTML twin" % n)
         done, wip, total = index.build()
         print("  index     %d of %d done, %d in progress" % (done, total, wip))
 
@@ -192,6 +194,9 @@ def main(argv):
         print("%d of %d done, %d in progress" % (lambda d, w, t: (d, t, w))(*index.build()))
     elif cmd == "next":
         print(next_entry())
+    elif cmd == "html-all":
+        target = Path(rest[0]).resolve() if rest else ROOT
+        print("%d Markdown files converted to themed HTML" % mdhtml.all_pages(target))
     elif cmd == "html":
         from . import start_here
         print("start-here pictures: %d" % start_here.draw())

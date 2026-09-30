@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Static Array (Recursive) — Video Narration Script</title>
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+[data-theme=dim]{color-scheme:dark;--bg:#1f2430;--fg:#d8dee9;--muted:#a3acbf;--card:#2a3140;--line:#3d4659;
+--accent:#b4a4f5;--code:#262c39;--link:#8cb4ff}
+[data-theme=dark]{color-scheme:dark;--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;--line:#334155;
+--accent:#a78bfa;--code:#020617;--link:#93c5fd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+.themes{position:fixed;top:10px;right:10px;display:flex;gap:2px;padding:3px;border:1px solid var(--line);
+border-radius:999px;background:var(--card);font-size:.8rem;z-index:10}
+.themes button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:999px;cursor:pointer;font:inherit}
+.themes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+@media print{.themes{display:none}}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("md-theme")}catch(e){}
+if(t!=="light"&&t!=="dim"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+document.documentElement.setAttribute("data-theme",t)})();</script>
+</head>
+<body>
+<div class="themes" role="group" aria-label="Theme">
+<button type="button" data-t="light">Light</button><button type="button" data-t="dim">Dim</button><button type="button" data-t="dark">Dark</button>
+</div>
+<script>(function(){var bs=document.querySelectorAll(".themes button");
+function show(t){document.documentElement.setAttribute("data-theme",t);
+bs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t===t?"true":"false")})}
+show(document.documentElement.getAttribute("data-theme"));
+bs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t);
+try{localStorage.setItem("md-theme",b.dataset.t)}catch(e){}})})})();</script>
+<main>
+<h1 id="static-array-recursive-video-narration-script">Static Array (Recursive) — Video Narration Script</h1>
+<h2 id="1-static-array-recursive">1. Static Array (Recursive)</h2>
+<p>Hello, and welcome. This video explains the static array, written recursively, in Java. This video is presented by Jayasekhar Konduru. First, a simple definition. A recursive method solves a problem by handling one small piece, and calling itself for the rest. It stops at a base case, where nothing is left to do. Every call that is still waiting uses memory on the call stack. Our example is a weather station, storing one temperature a day in an array. By the end, you will know how to write every textbook array operation recursively, what each one costs in time and in memory, and when a loop is the better choice.</p>
+<h2 id="2-the-everyday-idea">2. The Everyday Idea</h2>
+<p>Think of a queue of seven people. You want the total money in their pockets. You ask the first person. They ask the person behind them for the total from there to the end, and wait. That person asks the next, and waits too. The last person has nobody behind, so they answer at once. That is the base case. Then the answers travel back up, each person adding their own amount. While everyone waits, they are all standing in the queue. That is the call stack.</p>
+<h2 id="3-the-words">3. The Words</h2>
+<p>The words a textbook uses. The base case is the smallest input, answered without calling again. The recursive case handles one element and calls the method for the rest. The call stack holds one frame for every call that is still waiting. The recursion depth is how many frames there are at once, and that is the extra memory used. If the depth is too great, the stack overflows.</p>
+<h2 id="4-act-one-thinking-recursively">4. Act One — Thinking recursively</h2>
+<p>First, how to think recursively. The sum of the week is the first temperature, plus the sum of the rest. And the sum of the rest is its first temperature, plus the sum of what is left. This keeps going until nothing is left. The sum of nothing is zero. That is the base case. The answer is one hundred and fifty four, and seven calls were waiting at the same time.</p>
+<h2 id="5-thinking-recursively">5. Thinking recursively</h2>
+<p>Here are the calls going down. Sum of zero is twenty one, plus sum of one. But it cannot add yet. It must wait for sum of one. Sum of one waits for sum of two, and so on.</p>
+<h2 id="6-thinking-recursively">6. Thinking recursively</h2>
+<p>At index seven there are no elements left. So sum of seven returns zero, without another call. That is the base case, and it is what stops the recursion. Now the answers travel back up, and each call adds its own element.</p>
+<h2 id="7-act-two-the-call-stack">7. Act Two — The call stack</h2>
+<p>Where do the waiting calls live? On the call stack. Each call that has not finished keeps a frame, holding its own index. Traversal visits one element and calls itself for the rest. At the end, seven frames are on the stack at once. One frame per element. That is the cost of recursion: order n extra memory, where the loop used order one.</p>
+<h2 id="8-the-call-stack">8. The call stack</h2>
+<p>Here is the call stack. The first call is at the bottom. Each new call is pushed on top. Seven calls, seven frames. When the top one returns, it is popped, and the one below continues.</p>
+<h2 id="9-act-three-searching-recursively">9. Act Three — Searching recursively</h2>
+<p>Now searching, recursively. Linear search asks: is the key here? If not, search the rest. Twenty four is found after five comparisons, five calls deep. Binary search asks: is the key in the left half or the right half? Then it searches only that half. On the sorted week, three comparisons, three calls deep.</p>
+<h2 id="10-searching-recursively">10. Searching recursively</h2>
+<p>Binary search for twenty four. The first call looks at the middle, twenty three. Too small, so it calls itself on the right half. The second call looks at twenty five. Too big, so it calls itself on the left part. The third call finds twenty four. Three calls deep.</p>
+<h2 id="11-act-four-insertion-deletion-and-reversal-recursively">11. Act Four — Insertion, deletion and reversal, recursively</h2>
+<p>Insertion, deletion and reversal can also be recursive. To insert eighteen at index two, shift right calls itself from the last element down to index two. Five shifts, five calls deep. Deleting index zero shifts seven elements left, seven calls deep. And reverse swaps the two ends, then reverses what is between them. Three swaps, three calls deep.</p>
+<h2 id="12-insertion-deletion-and-reversal-recursively">12. Insertion, deletion and reversal, recursively</h2>
+<p>Here is the array after the insertion. Eighteen, in purple, is at index two. The five elements after it, in amber, were each moved by one call of shift right. Five calls, five frames.</p>
+<h2 id="13-insertion-deletion-and-reversal-recursively">13. Insertion, deletion and reversal, recursively</h2>
+<p>Here is reverse. The first call swaps the two ends. The second call swaps the next pair in. The third call swaps the pair next to the middle. The middle element has nothing to swap with. That is the base case.</p>
+<h2 id="14-act-five-the-limit-of-recursion">14. Act Five — The limit of recursion</h2>
+<p>And the limit of recursion. Binary search on a million elements goes only twenty calls deep, because each call halves the range. Linear search on the same million needs one frame per element. The call stack runs out, and Java throws a stack overflow error. The loop version finishes, with order one extra memory. So, recurse when the depth is small, and use a loop for long linear passes.</p>
+<h2 id="15-the-limit-of-recursion">15. The limit of recursion</h2>
+<p>Here are the two depths side by side. Binary search, twenty frames. Linear search, a million frames, far more than the call stack can hold. The work is similar in style. The depth is what matters.</p>
+<h2 id="16-time-and-space-complexity">16. Time and Space Complexity</h2>
+<p>Here are the costs. Access and update are order one, and are not recursive. Traversal, linear search, maximum and sum take order n time, and order n stack space, one frame per element. Binary search takes order log n time, and order log n stack space. Insertion and deletion shift up to n elements, with up to n frames. The loop versions take the same time, with order one extra space.</p>
+<h2 id="17-recursive-or-iterative">17. Recursive or Iterative?</h2>
+<p>Recursive or iterative? Both give the same answers, with the same number of steps. But recursion keeps a frame for every waiting call, and a loop does not. Binary search on a million elements needs only twenty frames, which is safe. Linear recursion on a million elements needs a million frames, and overflows. So recurse when the depth is logarithmic, and use a loop for long linear passes.</p>
+<h2 id="18-common-mistakes">18. Common Mistakes</h2>
+<p>Five mistakes to watch for. Forgetting the base case, so the recursion never stops. Calling again without making the problem smaller. A base case that an empty array never reaches. Shifting from the insertion position upwards, which overwrites the data. And linear recursion on large data, which overflows the stack.</p>
+<h2 id="19-thanks-for-watching">19. Thanks for Watching</h2>
+<p>That's the static array, written recursively. If you remember one sentence, make it this one. A recursive method handles one piece and calls itself for the rest, and every call still waiting costs a frame on the call stack. The full source code, written notes, pictures, and an animated walkthrough are all in the repository. Here is one exercise to try. Write a recursive method that checks whether the array is sorted, and find its base case. If this helped, a like really does help other people find it. And subscribe, if you'd like the rest of the series. Thanks for watching.</p>
+</main>
+<footer>Generated from <code>narration.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

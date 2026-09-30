@@ -1,0 +1,28 @@
+ONE. A playlist in a fixed array.
+  const char *playlist[4] = {Blue Sky, Rain Dance, Night Drive, Sunrise}
+  a fifth song would be playlist[4]: past the end, which C does not check
+  growing by one place each time, 1,000 songs cost 499,494 copies
+
+TWO. Size and capacity.
+  capacity 4, size 3: [Blue Sky, Rain Dance, Night Drive]
+  append("Sunrise"): 1 write, 0 copies, capacity 4, size 4, now full
+
+THREE. Full? Double it.
+  append("Paper Moon"): full, new array of 8 places, 4 songs copied, then 1 write
+  3 more songs: 1 write each, capacity 8, size 8
+  append("Last Train"): full again, new array of 16 places, 8 songs copied
+  9 songs appended, 2 resizes, 12 copies in total
+  1,000 appends by doubling: 1,020 copies, about 1 per song (growing by one: 499,494)
+
+FOUR. The middle, and the spare places.
+  insert_at(0, "Intro"): 9 songs shifted right
+  delete_at(5) removed "Paper Moon": 4 songs shifted left
+  capacity 16, size 9: 7 places spare
+  get(9), a spare place: out of range: not an element
+  shrink_to_fit(): capacity 9, 9 songs copied
+
+FIVE. The bill.
+  the one append that resizes at 512 songs copies 512 of them
+  513 songs: capacity 1024, 511 places spare, almost half
+  delete_at_end down to 256 songs, a quarter of 1024: capacity halves to 512
+  already in C: realloc, which does the grow-and-copy; the doubling policy is up to you

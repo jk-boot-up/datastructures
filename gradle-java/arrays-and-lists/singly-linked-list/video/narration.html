@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Singly Linked List — Video Narration Script</title>
+<style>
+:root,[data-theme=light]{color-scheme:light;--bg:#f8fafc;--fg:#0f172a;--muted:#475569;--card:#fff;--line:#d5dbe5;
+--accent:#6d28d9;--code:#f1f5f9;--link:#1d4ed8}
+[data-theme=dim]{color-scheme:dark;--bg:#1f2430;--fg:#d8dee9;--muted:#a3acbf;--card:#2a3140;--line:#3d4659;
+--accent:#b4a4f5;--code:#262c39;--link:#8cb4ff}
+[data-theme=dark]{color-scheme:dark;--bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--card:#1e293b;--line:#334155;
+--accent:#a78bfa;--code:#020617;--link:#93c5fd}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:17px/1.65 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+overflow-wrap:anywhere}
+main{max-width:920px;margin:0 auto;padding:28px 16px 40px}
+h1{font-size:2rem;line-height:1.2;margin:.2em 0 .5em}
+h2{font-size:1.45rem;margin:1.8em 0 .5em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;margin:1.4em 0 .4em}
+a{color:var(--link)}
+p,ul,ol{margin:.6em 0}
+li{margin:.25em 0}
+strong{color:var(--fg)}
+code{font:.9em ui-monospace,"SF Mono",Menlo,Consolas,monospace;background:var(--code);padding:.1em .35em;border-radius:5px}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow-x:auto;line-height:1.45}
+pre code{background:none;padding:0;font-size:.86rem}
+blockquote{margin:1em 0;padding:.6em 1em;border-left:4px solid var(--accent);background:var(--card);border-radius:0 8px 8px 0}
+table{border-collapse:collapse;width:100%;margin:1em 0;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--card)}
+img{max-width:100%;height:auto;border-radius:10px;border:1px solid var(--line);background:#0f172a}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{max-width:920px;margin:0 auto;padding:0 16px 28px;color:var(--muted);font-size:.85rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.6em 1em;margin:1em 0}
+summary{cursor:pointer;font-weight:700}
+.themes{position:fixed;top:10px;right:10px;display:flex;gap:2px;padding:3px;border:1px solid var(--line);
+border-radius:999px;background:var(--card);font-size:.8rem;z-index:10}
+.themes button{border:0;background:none;color:var(--muted);padding:4px 10px;border-radius:999px;cursor:pointer;font:inherit}
+.themes button[aria-pressed=true]{background:var(--accent);color:var(--bg)}
+@media print{.themes{display:none}}
+</style>
+<script>(function(){var t=null;try{t=localStorage.getItem("md-theme")}catch(e){}
+if(t!=="light"&&t!=="dim"&&t!=="dark"){t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}
+document.documentElement.setAttribute("data-theme",t)})();</script>
+</head>
+<body>
+<div class="themes" role="group" aria-label="Theme">
+<button type="button" data-t="light">Light</button><button type="button" data-t="dim">Dim</button><button type="button" data-t="dark">Dark</button>
+</div>
+<script>(function(){var bs=document.querySelectorAll(".themes button");
+function show(t){document.documentElement.setAttribute("data-theme",t);
+bs.forEach(function(b){b.setAttribute("aria-pressed",b.dataset.t===t?"true":"false")})}
+show(document.documentElement.getAttribute("data-theme"));
+bs.forEach(function(b){b.addEventListener("click",function(){show(b.dataset.t);
+try{localStorage.setItem("md-theme",b.dataset.t)}catch(e){}})})})();</script>
+<main>
+<h1 id="singly-linked-list-video-narration-script">Singly Linked List — Video Narration Script</h1>
+<h2 id="1-singly-linked-list">1. Singly Linked List</h2>
+<p>Hello, and welcome. This video explains the singly linked list, in Java. This video is presented by Jayasekhar Konduru. First, a simple definition. A singly linked list is a chain of nodes. Each node holds its data, and a next pointer to the following node. The list remembers only the first node, called the head. Inserting or deleting changes a pointer or two, and no data moves. Our example is a treasure hunt, where each clue says where the next one is. By the end, you will know every textbook operation on a linked list, what each one costs, and the one mistake that loses half the list.</p>
+<h2 id="2-the-everyday-idea">2. The Everyday Idea</h2>
+<p>Think of a treasure hunt. You are handed the first clue. It says: the next clue is under the oak tree. Under the oak tree, a clue sends you to the old well. Nobody has a map of every clue. Each clue only knows where the next one is. To add a clue, you rewrite one clue to point at the new spot. But to reach the last clue, you must walk the whole trail. That is a linked list.</p>
+<h2 id="3-the-words">3. The Words</h2>
+<p>The words a textbook uses. A node holds its data, and a next pointer. The head is the first node, and it is the only one the list stores. Null is the next pointer of the last node, and marks the end. And current and prev are the two pointers used to walk the list.</p>
+<h2 id="4-act-one-the-hunt-in-an-array">4. Act One — The hunt in an array</h2>
+<p>First, the hunt stored in an array. Six clues, at indexes zero to five. The organisers want a new clue, the mill, at index one. An array cannot open a gap. So five clues shift one place to the right. Every insertion near the front shifts nearly everything.</p>
+<h2 id="5-the-hunt-in-an-array">5. The hunt in an array</h2>
+<p>Here is the array after the insertion. The mill is at index one, in purple. The five clues after it, in amber, each shifted one place to the right. Five shifts for one new clue.</p>
+<h2 id="6-act-two-nodes-and-next-pointers">6. Act Two — Nodes and next pointers</h2>
+<p>Now the same hunt as a linked list. Each clue is a node, holding its data and a next pointer. The last next pointer is null. The list itself remembers only the head, the first node. Inserting at the end must walk to the last node every time: ten steps to build the hunt. And counting the clues means walking all six nodes.</p>
+<h2 id="7-nodes-and-next-pointers">7. Nodes and next pointers</h2>
+<p>Here is the list. Head points to the oak tree. Each node points to the next. The chest's next pointer is null: the end. The nodes can be anywhere in memory; the pointers put them in order.</p>
+<h2 id="8-act-three-search-insertion-and-deletion">8. Act Three — Search, insertion and deletion</h2>
+<p>Now the textbook operations. Search compares node after node: five comparisons to find the fountain. Inserting the mill at position one walks to the oak tree, then changes two pointers. Nothing shifts. Inserting at the beginning also changes two pointers. Deleting the red gate points the old well past it: one pointer. Deleting at the beginning moves the head. And deleting at the end walks to the node before the last.</p>
+<h2 id="9-search-insertion-and-deletion">9. Search, insertion and deletion</h2>
+<p>Here is the insertion. First, the new node, the mill, points to the old well. Then the oak tree points to the mill. Two pointers changed, and no clue moved.</p>
+<h2 id="10-search-insertion-and-deletion">10. Search, insertion and deletion</h2>
+<p>And the deletion. We walk with two pointers, prev and current. When current reaches the red gate, prev, the old well, is pointed past it, to the bridge. One pointer changed. The red gate can no longer be reached.</p>
+<h2 id="11-act-four-two-pointers-in-the-wrong-order">11. Act Four — Two pointers in the wrong order</h2>
+<p>What happens if the two pointers are set in the wrong order? First, the old well is pointed at the mill. Now nothing points to the red gate. Then the mill copies the old well's pointer, which points at the mill itself. The mill points at itself. Only three clues can be reached. The other four are lost.</p>
+<h2 id="12-two-pointers-in-the-wrong-order">12. Two pointers in the wrong order</h2>
+<p>Here is the broken list. The oak tree, the old well, and the mill, which points back at itself. The four clues after it, in red, still exist, but no pointer leads to them.</p>
+<h2 id="13-act-five-reversal-and-the-bill">13. Act Five — Reversal, and the bill</h2>
+<p>Now reversal. Three pointers walk the list: previous, current, and next. Each node's next pointer is turned around to point backwards. Seven pointer changes, and no clue moves. And the bill. Reaching position nine hundred and ninety nine takes nine hundred and ninety nine steps. An array takes one.</p>
+<h2 id="14-reversal-and-the-bill">14. Reversal, and the bill</h2>
+<p>Here is reversal half way. The nodes behind current already point backwards. Next holds on to the rest of the list, so nothing is lost when current's pointer is turned.</p>
+<h2 id="15-time-and-space-complexity">15. Time and Space Complexity</h2>
+<p>Here are the costs in time and space. Insertion and deletion at the beginning are order one. Insertion and deletion at the end are order n, because only the head is stored. At a position, reaching it is order n, and linking is order one. Search, get, count, display and reverse are order n. And every operation uses order one extra space.</p>
+<h2 id="16-compared-with-related-structures">16. Compared With Related Structures</h2>
+<p>How does it compare? Reaching position i is order n in a list, and order one in an array. Inserting at the beginning is order one in a list, and order n in an array. Deleting at the end is order n in a singly linked list, and order one in a doubly linked list. And every node carries a pointer, so a list uses more memory than an array.</p>
+<h2 id="17-common-mistakes">17. Common Mistakes</h2>
+<p>Four mistakes to watch for. Setting the two pointers of an insertion in the wrong order, which loses the rest of the list. Walking with the head instead of a current pointer. Forgetting the empty list, and the list of one node. And trying to delete a node without holding the node before it.</p>
+<h2 id="18-thanks-for-watching">18. Thanks for Watching</h2>
+<p>That's the singly linked list. If you remember one sentence, make it this one. A linked list changes pointers instead of moving data, and pays for it with no way to jump to a position. The full source code, written notes, pictures, and an animated walkthrough are all in the repository. Here is one exercise to try. Add a tail pointer, and make insertion at the end order one. If this helped, a like really does help other people find it. And subscribe, if you'd like the rest of the series. Thanks for watching.</p>
+</main>
+<footer>Generated from <code>narration.md</code>; edit the Markdown, not this file.</footer>
+</body>
+</html>

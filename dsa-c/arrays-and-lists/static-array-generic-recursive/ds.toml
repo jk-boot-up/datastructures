@@ -1,0 +1,434 @@
+# ds.toml: everything about this project that is not C code.
+# tools/dskit turns it into the README, docs, pictures, animation and video scenes.
+
+[project]
+slug = "static-array-generic-recursive"
+category = "arrays-and-lists"
+title = "Static Array (Generic, Recursive)"
+package = "generic_array"
+main_class = "demo"
+example = "One week held as day names, ints and readings, every operation recursive"
+tagline = "Any type, one element per call"
+bold = "The generic recursive static array in C holds any type as a block of bytes with an element size, compares through comparison functions, and writes every walk as a function that handles one element or one half and calls itself for the rest; the time is unchanged and the extra space is the recursion depth."
+analogy_short = "A queue of helpers, each comparing one box with a rule you hand them"
+jdk = "Nothing recursive: `qsort` and `bsearch` in `<stdlib.h>` take the same block, size and comparison function"
+thumb_lines = ["STATIC ARRAY", "GENERIC + RECURSIVE"]
+thumb_code = "search_from(a, key, i + 1)"
+youtube_title = "Generic Recursive Static Array in C - void *, Comparison Functions and the Call Stack"
+youtube_tags = ["recursion in c", "generic array in c", "void pointer", "function pointer", "call stack", "stack overflow"]
+youtube_description = """Generic Recursive Static Array in C, explained with one week held as day names, ints and Reading structs by the same code. We trace a recursive linear search for "Thu" call by call, each call asking the comparison function and passing the rest of the array to the next call, until the match at depth 4. We traverse all three element types at depth 7, binary search the sorted day names in 3 comparisons and 3 calls, and find the hottest reading with a comparison on the way back up the call stack. We insert, delete and reverse recursively, moving whole elements with memcpy, and finish at the limit: binary search on a million ints goes only 20 calls deep, while linear search overflows the call stack and the child process running it is stopped."""
+
+[readme]
+intro = """This project combines the two variations of the **static array** in C. Like `static-array-generic`, it holds **any type** as a block of bytes with an **element size**, copies elements with **`memcpy`**, and compares them through **comparison functions**, `int compare(const void *, const void *)`, as `qsort` and `bsearch` do. Like `static-array-recursive`, every walk is a **recursion**: a function handles one element or one half, **calls itself** for the rest, and stops at a **base case**, while each call still waiting keeps a **frame** on the **call stack**. Every operation takes the same time as in the plain static array; the extra space of each recursive operation is its **recursion depth**: O(n) for traversal, linear search, maximum and shifting, O(log n) for binary search."""
+analogy = """Picture a queue of seven helpers, each standing by one box. You hand the first helper a card describing what you are looking for, and a rule for comparing a box with the card. If the helper's box does not match, the helper passes the card and the rule to the next helper, and waits. The boxes could hold anything; the rule is what knows how to compare them. When someone finds a match, or the queue runs out, the answer travels back to you."""
+example = """The weather station's week is stored three ways by the same code: day names as `char *`, temperatures as `int`, and `Reading` structs ordered by temperature. The demo traces a recursive search for "Thu", traverses all three arrays, binary searches the sorted day names, finds the hottest reading and the last day name with one recursive `find_max`, inserts, deletes and reverses recursively, and finally overflows the call stack on a million elements, in a child process."""
+why = """The generic version answers "how do I write the structure once for every type in C?"; the recursive version answers "how do the textbook's recursive definitions run?". Much of real C code needs both: recursive functions over data they do not own the type of, driven by callbacks, as in tree and sorting libraries. Seeing the two together on the simplest structure prepares for the trees and heaps later in the course."""
+when_use = [
+  "The structure must hold several element types, and the algorithm is naturally recursive.",
+  "The recursion depth is logarithmic, as in binary search.",
+  "Learning: this is the shape of generic recursive C code for trees and divide-and-conquer.",
+]
+when_not = [
+  "Linear recursion over large arrays: a million elements overflow the call stack; use the loops of `static-array-generic`.",
+  "Only one element type is needed: the typed version is simpler and checked by the compiler.",
+]
+met_before = [
+  "`qsort` and `bsearch` in `<stdlib.h>`: a block, an element size and a comparison function.",
+  "Recursive functions in textbooks, such as a recursive binary search.",
+  "A program stopped by `SIGSEGV` after a function called itself too deeply.",
+]
+
+[[word]]
+term = "void * and elem_size"
+meaning = "The array stores bytes; element i starts at `data + i x elem_size`."
+[[word]]
+term = "comparison function"
+meaning = "`int compare(const void *a, const void *b)`: negative, zero or positive. The only code that knows the element type."
+[[word]]
+term = "base case"
+meaning = "The input answered without another call: no elements left, a match found, or an empty range."
+[[word]]
+term = "recursive case"
+meaning = "One element's work, then a call on the rest: `linear_search_from(a, key, compare, i + 1)`."
+[[word]]
+term = "call stack and frame"
+meaning = "C keeps one frame, holding a call's parameters and local variables, for every call that has not returned."
+[[word]]
+term = "recursion depth"
+meaning = "The most frames on the stack at once: the extra space of a recursive operation."
+
+[[operation]]
+name = "Traverse"
+does = "Print element i, then traverse from i + 1"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "depth 7, for each type"
+[[operation]]
+name = "Access `get` / `update`"
+does = "One address calculation and a memcpy (not recursive)"
+time = "O(1) / O(1) / O(1)"
+recursive_space = "O(1)"
+space = "O(1)"
+counted = "1 step"
+[[operation]]
+name = "Insert `insert_at`"
+does = "shift_right from the last element down to pos, then memcpy in"
+time = "O(1) at the end / O(n) / O(n) at the front"
+recursive_space = "O(n - pos)"
+space = "O(1)"
+counted = "5 shifts at depth 5"
+[[operation]]
+name = "Delete `delete_at`"
+does = "memcpy the element out, then shift_left from pos"
+time = "O(1) at the end / O(n) / O(n) at the front"
+recursive_space = "O(n - pos)"
+space = "O(1)"
+counted = "7 shifts at depth 7"
+[[operation]]
+name = "Linear search"
+does = "compare(element i, key) == 0? If not, search from i + 1"
+time = "O(1) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "4 comparisons at depth 4 to find \"Thu\""
+[[operation]]
+name = "Binary search (sorted)"
+does = "compare with the middle, search one half"
+time = "O(1) / O(log n) / O(log n)"
+recursive_space = "O(log n)"
+space = "O(1)"
+counted = "3 calls for \"Thu\"; 20 on 1,000,000"
+[[operation]]
+name = "Find maximum"
+does = "compare element i with the maximum of the rest"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n)"
+space = "O(1)"
+counted = "6 comparisons at depth 6"
+[[operation]]
+name = "Reverse"
+does = "Swap the ends byte by byte, reverse the middle"
+time = "O(n) / O(n) / O(n)"
+recursive_space = "O(n / 2)"
+space = "O(1)"
+counted = "3 swaps at depth 3"
+
+listing_intro = """Each operation is a public function and a `static` helper that calls itself. Compare them with `static-array-recursive`: the recursion is identical; `arr[i]` has become `element_at(a, i)`, assignment has become `memcpy`, and `==` and `<` have become calls to the comparison function."""
+[[listing]]
+op = "Linear search with a comparison function"
+method = "generic_array#linear_search,linear_search_from"
+note = """Two base cases: no elements left (-1), and a match, found by `compare(...) == 0`. Otherwise the call passes the rest of the array, `i + 1`, to the next call. One frame per element examined."""
+[[listing]]
+op = "Binary search"
+method = "generic_array#binary_search,binary_search_range"
+note = """The comparison function's sign decides the half. The base case is an empty range. Each call halves the range, so the depth is at most about log2(n) + 1: 3 for 7 names, 20 for a million."""
+[[listing]]
+op = "Find maximum"
+method = "generic_array#find_max,find_max_from"
+note = """The base case is the last element. Every other call first finds the maximum of the rest, then compares it with its own element on the way back up. The comparison function decides the order: temperature for readings, alphabetical for names."""
+[[listing]]
+op = "Insertion"
+method = "generic_array#insert_at,shift_right"
+note = """`shift_right` copies element i one place right with `memcpy` and recurses on `i - 1`, starting at the last element, so nothing is overwritten before it has moved."""
+
+[compare]
+intro = """The four static-array projects side by side (n elements):"""
+columns = ["Property", "Generic, recursive (this)", "Generic, loops", "int, recursive", "int, loops"]
+rows = [
+  ["Element types", "any, by elem_size", "any, by elem_size", "int", "int"],
+  ["Compares with", "a comparison function", "a comparison function", "==, <", "==, <"],
+  ["Traverse, linear search", "O(n) time, O(n) stack", "O(n) time, O(1) space", "O(n) time, O(n) stack", "O(n) time, O(1) space"],
+  ["Binary search", "O(log n) time and stack", "O(log n) time, O(1) space", "O(log n) time and stack", "O(log n) time, O(1) space"],
+  ["Type checked by the compiler", "no", "no", "yes", "yes"],
+  ["A million elements", "linear recursion overflows", "fine", "linear recursion overflows", "fine"],
+]
+
+pros = [
+  "One implementation for every type, and code that reads like the textbook's recursive definitions.",
+  "Binary search needs only O(log n) stack: 20 frames for a million elements.",
+  "The shape of generic recursive C code used for trees and heaps.",
+]
+cons = [
+  "O(n) stack for linear recursion, and a stack overflow on large arrays that C cannot catch.",
+  "No type checking through `void *`.",
+  "A function call for every comparison.",
+]
+
+[[mistake]]
+mistake = "No base case, or no progress towards it"
+happens = "The function calls itself until the stack overflows and the program is stopped."
+fix = "Write the base case first; make every call work on `i + 1` or a smaller half."
+[[mistake]]
+mistake = "Comparing strings or structs with `==`"
+happens = "`==` compares addresses, or does not compile for structs."
+fix = "Compare through the comparison function."
+[[mistake]]
+mistake = "The wrong element size"
+happens = "Elements overlap or are cut short."
+fix = "Pass `sizeof` of the element type itself."
+[[mistake]]
+mistake = "Linear recursion on large data"
+happens = "One frame per element: a million elements overflow the call stack."
+fix = "Recurse where the depth is logarithmic; loop over long linear passes."
+
+[[exercise]]
+level = "easy"
+question = """Write a recursive `int count_equal(const GenericArray *a, const void *key, CompareFn compare, int i)`. Name its base case and its extra space."""
+answer = """```c
+int count_equal(const GenericArray *a, const void *key, CompareFn compare, int i) {
+    if (i == a->n) return 0;                                        /* base case */
+    return (compare(element_at(a, i), key) == 0) + count_equal(a, key, compare, i + 1);
+}
+```
+Called with `i = 0`. The base case is `i == n`. O(n) time and O(n) stack, one frame per element."""
+[[exercise]]
+level = "medium"
+question = """Write a recursive `int is_sorted(const GenericArray *a, CompareFn compare, int i)`. How deep does it go on the day names in week order, [Mon, Tue, Wed, Thu, Fri, Sat, Sun]?"""
+answer = """```c
+int is_sorted(const GenericArray *a, CompareFn compare, int i) {
+    if (i >= a->n - 1) return 1;                                     /* zero or one element left */
+    if (compare(element_at(a, i), element_at(a, i + 1)) > 0) return 0;
+    return is_sorted(a, compare, i + 1);
+}
+```
+The first call finds "Mon" before "Tue", the second "Tue" before "Wed", and the third finds "Wed" after "Thu" and returns 0. Depth 3."""
+[[exercise]]
+level = "harder"
+question = """Write a recursive `int find_min(const GenericArray *a, CompareFn compare, int i)`. Then write a comparison function that orders readings by day name, and say what `find_min` returns on the readings without changing `generic_array.c`."""
+answer = """```c
+int find_min(const GenericArray *a, CompareFn compare, int i) {
+    if (i == a->n - 1) return i;
+    int rest_min = find_min(a, compare, i + 1);
+    return compare(element_at(a, i), element_at(a, rest_min)) <= 0 ? i : rest_min;
+}
+
+int compare_reading_by_day(const void *a, const void *b) {
+    return strcmp(((const Reading *) a)->day, ((const Reading *) b)->day);
+}
+```
+With readings ordered by day name, the smallest is "Fri" (24 C), the first alphabetically. The array code is unchanged: the comparison function decides the order."""
+
+[hero]
+caption = "linear_search for \"Thu\": one call per element, each asking the comparison function"
+picture = { type = "stack", cells = ["search_from(0): Mon", "search_from(1): Tue", "search_from(2): Wed", "search_from(3): Thu found"], width = 320, marks = { "3" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 1
+[[act]]
+title = "Recursion, for any element type"
+summary = "A recursive linear search for \"Thu\": Mon, Tue and Wed are not it, each passing the rest to the next call; Thu is found at index 3, 4 comparisons, depth 4."
+detail = """The recursive linear search asks one question per call: does element i compare equal to the key? The demo traces it on the day names. The call for index 0 finds "Mon" is not "Thu", calls itself for index 1, and waits. "Tue", no; "Wed", no; "Thu", yes: that call returns index 3 without calling again, a base case. Running the real search with a comparison function that counts its calls confirms it: 4 comparisons, one per call, so 4 calls deep."""
+speech = """First, recursion for any element type. [[slnc 400]] The recursive search asks one question. [[slnc 300]] Is this element equal to the key? [[slnc 400]] If not, search the rest, and wait. [[slnc 500]] Monday, no. [[slnc 200]] Tuesday, no. [[slnc 200]] Wednesday, no. [[slnc 200]] Thursday, yes. [[slnc 400]] A base case. [[slnc 300]] Four calls, four frames on the stack."""
+console = [["linear_search(0): Mon is not Thu -> linear_search(1)", "muted"], ["  ... Tue, no; Wed, no", "muted"], ["    linear_search(3): Thu equals Thu -> found, index 3   <- base case", "ok"], ["linear_search(\"Thu\") = index 3: 4 comparisons, one call each, depth 4", "amber"]]
+[[act.frame]]
+caption = "Four calls waiting; the top one found \"Thu\""
+say = """Here is the call stack at the match. [[slnc 300]] Three calls that did not match, waiting. [[slnc 300]] And the fourth, which found Thursday."""
+picture = { type = "stack", cells = ["search_from(0): Mon", "search_from(1): Tue", "search_from(2): Wed", "search_from(3): Thu found"], width = 320, marks = { "3" = "ok" }, top_label = "top" }
+
+# ---------------------------------------------------------------- act 2
+[[act]]
+title = "The same recursion, three types"
+summary = "The same recursive traverse prints ints, day names and readings, 7 calls deep for each."
+detail = """The same recursive `traverse` runs on the three arrays, each with its own print function. It prints one element and calls itself for the rest, so it goes 7 calls deep for 7 elements whatever the element type: the recursion depends on the number of elements, not on what they are."""
+speech = """The same recursion works for every type. [[slnc 400]] Traversal of the temperatures, the day names, and the readings. [[slnc 300]] Each goes seven calls deep. [[slnc 400]] The depth depends on how many elements there are, not on what they are."""
+console = [["ints:     [21, 23, 19, 25, 24, 22, 20]", "ok"], ["names:    [Mon, Tue, Wed, Thu, Fri, Sat, Sun]", "ok"], ["readings: [Mon 21 C, Tue 23 C, Wed 19 C, Thu 25 C, Fri 24 C, Sat 22 C, Sun 20 C]", "ok"], ["each traversal is 7 calls deep, whatever the element type", "amber"]]
+[[act.frame]]
+caption = "Two of the three arrays, traversed by the same recursive function"
+say = """Here are two of the arrays. [[slnc 300]] Numbers and names. [[slnc 300]] Seven calls deep, in both."""
+picture = { type = "group", items = [ { type = "array", cells = [21, 23, 19, 25, 24, 22, 20], title = "ints: depth 7" }, { type = "array", cells = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], title = "char *: depth 7" } ], vertical = true }
+
+# ---------------------------------------------------------------- act 3
+[[act]]
+title = "Comparison functions, recursively"
+summary = "Recursive binary search finds \"Thu\" in the sorted names with 3 comparisons, 3 calls deep; recursive find_max gives Thu 25 C for readings (6 comparisons) and Wed for names."
+detail = """Recursive binary search compares the key with the middle element through the comparison function and calls itself on one half. On the sorted names [Fri, Mon, Sat, Sun, Thu, Tue, Wed] it compares with "Sun", then "Tue", then "Thu": 3 comparisons, one per call, so 3 calls deep. Recursive `find_max` goes all the way to the last element, its base case, and compares on the way back up: 6 comparisons. With `compare_reading` the answer is "Thu 25 C"; with `compare_name` the same function returns "Wed"."""
+speech = """Now comparison functions, recursively. [[slnc 400]] Binary search on the sorted day names. [[slnc 300]] Sunday, then Tuesday, then Thursday. [[slnc 400]] Three calls deep. [[slnc 500]] Find max goes down to the last element, and compares on the way back up. [[slnc 400]] With the temperature comparison, Thursday wins. [[slnc 300]] With the name comparison, Wednesday."""
+console = [["sorted: [Fri, Mon, Sat, Sun, Thu, Tue, Wed]", "muted"], ["binary_search(\"Thu\") = index 4: 3 comparisons, one call each, depth 3", "ok"], ["find_max(compare_reading) = Thu 25 C: 6 comparisons on the way back up, depth 6", "ok"], ["find_max(compare_name) = Wed: the same function, alphabetical order", "muted"]]
+[[act.frame]]
+caption = "Recursive binary search: call 1 at Sun, call 2 at Tue, call 3 finds Thu"
+say = """Here are the three calls. [[slnc 300]] Each looks at the middle of its range, and calls itself on one half."""
+picture = { type = "array", cells = ["Fri", "Mon", "Sat", "Sun", "Thu", "Tue", "Wed"], marks = { "0" = "dim", "1" = "dim", "2" = "dim", "3" = "hi", "5" = "hi", "4" = "ok", "6" = "dim" }, pointers = [[3, "call 1"], [5, "call 2"], [4, "call 3"]] }
+
+# ---------------------------------------------------------------- act 4
+[[act]]
+title = "Insertion, deletion and reversal, recursively"
+summary = "insert_at(2) shifts 5 readings at depth 5; delete_at(0) shifts 7 at depth 7; reverse swaps 3 at depth 3."
+detail = """`insert_at(2, Wed* 18 C)` calls `shift_right` from the last reading down to index 2: 5 shifts with `memcpy`, one call each, so 5 deep. `delete_at(0)` copies "Mon 21 C" out and calls `shift_left` from index 0: 7 shifts, 7 deep. `reverse` swaps the two ends byte by byte and calls itself on the middle: 3 swaps, 3 deep."""
+speech = """Insertion and deletion, recursively. [[slnc 400]] Inserting at index two shifts five readings, five calls deep. [[slnc 400]] Deleting index zero shifts seven, seven calls deep. [[slnc 500]] And reverse swaps the ends, then reverses the middle: three swaps, three calls deep."""
+console = [["insert_at(2, Wed* 18 C): 5 shifts, depth 5", "amber"], ["delete_at(0) removed Mon 21 C: 7 shifts, depth 7", "amber"], ["reverse: 3 swaps, depth 3; [Sun 20 C, Sat 22 C, Fri 24 C, Thu 25 C, Wed 19 C, Wed* 18 C, Tue 23 C]", "ok"]]
+[[act.frame]]
+caption = "reverse: swap the ends, then reverse the middle; the centre stays"
+say = """Here is the reversed array. [[slnc 300]] Three calls swapped three pairs. [[slnc 300]] The middle reading stayed where it was."""
+picture = { type = "array", cells = ["Sun 20", "Sat 22", "Fri 24", "Thu 25", "Wed 19", "Wed* 18", "Tue 23"], marks = { "0" = "ok", "6" = "ok", "1" = "ok", "5" = "ok", "2" = "ok", "4" = "ok", "3" = "dim" } }
+
+# ---------------------------------------------------------------- act 5
+[[act]]
+title = "The limit of recursion"
+summary = "On 1,000,000 ints, recursive binary search makes 20 comparisons, 20 calls deep; recursive linear search overflows the call stack, and the child process running it is stopped by SIGSEGV."
+detail = """Generics do not change the depth. Binary search on a million sorted ints makes 20 comparisons, 20 calls deep, and is always safe. Linear search on the same array needs one frame per element, and the call stack runs out long before a million: the operating system stops the program with `SIGSEGV`. C cannot catch that, so the demo runs the search in a child process and reports how the child ended. The loop version in `static-array-generic` searches the million with O(1) extra space. `void *` changes what is stored; recursion changes how much stack is used; neither changes the time."""
+speech = """And the limit. [[slnc 400]] Binary search on a million integers is only twenty calls deep. [[slnc 500]] Linear search needs one frame per element, and the call stack runs out. [[slnc 400]] The operating system stops the program. [[slnc 300]] So the demo ran it in a separate child process. [[slnc 500]] Generics change what is stored. [[slnc 300]] Recursion changes how much stack is used."""
+console = [["binary_search on 1,000,000 ints: index 666666, 20 comparisons, depth 20", "ok"], ["linear_search on 1,000,000: the child process was killed by SIGSEGV: the call stack overflowed", "bad"], ["void * changes what is stored; recursion changes how much stack is used; neither changes the time", "muted"]]
+[[act.frame]]
+caption = "Depth 20 fits on the call stack; depth 1,000,000 does not"
+say = """Here are the two depths. [[slnc 300]] Twenty frames for binary search. [[slnc 300]] A million frames for linear search, far beyond what the stack can hold."""
+picture = { type = "group", items = [ { type = "stack", cells = ["binary_search_range", "...", "call 20"], width = 260, marks = { "2" = "ok" }, top_label = "depth 20" }, { type = "stack", cells = ["search_from(0)", "search_from(1)", "...", "SIGSEGV"], width = 260, marks = { "3" = "bad" }, top_label = "overflow" } ], gap = 60 }
+
+[animation]
+subtitle = "One generic C array holding names, ints and readings, with every operation recursive: comparison functions, base cases, the call stack, and a stack overflow in a child process."
+
+[docs.problem]
+scenario = """A weather station keeps its week as day names, temperatures and readings, and wants the textbook array operations written once for every type, in C, and written recursively."""
+naive = """A separate recursive implementation per element type; or linear recursion on large data, which overflows the call stack and stops the program."""
+deliver = [
+  "A `GenericArray` (bytes, elem_size, n) with recursive traverse, insert_at, delete_at, linear_search, binary_search, find_max and reverse, driven by comparison and print functions.",
+  "Pure textbook code: the demo counts comparisons with counting comparison functions, from outside.",
+  "A real stack overflow on a million-element linear recursion, in a child process, beside a 20-deep binary search.",
+  "Time and stack space of every operation, compared with the other three static-array projects.",
+]
+
+[docs.prerequisites]
+required = ["The static-array-generic and static-array-recursive projects", "C basics: pointers, structs, `sizeof`"]
+not_required = ["Big-O notation (START-HERE.md introduces it by counting steps)"]
+
+[docs.session]
+objectives = [
+  "Write recursive functions over a generic byte-block array, driven by comparison functions.",
+  "Identify the base cases of recursive linear search, binary search and find_max.",
+  "State the time and stack space of each operation.",
+  "Explain why neither void * nor recursion changes the time.",
+]
+walkthrough = """Start with the queue-of-helpers analogy. Trace the recursive search for "Thu" on the board. Run the demo; in act two, point out that the depth is 7 for every type. In act three, pass the two comparison functions to find_max. In act five, show the child process stopped by SIGSEGV. Finish with the four-column table."""
+
+[docs.explained]
+sentence = """The generic recursive static array holds any type as bytes with an element size, compares through comparison functions, and writes each operation as one element's work plus a call on the rest; the time is unchanged and the extra space is the recursion depth."""
+verdict = """This is the shape of generic recursive C code for trees and heaps. On arrays, keep recursion for logarithmic depth such as binary search, and use loops for linear passes over large data."""
+recognise = [
+  "A `static` helper that calls itself with `i + 1` and a `CompareFn` parameter.",
+  "`compare(element_at(a, i), key) == 0` inside a recursive function.",
+  "A base case such as `if (i == a->n) return -1;` at the top.",
+]
+
+[spec]
+purpose = """Teach generic containers and recursion together on the static array, in C."""
+requirements = [
+  "Written by hand on a `malloc`ed byte block; no libraries.",
+  "Fixed capacity; overflow, underflow and out-of-range reported by status codes.",
+  "Recursive traverse, insert_at, delete_at, linear_search, binary_search, find_max and reverse; get and update O(1).",
+  "A real stack overflow demonstrated in a child process.",
+  "The demo's output is kept in tests/expected-output.txt and checked by make test.",
+]
+nongoals = ["Loop versions (static-array-generic)", "int-only versions (static-array, static-array-recursive)"]
+
+[[diagram]]
+name = "architecture-diagram"
+kind = "flow"
+title = "Static Array (Generic, Recursive): the pieces"
+caption = "Each public function starts a recursive helper; the helpers call the comparison function passed in."
+nodes = [
+  { id = "demo", label = "Demo", sub = "demo.c, five acts", col = 0, row = 0, colour = "client" },
+  { id = "arr", label = "GenericArray", sub = "linear_search(&a, &key, compare)", col = 1, row = 0, colour = "accent" },
+  { id = "rec", label = "recursive helpers", sub = "linear_search_from(a, key, compare, i)", col = 2, row = 0, colour = "green" },
+  { id = "fns", label = "elements.c", sub = "compare_name, compare_reading", col = 1, row = 1, colour = "amber" },
+]
+edges = [ { from = "demo", to = "arr", label = "search" }, { from = "arr", to = "rec", label = "from 0" }, { from = "rec", to = "fns", label = "compare(x, key)" } ]
+
+[[diagram]]
+name = "class-diagram"
+kind = "class"
+title = "Static Array (Generic, Recursive): the types and functions"
+caption = "`GenericArray` knows only bytes; the recursive helpers are `static` inside generic_array.c."
+nodes = [
+  { id = "arr", label = "GenericArray", sub = ["unsigned char *data", "size_t elem_size", "int capacity, n", "traverse / get / update", "insert_at / delete_at", "linear_search / binary_search", "find_max / reverse"], col = 0, row = 0, colour = "accent" },
+  { id = "fn", label = "CompareFn", sub = ["int (*)(const void *,", "        const void *)"], col = 1, row = 0, colour = "green" },
+  { id = "rd", label = "Reading", sub = ["char day[8]", "int celsius"], col = 1, row = 1, colour = "client" },
+]
+edges = [ { from = "arr", to = "fn", label = "calls" }, { from = "fn", to = "rd", label = "knows" } ]
+
+[[diagram]]
+name = "data-flow-diagram"
+kind = "flow"
+title = "Static Array (Generic, Recursive): one call of linear_search_from"
+caption = "Two base cases, then a call on the rest."
+nodes = [
+  { id = "call", label = "linear_search_from(a, key, compare, i)", sub = "i = 0 at first", col = 0, row = 0, colour = "client" },
+  { id = "end", label = "i == n?", sub = "yes: return -1", col = 1, row = 0, colour = "red" },
+  { id = "eq", label = "compare(element i, key) == 0?", sub = "yes: return i", col = 2, row = 0, colour = "green" },
+  { id = "rec", label = "linear_search_from(..., i + 1)", sub = "this frame waits", col = 2, row = 1, colour = "amber" },
+]
+edges = [ { from = "call", to = "end", label = "" }, { from = "end", to = "eq", label = "no" }, { from = "eq", to = "rec", label = "no" } ]
+
+[[diagram]]
+name = "sequence-diagram"
+kind = "sequence"
+title = "Static Array (Generic, Recursive): binary_search(\"Thu\")"
+caption = "Three calls, each on half the range; the index returns through every frame."
+participants = ["Demo", "range 0..6", "range 4..6", "range 4..4"]
+steps = [
+  ["Demo", "range 0..6", "binary_search(&names, &thu, compare_name)"],
+  ["range 0..6", "range 4..6", "compare(Sun, Thu) < 0"],
+  ["range 4..6", "range 4..4", "compare(Tue, Thu) > 0"],
+  ["range 4..4", "range 4..6", "compare(Thu, Thu) == 0: 4", "reply"],
+  ["range 4..6", "range 0..6", "4", "reply"],
+  ["range 0..6", "Demo", "index 4, depth 3", "reply"],
+]
+
+[poster]
+headline = [["STATIC ARRAY", "text"], ["GENERIC + RECURSIVE", "accent"]]
+before = { code = "arr[i] == key", note = "one type only", tag = "TYPED" }
+after = { code = "compare(elem, key) == 0", note = "then search the rest", tag = "ANY TYPE" }
+taglines = [["Any type, one element per call.", "text"], ["A comparison function and a base case.", "gold"]]
+
+[[scene]]
+key = "01-poster"
+kind = "poster"
+title = "Static Array (Generic, Recursive)"
+narration = """Hello, and welcome. [[slnc 400]] This video explains the generic, recursive static array, in C. [[slnc 300]] This video is presented by Jayasekhar Konduru. [[slnc 600]] First, a simple definition. [[slnc 300]] It is a static array written once for any element type, as bytes with an element size, whose operations call themselves. [[slnc 400]] Each call handles one element, asks a comparison function, and passes the rest to the next call, until a base case stops it. [[slnc 700]] Our example is a weather station's week, as day names, temperatures, and readings. [[slnc 400]] By the end, you will know how generic code and recursion work together in C, and what each one costs."""
+
+[[scene]]
+key = "02-idea"
+kind = "structure"
+title = "The Everyday Idea"
+caption = "Each helper compares one box with the rule, or passes the card on and waits"
+picture = { type = "array", cells = ["you", "box", "box", "box", "box", "box", "last"], marks = { "6" = "ok" }, pointers = [[0, "asks"], [6, "base case"]], title = "a queue of helpers, one box each" }
+narration = """Picture a queue of seven helpers, each standing by one box. [[slnc 400]] You hand the first helper a card, and a rule for comparing a box with the card. [[slnc 400]] If the box does not match, the helper passes the card and the rule to the next helper, and waits. [[slnc 500]] The boxes could hold anything. [[slnc 300]] The rule is what knows how to compare them. [[slnc 500]] When someone finds a match, or the queue runs out, the answer travels back to you."""
+
+[[scene]]
+key = "03-words"
+kind = "bullets"
+title = "The Words"
+body = ["elem_size: bytes per element", "compare(a, b): negative, zero or positive", "base case: no call; recursive case: call on the rest", "", "recursion depth = frames at once = extra space"]
+narration = """The words. [[slnc 400]] The element size is how many bytes one element takes. [[slnc 400]] A comparison function returns negative, zero, or positive. [[slnc 400]] The base case answers without calling again. [[slnc 300]] The recursive case handles one element and calls itself on the rest. [[slnc 500]] And the recursion depth, the number of frames at once, is the extra memory used."""
+
+[[scene]]
+key = "acts"
+kind = "acts"
+title = "acts"
+narration = ""
+
+[[scene]]
+key = "costs"
+kind = "bullets"
+title = "Time and Space Complexity"
+body = ["get, update: O(1), not recursive", "traverse, linear search, max: O(n) time, O(n) stack", "binary search: O(log n) time and stack", "insert, delete: O(n) time and stack at the front", "", "the loop versions: the same time, O(1) space"]
+narration = """Here are the costs. [[slnc 400]] Get and update are order one, and not recursive. [[slnc 400]] Traversal, linear search and find max take order n time, and order n stack. [[slnc 400]] Binary search takes order log n time and stack. [[slnc 400]] Insertion and deletion at the front take order n time and stack. [[slnc 500]] The loop versions take the same time, with order one extra space."""
+
+[[scene]]
+key = "compare"
+kind = "bullets"
+title = "The Four Static Arrays"
+body = ["int, loops: the fastest, type checked", "int, recursive: O(depth) stack", "generic, loops: any type, no type checks", "generic, recursive: any type, O(depth) stack", "", "void *: what is stored; recursion: how much stack"]
+narration = """How do the four static arrays compare? [[slnc 400]] The int array with loops is the fastest, and the compiler checks its type. [[slnc 400]] The recursive int array adds a stack frame per waiting call. [[slnc 400]] The generic array with loops holds any type, without type checks. [[slnc 400]] And this one does both. [[slnc 500]] The void pointer changes what is stored. [[slnc 300]] Recursion changes how much stack is used."""
+
+[[scene]]
+key = "mistakes"
+kind = "bullets"
+title = "Common Mistakes"
+body = ["no base case, or no progress", "== on strings or structs", "the wrong element size", "linear recursion on large data"]
+narration = """Four mistakes to watch for. [[slnc 400]] A recursion with no base case, or no progress towards it. [[slnc 400]] Comparing strings or structs with double equals. [[slnc 400]] Passing the wrong element size. [[slnc 400]] And linear recursion on large data, which overflows the stack."""
+
+[[scene]]
+key = "outro"
+kind = "outro"
+title = "Thanks for Watching"
+body = ["Full source, notes, pictures and an animated walkthrough", "are in the repository. Try the three exercises", "in docs/exercises.md."]
+narration = """That's the generic, recursive static array in C. [[slnc 400]] If you remember one sentence, make it this one. [[slnc 300]] Compare through a function, handle one element, and let the call on the rest do the remainder, until a base case. [[slnc 500]] The full source code, written notes, pictures, and an animated walkthrough are all in the repository. [[slnc 500]] Here is one exercise to try. [[slnc 300]] Write a recursive find min, and see how the comparison function decides the answer. [[slnc 500]] If this helped, a like really does help other people find it. [[slnc 300]] And subscribe, if you'd like the rest of the series. [[slnc 400]] Thanks for watching."""
